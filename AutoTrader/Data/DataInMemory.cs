@@ -24,7 +24,7 @@ namespace AutoTrader.Data
 
         public List<AssetPairHistoryEntry> GetAssetPairHistory(AssetPair assetPair)
         {
-            throw new NotImplementedException();
+            return data[assetPair];
         }
 
         public List<float> GetBidHistory(AssetPair assetPair)
@@ -40,20 +40,9 @@ namespace AutoTrader.Data
         public DateTime GetYoungestDate(AssetPair assetPair)
         {
             List<AssetPairHistoryEntry> assetPairHistoryEntries = GetAssetPairHistory(assetPair);
-
             if (assetPairHistoryEntries.Count > 1)
                 return assetPairHistoryEntries[0].Date;
-            return DateTime.Now.AddDays(-timeWindowsInDays);
-            ;
-        }
-
-        public AssetPairHistoryEntry GetYoungestEntry(AssetPair assetPair)
-        {
-            List<AssetPairHistoryEntry> assetPairHistoryEntries = GetAssetPairHistory(assetPair);
-
-            if (assetPairHistoryEntries.Count > 1)
-                return assetPairHistoryEntries[0];
-            return null;
+            return DateTime.Today.AddDays(-timeWindowsInDays);
         }
     }
 }

@@ -20,11 +20,11 @@ namespace AutoTrader.Library
 
         public async void RefreshAssetPairHistory(AssetPair assetPair)
         {
-            DateTime youngestDate = data.GetYoungestDate(assetPair);
-            if (DateTime.Today > youngestDate)
+            DateTime nextDay = data.GetYoungestDate(assetPair);
+            while (nextDay < DateTime.Today)
             {
-                DateTime nextDay = youngestDate.AddDays(1);
-                var historyRatePerDay = repository.GetHistoryRatePerDay(assetPair, nextDay);
+                nextDay = nextDay.AddDays(1);
+                Task<IAssetPairHistoryEntry> historyRatePerDay = repository.GetHistoryRatePerDay(assetPair, nextDay);
                 if (await historyRatePerDay is not NoDataHistoryEntry)
                 {
                     data.AddAssetPairHistoryEntry(assetPair, await historyRatePerDay);
