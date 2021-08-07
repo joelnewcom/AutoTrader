@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace AutoTrader.Data
 {
-    public class DataInMemory : IDataAccess 
+    public class DataInMemory : IDataAccess
     {
         Dictionary<AssetPair, List<AssetPairHistoryEntry>> data;
         readonly int timeWindowsInDays;
@@ -17,7 +17,7 @@ namespace AutoTrader.Data
             data = new Dictionary<AssetPair, List<AssetPairHistoryEntry>>();
         }
 
-        public AssetPair AddAssetPairHistoryEntry(AssetPair assetPair, AssetPairHistoryEntry assetPairHistoryEntry)
+        public AssetPair AddAssetPairHistoryEntry(AssetPair assetPair, IAssetPairHistoryEntry assetPairHistoryEntry)
         {
             throw new NotImplementedException();
         }
@@ -43,7 +43,8 @@ namespace AutoTrader.Data
 
             if (assetPairHistoryEntries.Count > 1)
                 return assetPairHistoryEntries[0].Date;
-            return DateTime.Now.AddDays(-timeWindowsInDays); ;
+            return DateTime.Now.AddDays(-timeWindowsInDays);
+            ;
         }
 
         public AssetPairHistoryEntry GetYoungestEntry(AssetPair assetPair)

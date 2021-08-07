@@ -9,21 +9,27 @@ namespace AutoTrader.Library
 {
     public class DataRefresher
     {
-        private IRepository repository;
-        private IDataAccess data;
+        private readonly IRepository repository;
+        private readonly IDataAccess data;
 
         public DataRefresher(IRepository repository, IDataAccess data)
         {
             this.repository = repository;
             this.data = data;
         }
-       
-        public void refreshAssetPairHistory(AssetPair assetPair){
+
+        public async void RefreshAssetPairHistory(AssetPair assetPair)
+        {
             DateTime youngestDate = data.GetYoungestDate(assetPair);
-            if (DateTime.Today > youngestDate){
-                repository
+            if (DateTime.Today > youngestDate)
+            {
+                DateTime nextDay = youngestDate.AddDays(1);
+                var historyRatePerDay = repository.GetHistoryRatePerDay(assetPair, nextDay);
+                if (await historyRatePerDay is not NoDataHistoryEntry)
+                {
+                    data.AddAssetPairHistoryEntry(assetPair, await historyRatePerDay);
+                }
             }
-            
         }
     }
 }

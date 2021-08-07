@@ -7,7 +7,7 @@ namespace AutoTrader.Data
 {
     public interface IDataAccess
     {
-        AssetPair AddAssetPairHistoryEntry(AssetPair assetPair, AssetPairHistoryEntry assetPairHistoryEntry);
+        AssetPair AddAssetPairHistoryEntry(AssetPair assetPair, IAssetPairHistoryEntry assetPairHistoryEntry);
 
         List<AssetPairHistoryEntry> GetAssetPairHistory(AssetPair assetPair);
 
