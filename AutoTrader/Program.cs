@@ -16,22 +16,10 @@ namespace AutoTrader
     public class Program
     {
 
-        
-
         public static async Task Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
-            
         }
-
-        //public static IHostBuilder CreateHostBuilder(string[] args)
-        //{
-        //    return Host.CreateDefaultBuilder(args)
-        //        .ConfigureWebHostDefaults(webBuilder =>
-        //        {
-        //            webBuilder.UseStartup<Startup>();
-        //        });
-        //}
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
          Host.CreateDefaultBuilder(args)
@@ -43,21 +31,5 @@ namespace AutoTrader
              {
                  services.AddHostedService<TraderService>();
              });
-
-
-
-        //private static async Task ProcessRepositories()
-        //{
-        //    client.DefaultRequestHeaders.Accept.Clear();
-        //    client.DefaultRequestHeaders.Accept.Add(
-        //        new MediaTypeWithQualityHeaderValue("application/vnd.github.v3+json"));
-        //    client.DefaultRequestHeaders.Add("User-Agent", ".NET Foundation Repository Reporter");
-
-        //    var stringTask = client.GetStringAsync("https://api.github.com/orgs/dotnet/repos");
-
-        //    var msg = await stringTask;
-        //    Console.Write(msg);
-        //}
-
     }
 }
