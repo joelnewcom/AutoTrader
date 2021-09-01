@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ApplicationState } from '../store';
-import * as AutoTradersStore from "../store/AutoTraderPoC";
+import * as AutoTradersStore from "../store/AutoTrader";
 
 // At runtime, Redux will merge together...
 type AutoTraderProps =
@@ -29,56 +29,28 @@ class AutoTraderSite extends React.PureComponent<AutoTraderProps> {
         <h1 id="tabelLabel">Weather forecast</h1>
         <p>This component demonstrates fetching data from the server and working with URL parameters.</p>
         {this.renderForecastsTable()}
-        {this.renderPagination()}
       </React.Fragment>
     );
   }
 
   private ensureDataFetched() {
-    const startDateIndex = parseInt(this.props.match.params.startDateIndex, 10) || 0;
-      this.props.requestAutoTraderData(startDateIndex);
+    this.props.requestAutoTraderData();
   }
 
   private renderForecastsTable() {
-    return (
-      <table className='table table-striped' aria-labelledby="tabelLabel">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Temp. (C)</th>
-            <th>Temp. (F)</th>
-            <th>Summary</th>
-          </tr>
-        </thead>
-        <tbody>
-          {this.props.forecasts.map((autoTraderData: AutoTradersStore.AutoTraderData) =>
-            <tr key={autoTraderData.date}>
-              <td>{autoTraderData.date}</td>
-              <td>{autoTraderData.temperatureC}</td>
-              <td>{autoTraderData.temperatureF}</td>
-              <td>{autoTraderData.summary}</td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+      return (
+          <div>
+              <div>{this.props.trades.id}</div>
+              <div>{this.props.trades.name}</div>
+              <div>{this.props.trades.accuracy}</div>
+          </div>
+                    
     );
   }
 
-  private renderPagination() {
-    const prevStartDateIndex = (this.props.startDateIndex || 0) - 5;
-    const nextStartDateIndex = (this.props.startDateIndex || 0) + 5;
-
-    return (
-      <div className="d-flex justify-content-between">
-        <Link className='btn btn-outline-secondary btn-sm' to={`/fetch-data/${prevStartDateIndex}`}>Previous</Link>
-        {this.props.isLoading && <span>Loading...</span>}
-        <Link className='btn btn-outline-secondary btn-sm' to={`/fetch-data/${nextStartDateIndex}`}>Next</Link>
-      </div>
-    );
-  }
 }
 
 export default connect(
-  (state: ApplicationState) => state.autoTraderPoc, // Selects which state properties are merged into the component's props
+  (state: ApplicationState) => state.autoTrader, // Selects which state properties are merged into the component's props
   AutoTradersStore.actionCreators // Selects which action creators are merged into the component's props
 )(AutoTraderSite as any); // eslint-disable-line @typescript-eslint/no-explicit-any

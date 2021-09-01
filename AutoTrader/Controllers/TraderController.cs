@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AutoTrader.Data;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -20,9 +21,9 @@ namespace AutoTrader.Controllers
         }
 
         [HttpGet]
-        public bool GetSomething()
+        public AssetPair GetSomething()
         {
-            return true;
+            return new AssetPair("id", "name", 1222);
         }
     }
 }

@@ -6,15 +6,13 @@ import { AppThunkAction } from '.';
 
 export interface AutoTraderState {
     isLoading: boolean;
-    startDateIndex?: number;
-    forecasts: AutoTraderData[];
+    trades: AutoTraderData;
 }
 
 export interface AutoTraderData {
-    date: string;
-    temperatureC: number;
-    temperatureF: number;
-    summary: string;
+    id: string;
+    name: string;
+    accuracy: number;
 }
 
 // -----------------
@@ -23,13 +21,11 @@ export interface AutoTraderData {
 
 interface RequestAutoTraderDataAction {
     type: 'REQUEST_AUTOTRADER_DATA';
-    startDateIndex: number;
 }
 
 interface ReceiveAutoTraderDataAction {
     type: 'RECEIVE_AUTOTRADER_DATA';
-    startDateIndex: number;
-    forecasts: AutoTraderData[];
+    trades: AutoTraderData;
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
@@ -41,17 +37,17 @@ type KnownAction = RequestAutoTraderDataAction | ReceiveAutoTraderDataAction;
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    requestAutoTraderData: (startDateIndex: number): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    requestAutoTraderData: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
         // Only load data if it's something we don't already have (and are not already loading)
         const appState = getState();
-        if (appState && appState.weatherForecasts && startDateIndex !== appState.weatherForecasts.startDateIndex) {
-            fetch(`weatherforecast`)
-                .then(response => response.json() as Promise<AutoTraderData[]>)
+        if (appState && appState.autoTrader) {
+            fetch(`trader`)
+                .then(response => response.json() as Promise<AutoTraderData>)
                 .then(data => {
-                    dispatch({ type: 'RECEIVE_AUTOTRADER_DATA', startDateIndex: startDateIndex, forecasts: data });
+                    dispatch({ type: 'RECEIVE_AUTOTRADER_DATA', trades: data });
                 });
 
-            dispatch({ type: 'REQUEST_AUTOTRADER_DATA', startDateIndex: startDateIndex });
+            //dispatch({ type: 'REQUEST_AUTOTRADER_DATA'});
         }
     }
 };
@@ -59,7 +55,7 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: AutoTraderState = { forecasts: [], isLoading: false };
+const unloadedState: AutoTraderState = {trades: { id:"no", name: "no", accuracy: 0}, isLoading: false };
 
 export const reducer: Reducer<AutoTraderState> = (state: AutoTraderState | undefined, incomingAction: Action): AutoTraderState => {
     if (state === undefined) {
@@ -70,21 +66,16 @@ export const reducer: Reducer<AutoTraderState> = (state: AutoTraderState | undef
     switch (action.type) {
         case 'REQUEST_AUTOTRADER_DATA':
             return {
-                startDateIndex: action.startDateIndex,
-                forecasts: state.forecasts,
+                trades: state.trades,
                 isLoading: true
             };
         case 'RECEIVE_AUTOTRADER_DATA':
             // Only accept the incoming data if it matches the most recent request. This ensures we correctly
             // handle out-of-order responses.
-            if (action.startDateIndex === state.startDateIndex) {
-                return {
-                    startDateIndex: action.startDateIndex,
-                    forecasts: action.forecasts,
-                    isLoading: false
-                };
-            }
-            break;
+            return {
+                trades: action.trades,
+                isLoading: false
+            };
     }
 
     return state;
