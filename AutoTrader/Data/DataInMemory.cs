@@ -8,23 +8,37 @@ namespace AutoTrader.Data
 {
     public class DataInMemory : IDataAccess
     {
-        Dictionary<AssetPair, List<AssetPairHistoryEntry>> data;
-        readonly int timeWindowsInDays;
+        Dictionary<AssetPair, List<IAssetPairHistoryEntry>> data = new Dictionary<AssetPair, List<IAssetPairHistoryEntry>>();
+        readonly int timeWindowsInDays = 7;
 
-        public DataInMemory(int timeWindowInDays)
+        private DataInMemory()
         {
-            this.timeWindowsInDays = timeWindowInDays;
-            data = new Dictionary<AssetPair, List<AssetPairHistoryEntry>>();
+        }
+
+        private static readonly Lazy<DataInMemory> lazy = new Lazy<DataInMemory>(() => new DataInMemory());
+
+        public static DataInMemory Instance {
+            get {
+                return lazy.Value;
+            }
         }
 
         public AssetPair AddAssetPairHistoryEntry(AssetPair assetPair, IAssetPairHistoryEntry assetPairHistoryEntry)
         {
-            throw new NotImplementedException();
+            if (data.ContainsKey(assetPair)) {
+                List<IAssetPairHistoryEntry> assetPairHistoryEntries = data.GetValueOrDefault(assetPair, new List<IAssetPairHistoryEntry>());
+                assetPairHistoryEntries.Add(assetPairHistoryEntry);
+            }
+            else {
+                data.Add(assetPair, new List<IAssetPairHistoryEntry> { assetPairHistoryEntry });
+            }
+
+            return assetPair;
         }
 
-        public List<AssetPairHistoryEntry> GetAssetPairHistory(AssetPair assetPair)
+        public List<IAssetPairHistoryEntry> GetAssetPairHistory(AssetPair assetPair)
         {
-            return data[assetPair];
+            return data.GetValueOrDefault(assetPair, new List<IAssetPairHistoryEntry>());
         }
 
         public List<float> GetBidHistory(AssetPair assetPair)
@@ -39,7 +53,7 @@ namespace AutoTrader.Data
 
         public DateTime GetYoungestDate(AssetPair assetPair)
         {
-            List<AssetPairHistoryEntry> assetPairHistoryEntries = GetAssetPairHistory(assetPair);
+            List<IAssetPairHistoryEntry> assetPairHistoryEntries = GetAssetPairHistory(assetPair);
             if (assetPairHistoryEntries.Count > 1)
                 return assetPairHistoryEntries[0].Date;
             return DateTime.Today.AddDays(-timeWindowsInDays);

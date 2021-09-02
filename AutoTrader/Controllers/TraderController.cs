@@ -21,9 +21,11 @@ namespace AutoTrader.Controllers
         }
 
         [HttpGet]
-        public AssetPair GetSomething()
+        public List<IAssetPairHistoryEntry> AssetPairHistoryEntries()
         {
-            return new AssetPair("id", "name", 1222);
+            AssetPair assetPair = new AssetPair("ETHCHF", "ETH/CHF", 5);
+            List<IAssetPairHistoryEntry> assetPairHistoryEntries = DataInMemory.Instance.GetAssetPairHistory(assetPair);
+            return assetPairHistoryEntries;
         }
     }
 }

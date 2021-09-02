@@ -9,7 +9,7 @@ namespace AutoTrader.Data
     {
         AssetPair AddAssetPairHistoryEntry(AssetPair assetPair, IAssetPairHistoryEntry assetPairHistoryEntry);
 
-        List<AssetPairHistoryEntry> GetAssetPairHistory(AssetPair assetPair);
+        List<IAssetPairHistoryEntry> GetAssetPairHistory(AssetPair assetPair);
 
         List<float> GetBidHistory(AssetPair assetPair);
 

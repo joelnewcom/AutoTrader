@@ -41,7 +41,8 @@ namespace AutoTrader.Repository
         {
             PayloadGetHistoryRate payload = new PayloadGetHistoryRate {Period = "Day", DateTime = date};
 
-            HttpContent httpContent = new StringContent(JsonConvert.SerializeObject(payload), Encoding.UTF8, applicationJson);
+            string content = JsonConvert.SerializeObject(payload);
+            HttpContent httpContent = new StringContent(content, Encoding.UTF8, applicationJson);
             Task<HttpResponseMessage> task = client.PostAsync(publicApi + "/api/AssetPairs/rate/history/" + assetPair.Id, httpContent);
             HttpResponseMessage msg = await task;
             String response = await msg.Content.ReadAsStringAsync();

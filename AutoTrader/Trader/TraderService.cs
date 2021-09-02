@@ -1,4 +1,5 @@
-﻿using AutoTrader.Repository;
+﻿using AutoTrader.Data;
+using AutoTrader.Repository;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -25,13 +26,18 @@ namespace AutoTrader.Trader
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(5));
+            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(50));
             return Task.CompletedTask;
         }
 
         private async void DoWork(object state)
         {
             _logger.LogInformation("Do work besides host");
+            AssetPair assetPair = new AssetPair("ETHCHF", "ETH/CHF", 5);
+            Task<IAssetPairHistoryEntry> task = repo.GetHistoryRatePerDay(assetPair, new DateTime(2021, 9, 2));
+            IAssetPairHistoryEntry assetPairHistoryEntry = task.Result;
+            DataInMemory.Instance.AddAssetPairHistoryEntry(assetPair, assetPairHistoryEntry);
+
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
