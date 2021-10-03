@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AutoTrader.Repository
 {
@@ -13,4 +10,5 @@ namespace AutoTrader.Repository
         public float TradingVolume { get; set; }
         public float TradingOppositeVolume { get; set; }
     }
+
 }

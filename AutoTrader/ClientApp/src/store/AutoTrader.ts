@@ -7,12 +7,19 @@ import { AppThunkAction } from '.';
 export interface AutoTraderState {
     isLoading: boolean;
     trades: AutoTraderData;
+    assetPairHistoryEntries: AutoTraderIAssetPairHistoryEntry[];
 }
 
 export interface AutoTraderData {
     id: string;
     name: string;
     accuracy: number;
+}
+
+ export interface AutoTraderIAssetPairHistoryEntry{
+    date: string;
+    ask: number;
+    buy: number;
 }
 
 // -----------------
@@ -25,7 +32,8 @@ interface RequestAutoTraderDataAction {
 
 interface ReceiveAutoTraderDataAction {
     type: 'RECEIVE_AUTOTRADER_DATA';
-    trades: AutoTraderData;
+    assetPairHistoryEntries: AutoTraderIAssetPairHistoryEntry[];
+
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
@@ -42,9 +50,9 @@ export const actionCreators = {
         const appState = getState();
         if (appState && appState.autoTrader) {
             fetch(`trader`)
-                .then(response => response.json() as Promise<AutoTraderData>)
+                .then(response => response.json() as Promise<AutoTraderIAssetPairHistoryEntry[]>)
                 .then(data => {
-                    dispatch({ type: 'RECEIVE_AUTOTRADER_DATA', trades: data });
+                    dispatch({ type: 'RECEIVE_AUTOTRADER_DATA', assetPairHistoryEntries: data });
                 });
 
             //dispatch({ type: 'REQUEST_AUTOTRADER_DATA'});
@@ -55,7 +63,7 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: AutoTraderState = {trades: { id:"no", name: "no", accuracy: 0}, isLoading: false };
+const unloadedState: AutoTraderState = {trades: { id:"no", name: "no", accuracy: 0}, isLoading: false, assetPairHistoryEntries:[]};
 
 export const reducer: Reducer<AutoTraderState> = (state: AutoTraderState | undefined, incomingAction: Action): AutoTraderState => {
     if (state === undefined) {
@@ -67,14 +75,16 @@ export const reducer: Reducer<AutoTraderState> = (state: AutoTraderState | undef
         case 'REQUEST_AUTOTRADER_DATA':
             return {
                 trades: state.trades,
+                assetPairHistoryEntries: state.assetPairHistoryEntries,
                 isLoading: true
             };
         case 'RECEIVE_AUTOTRADER_DATA':
             // Only accept the incoming data if it matches the most recent request. This ensures we correctly
             // handle out-of-order responses.
             return {
-                trades: action.trades,
-                isLoading: false
+                isLoading: false,
+                trades: {id:"", accuracy:0, name:""},
+                assetPairHistoryEntries: action.assetPairHistoryEntries
             };
     }
 

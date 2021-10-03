@@ -8,6 +8,7 @@ namespace AutoTrader.Repository
     public interface IRepository
     {
         Task<Dictionary<String, AssetPair>> GetAssetPairsDictionary();
+        
         Task<Boolean> IsAliveAsync();
 
         Task<IAssetPairHistoryEntry> GetHistoryRatePerDay(AssetPair assetPair, DateTime date);

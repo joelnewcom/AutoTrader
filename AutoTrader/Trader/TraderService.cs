@@ -1,4 +1,5 @@
 ﻿using AutoTrader.Data;
+using AutoTrader.Library;
 using AutoTrader.Repository;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -14,10 +15,18 @@ namespace AutoTrader.Trader
     {
         private readonly ILogger<TraderService> _logger;
         private Timer _timer;
-        private readonly IRepository repo = new LykkeRepository();
+        private readonly IRepository repo;
 
-        public TraderService(ILogger<TraderService> logger) =>
+        private readonly String[] knownAssets = new String[] { "ETH/CHF" };
+
+        private readonly TraderConfig conf;
+
+        public TraderService(ILogger<TraderService> logger, TraderConfig traderConfig, IRepository lykkeRepository)
+        {
             _logger = logger;
+            conf = traderConfig;
+            repo = lykkeRepository;
+        }
 
         public void Dispose()
         {
@@ -26,8 +35,27 @@ namespace AutoTrader.Trader
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            doPrepWorkAsync();
             _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(50));
             return Task.CompletedTask;
+        }
+
+        private async void doPrepWorkAsync()
+        {
+
+            Dictionary<String, AssetPair> assetPairDict = await repo.GetAssetPairsDictionary();
+
+            DataRefresher dataRefresher = new DataRefresher(repo, DataInMemory.Instance);
+
+            List<string> knownAssetPairIds = conf.knownAssetPairIds;
+            foreach (string item in knownAssetPairIds)
+            {
+                AssetPair assetPair = assetPairDict.GetValueOrDefault(item);
+                if (assetPair != null)
+                {
+                    dataRefresher.RefreshAssetPairHistory(assetPair);
+                }
+            }
         }
 
         private async void DoWork(object state)
@@ -35,7 +63,7 @@ namespace AutoTrader.Trader
             _logger.LogInformation("Do work besides host");
             AssetPair assetPair = new AssetPair("ETHCHF", "ETH/CHF", 5);
             Task<IAssetPairHistoryEntry> task = repo.GetHistoryRatePerDay(assetPair, new DateTime(2021, 9, 2));
-            IAssetPairHistoryEntry assetPairHistoryEntry = task.Result;
+            IAssetPairHistoryEntry assetPairHistoryEntry = await task;
             DataInMemory.Instance.AddAssetPairHistoryEntry(assetPair, assetPairHistoryEntry);
 
         }

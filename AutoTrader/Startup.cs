@@ -29,6 +29,9 @@ namespace AutoTrader
             {
                 configuration.RootPath = "ClientApp/build";
             });
+
+            TraderConfig traderConfig = Configuration.GetSection("TraderConfig").Get<TraderConfig>();
+            services.AddSingleton(traderConfig);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

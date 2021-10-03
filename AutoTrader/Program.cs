@@ -1,14 +1,8 @@
+using AutoTrader.Repository;
 using AutoTrader.Trader;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace AutoTrader
@@ -29,7 +23,8 @@ namespace AutoTrader
              })
              .ConfigureServices(services =>
              {
-                 services.AddHostedService<TraderService>();
+                 services.AddHostedService<TraderService>()
+                 .AddSingleton<IRepository, LykkeRepository>();
              });
     }
 }

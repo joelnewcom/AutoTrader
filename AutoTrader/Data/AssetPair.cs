@@ -13,7 +13,6 @@ namespace AutoTrader.Data
 
         public int Accuracy { get; }
 
-
         public AssetPair(String id, String name, int accuracy)
         {
             this.Id = id;

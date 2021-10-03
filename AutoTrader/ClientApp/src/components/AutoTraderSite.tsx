@@ -28,7 +28,7 @@ class AutoTraderSite extends React.PureComponent<AutoTraderProps> {
       <React.Fragment>
         <h1 id="tabelLabel">Weather forecast</h1>
         <p>This component demonstrates fetching data from the server and working with URL parameters.</p>
-        {this.renderForecastsTable()}
+        {this.renderAssetPairHistoryPairTable()}
       </React.Fragment>
     );
   }
@@ -45,6 +45,30 @@ class AutoTraderSite extends React.PureComponent<AutoTraderProps> {
               <div>{this.props.trades.accuracy}</div>
           </div>
                     
+    );
+  }
+
+  private renderAssetPairHistoryPairTable() {
+    return (
+      <table className='table table-striped' aria-labelledby="tabelLabel">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Ask</th>
+            <th>Buy</th>
+          </tr>
+        </thead>
+        <tbody>
+          {this.props.assetPairHistoryEntries.map((assetPairHistoryEntries: AutoTradersStore.AutoTraderIAssetPairHistoryEntry) =>
+            <tr key={assetPairHistoryEntries.date}>
+              <td>{assetPairHistoryEntries.date}</td>
+              <td>{assetPairHistoryEntries.ask}</td>
+              <td>{assetPairHistoryEntries.buy}</td>
+              
+            </tr>
+          )}
+        </tbody>
+      </table>
     );
   }
 
