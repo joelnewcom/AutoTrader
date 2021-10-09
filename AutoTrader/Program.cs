@@ -3,6 +3,7 @@ using AutoTrader.Trader;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace AutoTrader
@@ -23,8 +24,11 @@ namespace AutoTrader
              })
              .ConfigureServices(services =>
              {
-                 services.AddHostedService<TraderService>()
-                 .AddSingleton<IRepository, LykkeRepository>();
+                 services.AddHostedService<TraderService>();
+                 services.AddSingleton<IRepositoryGen<Task<HttpResponseMessage>>, LykkeRepository>();
+                 services.AddSingleton<IRepositoryGen<Task<IResponse>>, WrappedResponseAdapter>();
+                 services.AddSingleton<IRepository, RetryAdapter>();
+                 
              });
     }
 }

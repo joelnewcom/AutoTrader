@@ -21,6 +21,8 @@ namespace AutoTrader.Trader
 
         private readonly TraderConfig conf;
 
+        private readonly int secondsToWaitForNextRequest = 10;
+
         public TraderService(ILogger<TraderService> logger, TraderConfig traderConfig, IRepository lykkeRepository)
         {
             _logger = logger;
@@ -54,18 +56,18 @@ namespace AutoTrader.Trader
                 if (assetPair != null)
                 {
                     dataRefresher.RefreshAssetPairHistory(assetPair);
+                    await Task.Delay(secondsToWaitForNextRequest * 1000);
                 }
             }
         }
 
         private async void DoWork(object state)
         {
-            _logger.LogInformation("Do work besides host");
+            _logger.LogInformation("Lykke trader does work");
             AssetPair assetPair = new AssetPair("ETHCHF", "ETH/CHF", 5);
             Task<IAssetPairHistoryEntry> task = repo.GetHistoryRatePerDay(assetPair, new DateTime(2021, 9, 2));
             IAssetPairHistoryEntry assetPairHistoryEntry = await task;
             DataInMemory.Instance.AddAssetPairHistoryEntry(assetPair, assetPairHistoryEntry);
-
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
