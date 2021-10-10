@@ -16,5 +16,7 @@ namespace AutoTrader.Data
         List<float> GetAskHistory(AssetPair assetPair);
 
         DateTime GetYoungestDate(AssetPair assetPair);
+
+        List<AssetPair> GetAssetPairs();
     }
 }

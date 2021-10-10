@@ -12,19 +12,22 @@ namespace AutoTrader.Controllers
     [Route("[controller]")]
     public class TraderController : ControllerBase
     {
-    
+
         private readonly ILogger<TraderController> _logger;
 
-        public TraderController(ILogger<TraderController> logger)
+        private IDataAccess dataAccess;
+
+        public TraderController(ILogger<TraderController> logger, IDataAccess dataAccess)
         {
             _logger = logger;
+            this.dataAccess = dataAccess;
         }
 
         [HttpGet]
         public List<IAssetPairHistoryEntry> AssetPairHistoryEntries()
         {
             AssetPair assetPair = new AssetPair("ETHCHF", "ETH/CHF", 5);
-            List<IAssetPairHistoryEntry> assetPairHistoryEntries = DataInMemory.Instance.GetAssetPairHistory(assetPair);
+            List<IAssetPairHistoryEntry> assetPairHistoryEntries = dataAccess.GetAssetPairHistory(assetPair);
             return assetPairHistoryEntries;
         }
     }

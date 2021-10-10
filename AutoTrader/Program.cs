@@ -1,3 +1,5 @@
+using AutoTrader.Data;
+using AutoTrader.Library;
 using AutoTrader.Repository;
 using AutoTrader.Trader;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +30,8 @@ namespace AutoTrader
                  services.AddSingleton<IRepositoryGen<Task<HttpResponseMessage>>, LykkeRepository>();
                  services.AddSingleton<IRepositoryGen<Task<IResponse>>, WrappedResponseAdapter>();
                  services.AddSingleton<IRepository, RetryAdapter>();
+                 services.AddSingleton<DataRefresher>();
+                 services.AddSingleton<IDataAccess, DataInMemory>();
                  
              });
     }

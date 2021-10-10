@@ -1,35 +1,36 @@
-﻿using AutoTrader.Library;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AutoTrader.Data
 {
     public class DataInMemory : IDataAccess
     {
-        Dictionary<AssetPair, List<IAssetPairHistoryEntry>> data = new Dictionary<AssetPair, List<IAssetPairHistoryEntry>>();
-        readonly int timeWindowsInDays = 7;
+        private Dictionary<AssetPair, List<IAssetPairHistoryEntry>> data = new Dictionary<AssetPair, List<IAssetPairHistoryEntry>>();
+        private readonly int timeWindowsInDays = 7;
 
-        private DataInMemory()
-        {
-        }
+        // private DataInMemory()
+        // {
+        // }
 
-        private static readonly Lazy<DataInMemory> lazy = new Lazy<DataInMemory>(() => new DataInMemory());
+        // private static readonly Lazy<DataInMemory> lazy = new Lazy<DataInMemory>(() => new DataInMemory());
 
-        public static DataInMemory Instance {
-            get {
-                return lazy.Value;
-            }
-        }
+        // public static DataInMemory Instance
+        // {
+        //     get
+        //     {
+        //         return lazy.Value;
+        //     }
+        // }
 
         public AssetPair AddAssetPairHistoryEntry(AssetPair assetPair, IAssetPairHistoryEntry assetPairHistoryEntry)
         {
-            if (data.ContainsKey(assetPair)) {
+            if (data.ContainsKey(assetPair))
+            {
                 List<IAssetPairHistoryEntry> assetPairHistoryEntries = data.GetValueOrDefault(assetPair, new List<IAssetPairHistoryEntry>());
                 assetPairHistoryEntries.Add(assetPairHistoryEntry);
             }
-            else {
+            else
+            {
                 data.Add(assetPair, new List<IAssetPairHistoryEntry> { assetPairHistoryEntry });
             }
 
@@ -57,6 +58,11 @@ namespace AutoTrader.Data
             if (assetPairHistoryEntries.Count > 1)
                 return assetPairHistoryEntries[0].Date;
             return DateTime.Today.AddDays(-timeWindowsInDays);
+        }
+
+        public List<AssetPair> GetAssetPairs()
+        {
+            return new List<AssetPair>(this.data.Keys);
         }
     }
 }

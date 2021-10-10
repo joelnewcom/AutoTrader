@@ -23,11 +23,21 @@ namespace AutoTrader.Trader
 
         private readonly int secondsToWaitForNextRequest = 10;
 
-        public TraderService(ILogger<TraderService> logger, TraderConfig traderConfig, IRepository lykkeRepository)
+        private IDataAccess dataAccess;
+
+        private DataRefresher dataRefresher;
+
+        public TraderService(ILogger<TraderService> logger,
+        TraderConfig traderConfig,
+        IRepository lykkeRepository,
+        IDataAccess dataAccess,
+        DataRefresher dataRefresher)
         {
             _logger = logger;
             conf = traderConfig;
             repo = lykkeRepository;
+            this.dataAccess = dataAccess;
+            this.dataRefresher = dataRefresher;
         }
 
         public void Dispose()
@@ -44,10 +54,7 @@ namespace AutoTrader.Trader
 
         private async void doPrepWorkAsync()
         {
-
             Dictionary<String, AssetPair> assetPairDict = await repo.GetAssetPairsDictionary();
-
-            DataRefresher dataRefresher = new DataRefresher(repo, DataInMemory.Instance);
 
             List<string> knownAssetPairIds = conf.knownAssetPairIds;
             foreach (string item in knownAssetPairIds)
@@ -64,10 +71,13 @@ namespace AutoTrader.Trader
         private async void DoWork(object state)
         {
             _logger.LogInformation("Lykke trader does work");
-            AssetPair assetPair = new AssetPair("ETHCHF", "ETH/CHF", 5);
-            Task<IAssetPairHistoryEntry> task = repo.GetHistoryRatePerDay(assetPair, new DateTime(2021, 9, 2));
-            IAssetPairHistoryEntry assetPairHistoryEntry = await task;
-            DataInMemory.Instance.AddAssetPairHistoryEntry(assetPair, assetPairHistoryEntry);
+
+            foreach (AssetPair assetPair in dataAccess.GetAssetPairs())
+            {
+                dataRefresher.RefreshAssetPairHistory(assetPair);
+                await Task.Delay(secondsToWaitForNextRequest * 1000);
+
+            }
         }
 
         public Task StopAsync(CancellationToken cancellationToken)
