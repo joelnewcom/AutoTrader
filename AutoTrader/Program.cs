@@ -32,6 +32,8 @@ namespace AutoTrader
                  services.AddSingleton<IRepository, RetryAdapter>();
                  services.AddSingleton<DataRefresher>();
                  services.AddSingleton<IDataAccess, DataInMemory>();
+                 services.AddMvcCore().AddApiExplorer();
+                 services.AddSwaggerGen();
                  
              });
     }

@@ -24,11 +24,21 @@ namespace AutoTrader.Controllers
         }
 
         [HttpGet]
+        [Route("api/AssetPairHistoryEntries")]
         public List<IAssetPairHistoryEntry> AssetPairHistoryEntries()
         {
             AssetPair assetPair = new AssetPair("ETHCHF", "ETH/CHF", 5);
             List<IAssetPairHistoryEntry> assetPairHistoryEntries = dataAccess.GetAssetPairHistory(assetPair);
             return assetPairHistoryEntries;
+        }
+
+
+        [HttpGet]
+         [Route("api/AssetPairs")]
+        public List<AssetPair> AssetPairs()
+        {
+            List<AssetPair> assetPair = dataAccess.GetAssetPairs();
+            return assetPair;
         }
     }
 }

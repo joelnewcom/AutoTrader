@@ -54,6 +54,18 @@ namespace AutoTrader
 
             app.UseRouting();
 
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.)
+            app.UseSwaggerUI(c => {  
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Test API V1");  
+            });
+
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -70,6 +82,8 @@ namespace AutoTrader
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
+
+
         }
     }
 }
