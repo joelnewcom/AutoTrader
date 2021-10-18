@@ -20,7 +20,6 @@ class AutoTraderSite extends React.PureComponent<AutoTraderProps> {
 
   // This method is called when the route parameters change
   public componentDidUpdate() {
-    this.ensureDataFetched();
   }
 
   public render() {
@@ -35,17 +34,7 @@ class AutoTraderSite extends React.PureComponent<AutoTraderProps> {
 
   private ensureDataFetched() {
     this.props.requestAutoTraderData();
-  }
-
-  private renderForecastsTable() {
-      return (
-          <div>
-              <div>{this.props.trades.id}</div>
-              <div>{this.props.trades.name}</div>
-              <div>{this.props.trades.accuracy}</div>
-          </div>
-                    
-    );
+    this.props.requestAssetPairs();
   }
 
   private renderAssetPairHistoryPairTable() {

@@ -6,14 +6,14 @@ using Microsoft.Extensions.Logging;
 
 namespace AutoTrader.Repository
 {
-    public class WrappedResponseAdapter : IRepositoryGen<Task<IResponse>>
+    public class RepositoryWrappedResponse : IRepositoryGen<Task<IResponse>>
     {
 
-        private readonly ILogger<WrappedResponseAdapter> _logger;
+        private readonly ILogger<RepositoryWrappedResponse> _logger;
 
         private IRepositoryGen<Task<HttpResponseMessage>> lykkeRepository;
 
-        public WrappedResponseAdapter(ILogger<WrappedResponseAdapter> logger, IRepositoryGen<Task<HttpResponseMessage>> lykkeRepositoryBase)
+        public RepositoryWrappedResponse(ILogger<RepositoryWrappedResponse> logger, IRepositoryGen<Task<HttpResponseMessage>> lykkeRepositoryBase)
         {
             this.lykkeRepository = lykkeRepositoryBase;
             _logger = logger;
@@ -33,9 +33,9 @@ namespace AutoTrader.Repository
             return new WrappedResponse(task, msg.IsSuccessStatusCode, ReasonOfFailure.None);
         }
 
-        public async Task<IResponse> GetHistoryRatePerDay(AssetPair assetPair, DateTime date)
+        public async Task<IResponse> GetHistoryRatePerDay(String assetPairId, DateTime date)
         {
-            Task<HttpResponseMessage> task = lykkeRepository.GetHistoryRatePerDay(assetPair, date);
+            Task<HttpResponseMessage> task = lykkeRepository.GetHistoryRatePerDay(assetPairId, date);
             HttpResponseMessage msg = await task;
             String response = await msg.Content.ReadAsStringAsync();
 

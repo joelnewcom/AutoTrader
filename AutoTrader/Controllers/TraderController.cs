@@ -1,10 +1,7 @@
 ﻿using AutoTrader.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AutoTrader.Controllers
 {
@@ -25,18 +22,26 @@ namespace AutoTrader.Controllers
 
         [HttpGet]
         [Route("api/AssetPairHistoryEntries")]
-        public List<IAssetPairHistoryEntry> AssetPairHistoryEntries()
+        public List<AssetPairHistoryEntry> AssetPairHistoryEntries()
         {
-            AssetPair assetPair = new AssetPair("ETHCHF", "ETH/CHF", 5);
-            List<IAssetPairHistoryEntry> assetPairHistoryEntries = dataAccess.GetAssetPairHistory(assetPair);
-            return assetPairHistoryEntries;
+            _logger.LogDebug("Called endpoint: Get AssetPairHistoryEntries");
+            return dataAccess.GetAssetPairHistory("ETHCHF");
+        }
+
+        [HttpGet]
+        [Route("api/AssetPairHistoryEntries/{assetPairId}")]
+        public List<AssetPairHistoryEntry> AssetPairHistoryEntries(string assertPairId)
+        {
+            _logger.LogDebug("Called endpoint: Get AssetPairHistoryEntries id: " + assertPairId);
+            return dataAccess.GetAssetPairHistory(assertPairId);
         }
 
 
         [HttpGet]
-         [Route("api/AssetPairs")]
+        [Route("api/AssetPairs")]
         public List<AssetPair> AssetPairs()
         {
+            _logger.LogDebug("Called endpoint: Get AssetPairs");
             List<AssetPair> assetPair = dataAccess.GetAssetPairs();
             return assetPair;
         }

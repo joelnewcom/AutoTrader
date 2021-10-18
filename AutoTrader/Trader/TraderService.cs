@@ -5,7 +5,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -17,15 +16,13 @@ namespace AutoTrader.Trader
         private Timer _timer;
         private readonly IRepository repo;
 
-        private readonly String[] knownAssets = new String[] { "ETH/CHF" };
-
         private readonly TraderConfig conf;
-
-        private readonly int secondsToWaitForNextRequest = 10;
 
         private IDataAccess dataAccess;
 
         private DataRefresher dataRefresher;
+
+        private int invokeCount;
 
         public TraderService(ILogger<TraderService> logger,
         TraderConfig traderConfig,
@@ -48,9 +45,12 @@ namespace AutoTrader.Trader
         public Task StartAsync(CancellationToken cancellationToken)
         {
             doPrepWorkAsync();
-            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromSeconds(50));
+            var autoEvent = new AutoResetEvent(false);
+            _timer = new Timer(DoWork, autoEvent, TimeSpan.Zero, TimeSpan.FromHours(8));
+            // _timer = new Timer(dataAccess.PersistData, null, TimeSpan.FromMinutes(10), TimeSpan.FromHours(8));
             return Task.CompletedTask;
         }
+
 
         private async void doPrepWorkAsync()
         {
@@ -62,21 +62,24 @@ namespace AutoTrader.Trader
                 AssetPair assetPair = assetPairDict.GetValueOrDefault(item);
                 if (assetPair != null)
                 {
-                    dataRefresher.RefreshAssetPairHistory(assetPair);
-                    await Task.Delay(secondsToWaitForNextRequest * 1000);
+                    dataAccess.AddAssetPair(assetPair);
+                    dataRefresher.RefreshAssetPairHistory(assetPair.Id);
                 }
             }
         }
 
-        private async void DoWork(object state)
+        private async void DoWork(object stateInfo)
         {
-            _logger.LogInformation("Lykke trader does work");
+            _logger.LogInformation("Lykke trader started to do work");
+
+            AutoResetEvent autoEvent = (AutoResetEvent)stateInfo;
+            Console.WriteLine("{0} Checking status {1,2}.",
+                DateTime.Now.ToString("h:mm:ss.fff"),
+                (++invokeCount).ToString());
 
             foreach (AssetPair assetPair in dataAccess.GetAssetPairs())
             {
-                dataRefresher.RefreshAssetPairHistory(assetPair);
-                await Task.Delay(secondsToWaitForNextRequest * 1000);
-
+                dataRefresher.RefreshAssetPairHistory(assetPair.Id);
             }
         }
 

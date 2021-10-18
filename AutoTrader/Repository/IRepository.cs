@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using AutoTrader.Data;
 
@@ -12,7 +11,7 @@ namespace AutoTrader.Repository
 
         Task<Boolean> IsAliveAsync();
 
-        Task<IAssetPairHistoryEntry> GetHistoryRatePerDay(AssetPair assetPair, DateTime date);
+        Task<IAssetPairHistoryEntry> GetHistoryRatePerDay(String assetPairId, DateTime date);
     }
 
     public interface IRepositoryGen<T>
@@ -21,7 +20,7 @@ namespace AutoTrader.Repository
 
         T IsAliveAsync();
 
-        T GetHistoryRatePerDay(AssetPair assetPair, DateTime date);
+        T GetHistoryRatePerDay(String assetPairId, DateTime date);
     }
 
 }

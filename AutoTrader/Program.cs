@@ -28,10 +28,10 @@ namespace AutoTrader
              {
                  services.AddHostedService<TraderService>();
                  services.AddSingleton<IRepositoryGen<Task<HttpResponseMessage>>, LykkeRepository>();
-                 services.AddSingleton<IRepositoryGen<Task<IResponse>>, WrappedResponseAdapter>();
-                 services.AddSingleton<IRepository, RetryAdapter>();
+                 services.AddSingleton<IRepositoryGen<Task<IResponse>>, RepositoryWrappedResponse>();
+                 services.AddSingleton<IRepository, RepositoryRetry>();
                  services.AddSingleton<DataRefresher>();
-                 services.AddSingleton<IDataAccess, DataInMemory>();
+                 services.AddSingleton<IDataAccess, DataInFile>();
                  services.AddMvcCore().AddApiExplorer();
                  services.AddSwaggerGen();
                  

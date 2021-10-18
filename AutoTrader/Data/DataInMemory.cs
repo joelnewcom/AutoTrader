@@ -5,56 +5,45 @@ namespace AutoTrader.Data
 {
     public class DataInMemory : IDataAccess
     {
-        private Dictionary<AssetPair, List<IAssetPairHistoryEntry>> data = new Dictionary<AssetPair, List<IAssetPairHistoryEntry>>();
+        private Dictionary<String, List<AssetPairHistoryEntry>> data = new Dictionary<String, List<AssetPairHistoryEntry>>();
+        
+        private Dictionary<String, AssetPair> assetPairs = new Dictionary<String, AssetPair>();          
+        
         private readonly int timeWindowsInDays = 7;
 
-        // private DataInMemory()
-        // {
-        // }
-
-        // private static readonly Lazy<DataInMemory> lazy = new Lazy<DataInMemory>(() => new DataInMemory());
-
-        // public static DataInMemory Instance
-        // {
-        //     get
-        //     {
-        //         return lazy.Value;
-        //     }
-        // }
-
-        public AssetPair AddAssetPairHistoryEntry(AssetPair assetPair, IAssetPairHistoryEntry assetPairHistoryEntry)
+        public String AddAssetPairHistoryEntry(String assetPairId, AssetPairHistoryEntry assetPairHistoryEntry)
         {
-            if (data.ContainsKey(assetPair))
+            if (data.ContainsKey(assetPairId))
             {
-                List<IAssetPairHistoryEntry> assetPairHistoryEntries = data.GetValueOrDefault(assetPair, new List<IAssetPairHistoryEntry>());
+                List<AssetPairHistoryEntry> assetPairHistoryEntries = data.GetValueOrDefault(assetPairId, new List<AssetPairHistoryEntry>());
                 assetPairHistoryEntries.Add(assetPairHistoryEntry);
             }
             else
             {
-                data.Add(assetPair, new List<IAssetPairHistoryEntry> { assetPairHistoryEntry });
+                data.Add(assetPairId, new List<AssetPairHistoryEntry> { assetPairHistoryEntry });
             }
 
-            return assetPair;
+            return assetPairId;
         }
 
-        public List<IAssetPairHistoryEntry> GetAssetPairHistory(AssetPair assetPair)
+        public List<AssetPairHistoryEntry> GetAssetPairHistory(String assetPairId)
         {
-            return data.GetValueOrDefault(assetPair, new List<IAssetPairHistoryEntry>());
+            return data.GetValueOrDefault(assetPairId, new List<AssetPairHistoryEntry>());
         }
 
-        public List<float> GetBidHistory(AssetPair assetPair)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<float> GetAskHistory(AssetPair assetPair)
+        public List<float> GetBidHistory(String assetPairId)
         {
             throw new NotImplementedException();
         }
 
-        public DateTime GetYoungestDate(AssetPair assetPair)
+        public List<float> GetAskHistory(String assetPairId)
         {
-            List<IAssetPairHistoryEntry> assetPairHistoryEntries = GetAssetPairHistory(assetPair);
+            throw new NotImplementedException();
+        }
+
+        public DateTime GetDateOfLatestEntry(String assetPairId)
+        {
+            List<AssetPairHistoryEntry> assetPairHistoryEntries = GetAssetPairHistory(assetPairId);
             if (assetPairHistoryEntries.Count > 1)
                 return assetPairHistoryEntries[0].Date;
             return DateTime.Today.AddDays(-timeWindowsInDays);
@@ -62,7 +51,17 @@ namespace AutoTrader.Data
 
         public List<AssetPair> GetAssetPairs()
         {
-            return new List<AssetPair>(this.data.Keys);
+            return new List<AssetPair>(assetPairs.Values);
+        }
+
+        public void AddAssetPair(AssetPair assetPair)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void PersistData(object stateInfo)
+        {
+            throw new NotImplementedException();
         }
     }
 }

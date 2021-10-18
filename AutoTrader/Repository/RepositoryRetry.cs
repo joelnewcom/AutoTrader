@@ -9,9 +9,9 @@ using Newtonsoft.Json;
 
 namespace AutoTrader.Repository
 {
-    public class RetryAdapter : IRepository
+    public class RepositoryRetry : IRepository
     {
-        private readonly ILogger<RetryAdapter> _logger;
+        private readonly ILogger<RepositoryRetry> _logger;
 
         private readonly int retries = 5;
 
@@ -19,7 +19,7 @@ namespace AutoTrader.Repository
 
         private IRepositoryGen<Task<IResponse>> wrappedResponeRepo;
 
-        public RetryAdapter(ILogger<RetryAdapter> logger, IRepositoryGen<Task<IResponse>> wrappedResponseRepo)
+        public RepositoryRetry(ILogger<RepositoryRetry> logger, IRepositoryGen<Task<IResponse>> wrappedResponseRepo)
         {
             this.wrappedResponeRepo = wrappedResponseRepo;
             _logger = logger;
@@ -32,12 +32,12 @@ namespace AutoTrader.Repository
             return msg.IsSuccessStatusCode;
         }
 
-        public async Task<IAssetPairHistoryEntry> GetHistoryRatePerDay(AssetPair assetPair, DateTime date)
+        public async Task<IAssetPairHistoryEntry> GetHistoryRatePerDay(String assetPairId, DateTime date)
         {
             String responseString = "";
             foreach (int value in Enumerable.Range(1, retries))
             {
-                IResponse response = await wrappedResponeRepo.GetHistoryRatePerDay(assetPair, date);
+                IResponse response = await wrappedResponeRepo.GetHistoryRatePerDay(assetPairId, date);
                 if (response.IsSuccess())
                 {
                     HttpResponseMessage msg = await response.GetResponse();
@@ -60,7 +60,7 @@ namespace AutoTrader.Repository
 
             catch (JsonSerializationException)
             {
-                _logger.LogWarning("Not able to parse history rate response of assetId" + assetPair.Id + " raw response: " + responseString);
+                _logger.LogWarning("Not able to parse history rate response of assetId" + assetPairId + " raw response: " + responseString);
                 return new NoDataHistoryEntry();
             }
         }

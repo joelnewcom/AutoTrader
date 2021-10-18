@@ -11,15 +11,15 @@ namespace AutoTraderTests.Repository
     [TestClass()]
     public class LykkeRepositoryTests
     {
-        IRepository repository = new RetryAdapter(
-            new NullLogger<RetryAdapter>(),
-            new WrappedResponseAdapter(new NullLogger<WrappedResponseAdapter>(), new LykkeRepository(new NullLogger<LykkeRepository>()))
+        IRepository repository = new RepositoryRetry(
+            new NullLogger<RepositoryRetry>(),
+            new RepositoryWrappedResponse(new NullLogger<RepositoryWrappedResponse>(), new LykkeRepository(new NullLogger<LykkeRepository>()))
         );
 
         [TestMethod()]
         public async Task GetHistoryRatePerDayTest()
         {
-            Task<IAssetPairHistoryEntry> historyRatePerDay = repository.GetHistoryRatePerDay(new AssetPair("BTCCHF", "BTC/CHF", 3), DateTime.Today);
+            Task<IAssetPairHistoryEntry> historyRatePerDay = repository.GetHistoryRatePerDay("BTCCHF", DateTime.Today);
             await historyRatePerDay;
             IAssetPairHistoryEntry assetPairHistoryEntry = historyRatePerDay.Result;
             Assert.AreEqual(DateTime.Today, assetPairHistoryEntry.Date);

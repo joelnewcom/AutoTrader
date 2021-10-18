@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace AutoTrader.Repository
 {
-    public class WrappedResponse:IResponse
+    public class WrappedResponse : IResponse
     {
-        Task<HttpResponseMessage> response; 
+        Task<HttpResponseMessage> response;
         Boolean success;
         ReasonOfFailure reasonOfFailure;
 

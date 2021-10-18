@@ -37,7 +37,7 @@ namespace AutoTrader
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
+            if (env.IsEnvironment("Private"))
             {
                 app.UseDeveloperExceptionPage();
             }
@@ -63,11 +63,6 @@ namespace AutoTrader
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
-            });
-
-            app.UseEndpoints(endpoints =>
-            {
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller}/{action=Index}/{id?}");
@@ -77,7 +72,7 @@ namespace AutoTrader
             {
                 spa.Options.SourcePath = "ClientApp";
 
-                if (env.IsDevelopment())
+                if (env.IsEnvironment("Private"))
                 {
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }

@@ -18,17 +18,17 @@ namespace AutoTraderTests.Library
         public void NewEntryGetsAdded()
         {
             // given
-            IAssetPairHistoryEntry assetPairHistoryEntry = new AssetPairHistoryEntry(DateTime.Today, 10, 10);
-            dataAccessMock.Setup(p => p.GetYoungestDate(assetPair)).Returns(DateTime.Today.AddDays(-1));
-            repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<AssetPair>(), It.IsAny<DateTime>()))
+            AssetPairHistoryEntry assetPairHistoryEntry = new AssetPairHistoryEntry(DateTime.Today, 10, 10);
+            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(DateTime.Today.AddDays(-1));
+            repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<String>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(assetPairHistoryEntry);
             DataRefresher dataRefresher = new DataRefresher(repoMock.Object, dataAccessMock.Object);
 
             // when
-            dataRefresher.RefreshAssetPairHistory(assetPair);
+            dataRefresher.RefreshAssetPairHistory(assetPair.Id);
 
             // then
-            dataAccessMock.Verify(s => s.AddAssetPairHistoryEntry(assetPair, assetPairHistoryEntry), Times.Once);
+            dataAccessMock.Verify(s => s.AddAssetPairHistoryEntry(assetPair.Id, assetPairHistoryEntry), Times.Once);
         }
 
         [TestMethod()]
@@ -36,20 +36,20 @@ namespace AutoTraderTests.Library
         {
             // given
             DateTime dateTime = DateTime.Today;
-            IAssetPairHistoryEntry assetPairHistoryEntry = new AssetPairHistoryEntry(dateTime, 10, 10);
+            AssetPairHistoryEntry assetPairHistoryEntry = new AssetPairHistoryEntry(dateTime, 10, 10);
 
-            dataAccessMock.Setup(p => p.GetYoungestDate(assetPair)).Returns(dateTime);
-            repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<AssetPair>(), It.IsAny<DateTime>()))
+            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(dateTime);
+            repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<String>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(assetPairHistoryEntry);
 
             DataRefresher dataRefresher = new DataRefresher(repoMock.Object, dataAccessMock.Object);
 
             // when
-            dataRefresher.RefreshAssetPairHistory(assetPair);
+            dataRefresher.RefreshAssetPairHistory(assetPair.Id);
 
             // then
             dataAccessMock.Verify(
-                s => s.AddAssetPairHistoryEntry(It.IsAny<AssetPair>(), It.IsAny<IAssetPairHistoryEntry>()),
+                s => s.AddAssetPairHistoryEntry(It.IsAny<String>(), It.IsAny<AssetPairHistoryEntry>()),
                 Times.Never);
         }
 
@@ -58,20 +58,20 @@ namespace AutoTraderTests.Library
         {
             // given
             DateTime dateTime = DateTime.Today;
-            IAssetPairHistoryEntry assetPairHistoryEntry = new AssetPairHistoryEntry(dateTime, 10, 10);
+            AssetPairHistoryEntry assetPairHistoryEntry = new AssetPairHistoryEntry(dateTime, 10, 10);
 
-            dataAccessMock.Setup(p => p.GetYoungestDate(assetPair)).Returns(dateTime.AddDays(-2));
-            repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<AssetPair>(), It.IsAny<DateTime>()))
+            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(dateTime.AddDays(-2));
+            repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<String>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(assetPairHistoryEntry);
 
             DataRefresher dataRefresher = new DataRefresher(repoMock.Object, dataAccessMock.Object);
 
             // when
-            dataRefresher.RefreshAssetPairHistory(assetPair);
+            dataRefresher.RefreshAssetPairHistory(assetPair.Id);
 
             // then
             dataAccessMock.Verify(
-                s => s.AddAssetPairHistoryEntry(It.IsAny<AssetPair>(), It.IsAny<IAssetPairHistoryEntry>()),
+                s => s.AddAssetPairHistoryEntry(It.IsAny<String>(), It.IsAny<AssetPairHistoryEntry>()),
                 Times.Exactly(2));
         }
     }

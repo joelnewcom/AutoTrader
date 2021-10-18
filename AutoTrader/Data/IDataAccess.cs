@@ -1,22 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace AutoTrader.Data
 {
     public interface IDataAccess
     {
-        AssetPair AddAssetPairHistoryEntry(AssetPair assetPair, IAssetPairHistoryEntry assetPairHistoryEntry);
+        String AddAssetPairHistoryEntry(String assetPairId, AssetPairHistoryEntry assetPairHistoryEntry);
 
-        List<IAssetPairHistoryEntry> GetAssetPairHistory(AssetPair assetPair);
+        List<AssetPairHistoryEntry> GetAssetPairHistory(String assetPairId);
 
-        List<float> GetBidHistory(AssetPair assetPair);
+        List<float> GetBidHistory(String assetPairId);
 
-        List<float> GetAskHistory(AssetPair assetPair);
+        List<float> GetAskHistory(String assetPairId);
 
-        DateTime GetYoungestDate(AssetPair assetPair);
+        // Summary:
+        // Returns the newest entry of the specific assetPairId. 
+        DateTime GetDateOfLatestEntry(String assetPairId);
 
         List<AssetPair> GetAssetPairs();
+        void AddAssetPair(AssetPair assetPair);
+
+        void PersistData(object stateInfo);
     }
 }

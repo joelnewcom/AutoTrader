@@ -30,13 +30,13 @@ namespace AutoTrader.Repository
             return  await client.GetAsync(publicApi + "/api/IsAlive");
         }
 
-        public async Task<HttpResponseMessage> GetHistoryRatePerDay(AssetPair assetPair, DateTime date)
+        public async Task<HttpResponseMessage> GetHistoryRatePerDay(String assetPairId, DateTime date)
         {
             PayloadGetHistoryRate payload = new PayloadGetHistoryRate { Period = "Day", DateTime = date };
             string content = JsonConvert.SerializeObject(payload);
             HttpContent httpContent = new StringContent(content, Encoding.UTF8, applicationJson);
 
-            return await client.PostAsync(publicApi + "/api/AssetPairs/rate/history/" + assetPair.Id, httpContent);
+            return await client.PostAsync(publicApi + "/api/AssetPairs/rate/history/" + assetPairId, httpContent);
         }
 
         public async Task<HttpResponseMessage> GetAssetPairsDictionary()
