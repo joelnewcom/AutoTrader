@@ -20,3 +20,10 @@
 * XRPCHF        XRP/CHF
 * EURCHF        EUR/CHF
 * ETHCHF        ETH/CHF
+
+
+## Run locally production build
+1. Open cmd in ./AutoTrader and run following two commands (The same as defined in master_lykke-trader-app.yml github workflow)
+2. run dotnet build --configuration Release
+3. run: dotnet publish -c Release -o <whatever>/myapp
+4. Goto <whatever>/myapp and run AutoTrader.exe
