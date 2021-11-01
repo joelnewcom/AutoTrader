@@ -42,6 +42,10 @@ namespace AutoTrader.Data
 
         public List<AssetPairHistoryEntry> GetAssetPairHistory(String assetPairId)
         {
+            if (assetPairId is null)
+            {
+                return new List<AssetPairHistoryEntry>();
+            }
             List<AssetPairHistoryEntry> assetPairHistoryEntries = data.GetValueOrDefault(assetPairId, new List<AssetPairHistoryEntry>());
             return assetPairHistoryEntries.TakeLast(timeWindowsInDays).ToList();
         }

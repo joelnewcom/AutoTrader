@@ -25,8 +25,8 @@ class AutoTraderSite extends React.PureComponent<AutoTraderProps> {
   public render() {
     return (
       <React.Fragment>
-        <h1 id="tabelLabel">Weather forecast</h1>
-        <p>This component demonstrates fetching data from the server and working with URL parameters.</p>
+        <h1 id="tabelLabel">Lykke Autotrader</h1>
+        <p>Displaying live data from autoreader</p>
         {this.renderAssetPairHistoryPairTable()}
       </React.Fragment>
     );
@@ -39,25 +39,52 @@ class AutoTraderSite extends React.PureComponent<AutoTraderProps> {
 
   private renderAssetPairHistoryPairTable() {
     return (
-      <table className='table table-striped' aria-labelledby="tabelLabel">
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Ask</th>
-            <th>Buy</th>
-          </tr>
-        </thead>
-        <tbody>
-          {this.props.assetPairHistoryEntries.map((assetPairHistoryEntries: AutoTradersStore.AutoTraderIAssetPairHistoryEntry) =>
-            <tr key={assetPairHistoryEntries.date}>
-              <td>{assetPairHistoryEntries.date}</td>
-              <td>{assetPairHistoryEntries.ask}</td>
-              <td>{assetPairHistoryEntries.buy}</td>
-              
+      <div>
+        <h1>AssetPairs</h1>
+        <table className='table table-striped' aria-labelledby="tabelLabel">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Name</th>
+              <th>Accuracy</th>
             </tr>
-          )}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {this.props.assetPairs.map((assetPairs: AutoTradersStore.AssetPairs) =>
+              <tr key={assetPairs.id}>
+                <td>
+                  <button type="button"
+                    className="btn btn-primary btn-lg"
+                    onClick={() => { this.props.requestHistoryEntries(assetPairs.id); }}>
+                    {assetPairs.id}
+                  </button>
+                </td>
+                <td>{assetPairs.name}</td>
+                <td>{assetPairs.accuracy}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+        <h1>History entries of {this.props.selectedAssetPair}</h1>
+        <table className='table table-striped' aria-labelledby="tabelLabel">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Ask</th>
+              <th>Buy</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.props.assetPairHistoryEntries.map((assetPairHistoryEntries: AutoTradersStore.AutoTraderIAssetPairHistoryEntry) =>
+              <tr key={assetPairHistoryEntries.date}>
+                <td>{assetPairHistoryEntries.date}</td>
+                <td>{assetPairHistoryEntries.ask}</td>
+                <td>{assetPairHistoryEntries.buy}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
     );
   }
 

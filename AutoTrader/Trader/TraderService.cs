@@ -23,6 +23,8 @@ namespace AutoTrader.Trader
 
         private DataRefresher dataRefresher;
 
+        private int secondsToWaitForNextRequest = 10;
+
         private int invokeCount;
 
         public TraderService(ILogger<TraderService> logger,
@@ -48,7 +50,6 @@ namespace AutoTrader.Trader
             doPrepWorkAsync();
             var autoEvent = new AutoResetEvent(false);
             _timer = new Timer(DoWork, autoEvent, TimeSpan.Zero, TimeSpan.FromHours(8));
-            // _timer = new Timer(dataAccess.PersistData, null, TimeSpan.FromMinutes(10), TimeSpan.FromHours(8));
             return Task.CompletedTask;
         }
 
@@ -75,7 +76,7 @@ namespace AutoTrader.Trader
             _logger.LogInformation("Prework is done, following data is prepared [dataAccess]: {dataAccess}", string.Join(", ", dataAccess.GetAssetPairs().Select(assetPair => assetPair.Id)));
         }
 
-        private async void DoWork(object stateInfo)
+        private void DoWork(object stateInfo)
         {
             _logger.LogInformation("Lykke trader started to do work");
 

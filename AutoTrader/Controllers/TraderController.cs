@@ -29,11 +29,11 @@ namespace AutoTrader.Controllers
         }
 
         [HttpGet]
-        [Route("api/AssetPairHistoryEntries/{assetPairId}")]
-        public List<AssetPairHistoryEntry> AssetPairHistoryEntries(string assertPairId)
+        [Route("api/AssetPairHistoryEntries/{id}")]
+        public List<AssetPairHistoryEntry> AssetPairHistoryEntries(string id)
         {
-            _logger.LogDebug("Called endpoint: Get AssetPairHistoryEntries id: " + assertPairId);
-            return dataAccess.GetAssetPairHistory(assertPairId);
+            _logger.LogDebug("Called endpoint: Get AssetPairHistoryEntries id: " + id);
+            return dataAccess.GetAssetPairHistory(id);
         }
 
 

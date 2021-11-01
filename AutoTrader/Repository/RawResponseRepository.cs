@@ -1,19 +1,18 @@
 using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AutoTrader.Data;
 using Microsoft.Extensions.Logging;
 
 namespace AutoTrader.Repository
 {
-    public class RepositoryWrappedResponse : IRepositoryGen<Task<IResponse>>
+    public class RawResponseRepository : IRepositoryGen<Task<IResponse>>
     {
 
-        private readonly ILogger<RepositoryWrappedResponse> _logger;
+        private readonly ILogger<RawResponseRepository> _logger;
 
         private IRepositoryGen<Task<HttpResponseMessage>> lykkeRepository;
 
-        public RepositoryWrappedResponse(ILogger<RepositoryWrappedResponse> logger, IRepositoryGen<Task<HttpResponseMessage>> lykkeRepositoryBase)
+        public RawResponseRepository(ILogger<RawResponseRepository> logger, IRepositoryGen<Task<HttpResponseMessage>> lykkeRepositoryBase)
         {
             this.lykkeRepository = lykkeRepositoryBase;
             _logger = logger;

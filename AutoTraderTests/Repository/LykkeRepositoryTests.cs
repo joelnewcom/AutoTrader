@@ -11,9 +11,9 @@ namespace AutoTraderTests.Repository
     [TestClass()]
     public class LykkeRepositoryTests
     {
-        IRepository repository = new RepositoryRetry(
-            new NullLogger<RepositoryRetry>(),
-            new RepositoryWrappedResponse(new NullLogger<RepositoryWrappedResponse>(), new LykkeRepository(new NullLogger<LykkeRepository>()))
+        IRepository repository = new RetryRepository(
+            new NullLogger<RetryRepository>(),
+            new RawResponseRepository(new NullLogger<RawResponseRepository>(), new LykkeRepository(new NullLogger<LykkeRepository>()))
         );
 
         [TestMethod()]

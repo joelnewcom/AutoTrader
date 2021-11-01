@@ -13,7 +13,7 @@ namespace AutoTrader
     public class Program
     {
 
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             CreateHostBuilder(args).Build().Run();
         }
@@ -28,8 +28,8 @@ namespace AutoTrader
              {
                  services.AddHostedService<TraderService>();
                  services.AddSingleton<IRepositoryGen<Task<HttpResponseMessage>>, LykkeRepository>();
-                 services.AddSingleton<IRepositoryGen<Task<IResponse>>, RepositoryWrappedResponse>();
-                 services.AddSingleton<IRepository, RepositoryRetry>();
+                 services.AddSingleton<IRepositoryGen<Task<IResponse>>, RawResponseRepository>();
+                 services.AddSingleton<IRepository, RetryRepository>();
                  services.AddSingleton<DataRefresher>();
                  services.AddSingleton<IDataAccess, DataInFile>();
                  services.AddMvcCore().AddApiExplorer();

@@ -7,6 +7,7 @@ import { AppThunkAction } from '.';
 export interface AutoTraderState {
     isLoading: boolean;
     assetPairs: AssetPairs[];
+    selectedAssetPair: string;
     assetPairHistoryEntries: AutoTraderIAssetPairHistoryEntry[];
 }
 
@@ -28,8 +29,8 @@ export interface AutoTraderIAssetPairHistoryEntry {
 
 interface RequestAutoTraderDataAction {
     type: 'REQUEST_AUTOTRADER_DATA';
+    selectedAssetPair: string;
 }
-
 
 interface ReceiveAutoTraderDataAction {
     type: 'RECEIVE_AUTOTRADER_DATA';
@@ -64,7 +65,21 @@ export const actionCreators = {
                 .then(data => {
                     dispatch({ type: 'RECEIVE_AUTOTRADER_DATA', assetPairHistoryEntries: data });
                 });
-            dispatch({ type: 'REQUEST_AUTOTRADER_DATA' });
+            dispatch({ type: 'REQUEST_AUTOTRADER_DATA', selectedAssetPair:"ETHCHF-Harcoded" });
+        }
+    },
+
+    requestHistoryEntries: (assetPair: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        // Only load data if it's something we don't already have (and are not already loading)
+        const appState = getState();
+        if (appState && appState.autoTrader) {
+            console.log("Call AssetPairHistoryEntries");
+            fetch(`/Trader/api/AssetPairHistoryEntries/` + assetPair)
+                .then(response => response.json() as Promise<AutoTraderIAssetPairHistoryEntry[]>)
+                .then(data => {
+                    dispatch({ type: 'RECEIVE_AUTOTRADER_DATA', assetPairHistoryEntries: data });
+                });
+            dispatch({ type: 'REQUEST_AUTOTRADER_DATA', selectedAssetPair: assetPair });
         }
     },
 
@@ -86,7 +101,7 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: AutoTraderState = { assetPairs: [], isLoading: false, assetPairHistoryEntries: [] };
+const unloadedState: AutoTraderState = { assetPairs: [], isLoading: false, assetPairHistoryEntries: [], selectedAssetPair: "" };
 
 export const reducer: Reducer<AutoTraderState> = (state: AutoTraderState | undefined, incomingAction: Action): AutoTraderState => {
     if (state === undefined) {
@@ -99,25 +114,29 @@ export const reducer: Reducer<AutoTraderState> = (state: AutoTraderState | undef
             return {
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
-                isLoading: true
+                isLoading: true,
+                selectedAssetPair: action.selectedAssetPair
             };
         case 'RECEIVE_AUTOTRADER_DATA':
             return {
                 isLoading: false,
                 assetPairs: state.assetPairs,
-                assetPairHistoryEntries: action.assetPairHistoryEntries
+                assetPairHistoryEntries: action.assetPairHistoryEntries,
+                selectedAssetPair: state.selectedAssetPair
             };
         case 'REQUEST_ASSETPAIRS':
             return {
                 isLoading: true,
                 assetPairs: state.assetPairs,
-                assetPairHistoryEntries: state.assetPairHistoryEntries
+                assetPairHistoryEntries: state.assetPairHistoryEntries,
+                selectedAssetPair: state.selectedAssetPair
             }
         case 'RECEIVE_ASSET_PAIRS':
             return {
                 isLoading: false,
                 assetPairs: action.assetPairs,
-                assetPairHistoryEntries: state.assetPairHistoryEntries
+                assetPairHistoryEntries: state.assetPairHistoryEntries,
+                selectedAssetPair: state.selectedAssetPair
             };
     }
 

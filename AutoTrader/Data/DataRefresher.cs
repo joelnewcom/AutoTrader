@@ -28,6 +28,7 @@ namespace AutoTrader.Library
                 {
                     data.AddAssetPairHistoryEntry(assetPairId, (AssetPairHistoryEntry) await historyRatePerDay);
                 }
+                await Task.Delay(secondsToWaitForNextRequest * 1000);
             }
         }
     }

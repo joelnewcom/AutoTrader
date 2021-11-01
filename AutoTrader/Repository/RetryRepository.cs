@@ -9,9 +9,9 @@ using Newtonsoft.Json;
 
 namespace AutoTrader.Repository
 {
-    public class RepositoryRetry : IRepository
+    public class RetryRepository : IRepository
     {
-        private readonly ILogger<RepositoryRetry> _logger;
+        private readonly ILogger<RetryRepository> _logger;
 
         private readonly int retries = 5;
 
@@ -19,7 +19,7 @@ namespace AutoTrader.Repository
 
         private IRepositoryGen<Task<IResponse>> wrappedResponeRepo;
 
-        public RepositoryRetry(ILogger<RepositoryRetry> logger, IRepositoryGen<Task<IResponse>> wrappedResponseRepo)
+        public RetryRepository(ILogger<RetryRepository> logger, IRepositoryGen<Task<IResponse>> wrappedResponseRepo)
         {
             this.wrappedResponeRepo = wrappedResponseRepo;
             _logger = logger;
