@@ -4,6 +4,7 @@ using System;
 using AutoTrader.Data;
 using AutoTrader.Repository;
 using Moq;
+using System.Threading.Tasks;
 
 namespace AutoTraderTests.Library
 {
@@ -15,7 +16,7 @@ namespace AutoTraderTests.Library
         readonly AssetPair assetPair = new AssetPair("eth/chf", "testAssetPair", 1000);
 
         [TestMethod()]
-        public void NewEntryGetsAdded()
+        public async Task NewEntryGetsAdded()
         {
             // given
             AssetPairHistoryEntry assetPairHistoryEntry = new AssetPairHistoryEntry(DateTime.Today, 10, 10);
@@ -25,14 +26,14 @@ namespace AutoTraderTests.Library
             DataRefresher dataRefresher = new DataRefresher(repoMock.Object, dataAccessMock.Object);
 
             // when
-            dataRefresher.RefreshAssetPairHistory(assetPair.Id);
+            await dataRefresher.RefreshAssetPairHistory(assetPair.Id);
 
             // then
             dataAccessMock.Verify(s => s.AddAssetPairHistoryEntry(assetPair.Id, assetPairHistoryEntry), Times.Once);
         }
 
         [TestMethod()]
-        public void OldEntryGetsOmitted()
+        public async Task OldEntryGetsOmitted()
         {
             // given
             DateTime dateTime = DateTime.Today;
@@ -45,7 +46,7 @@ namespace AutoTraderTests.Library
             DataRefresher dataRefresher = new DataRefresher(repoMock.Object, dataAccessMock.Object);
 
             // when
-            dataRefresher.RefreshAssetPairHistory(assetPair.Id);
+            await dataRefresher.RefreshAssetPairHistory(assetPair.Id);
 
             // then
             dataAccessMock.Verify(
@@ -54,20 +55,20 @@ namespace AutoTraderTests.Library
         }
 
         [TestMethod()]
-        public void MultipleEntriesGetAdded()
+        public async Task MultipleEntriesGetAdded()
         {
             // given
-            DateTime dateTime = DateTime.Today;
-            AssetPairHistoryEntry assetPairHistoryEntry = new AssetPairHistoryEntry(dateTime, 10, 10);
+            DateTime today = DateTime.Today;
+            AssetPairHistoryEntry assetPairHistoryEntry = new AssetPairHistoryEntry(today, 10, 10);
 
-            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(dateTime.AddDays(-2));
+            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(today.AddDays(-2));
             repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<String>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(assetPairHistoryEntry);
 
             DataRefresher dataRefresher = new DataRefresher(repoMock.Object, dataAccessMock.Object);
 
             // when
-            dataRefresher.RefreshAssetPairHistory(assetPair.Id);
+            await dataRefresher.RefreshAssetPairHistory(assetPair.Id);
 
             // then
             dataAccessMock.Verify(

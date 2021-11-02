@@ -69,14 +69,14 @@ namespace AutoTrader.Trader
                 if (assetPair != null)
                 {
                     dataAccess.AddAssetPair(assetPair);
-                    dataRefresher.RefreshAssetPairHistory(assetPair.Id);
+                    await dataRefresher.RefreshAssetPairHistory(assetPair.Id);
                 }
             }
 
             _logger.LogInformation("Prework is done, following data is prepared [dataAccess]: {dataAccess}", string.Join(", ", dataAccess.GetAssetPairs().Select(assetPair => assetPair.Id)));
         }
 
-        private void DoWork(object stateInfo)
+        private async void DoWork(object stateInfo)
         {
             _logger.LogInformation("Lykke trader started to do work");
 
@@ -87,7 +87,7 @@ namespace AutoTrader.Trader
 
             foreach (AssetPair assetPair in dataAccess.GetAssetPairs())
             {
-                dataRefresher.RefreshAssetPairHistory(assetPair.Id);
+                await dataRefresher.RefreshAssetPairHistory(assetPair.Id);
             }
         }
 
