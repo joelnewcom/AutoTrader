@@ -20,6 +20,6 @@ namespace AutoTrader.Data
         List<AssetPair> GetAssetPairs();
         void AddAssetPair(AssetPair assetPair);
 
-        void PersistData(object stateInfo);
+        void PersistData();
     }
 }

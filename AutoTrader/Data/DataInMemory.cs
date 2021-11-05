@@ -59,7 +59,7 @@ namespace AutoTrader.Data
             throw new NotImplementedException();
         }
 
-        public void PersistData(object stateInfo)
+        public void PersistData()
         {
             throw new NotImplementedException();
         }

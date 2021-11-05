@@ -24,7 +24,13 @@ export default class NavMenu extends React.PureComponent<{}, { isOpen: boolean }
                                     <NavLink tag={Link} className="text-dark" to="/swagger/index.html">Swagger</NavLink>
                                 </NavItem>
                                 <NavItem>
-                                    <NavLink tag={Link} className="text-dark" to="/auto-trader">Auto Trader</NavLink>
+                                    <NavLink tag={Link} className="text-dark" to="/assetpairs">Auto Trader</NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink tag={Link} className="text-dark" to="/orders">Orders</NavLink>
+                                </NavItem>
+                                <NavItem>
+                                    <NavLink tag={Link} className="text-dark" to="/orders">Wallet</NavLink>
                                 </NavItem>
                             </ul>
                         </Collapse>

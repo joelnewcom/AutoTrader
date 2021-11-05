@@ -3,6 +3,7 @@ using System;
 using AutoTrader.Data;
 using AutoTrader.Repository;
 using Moq;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AutoTraderTests.Library
 {
@@ -17,7 +18,7 @@ namespace AutoTraderTests.Library
         public void NewestDataAvailableGetReturned()
         {
             // given
-            DataInFile dataInFile = new DataInFile();
+            DataInFile dataInFile = new DataInFile(new NullLogger<DataInFile>());
             DateTime today = DateTime.Today;
 
             AssetPairHistoryEntry firstAssetPairHistoryEntry = new AssetPairHistoryEntry(DateTime.Today.AddDays(-2), 10, 10);

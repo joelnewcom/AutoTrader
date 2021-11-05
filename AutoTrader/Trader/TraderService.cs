@@ -93,7 +93,8 @@ namespace AutoTrader.Trader
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            dataAccess.PersistData();
+            return Task.CompletedTask;
         }
     }
 }

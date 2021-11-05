@@ -46,5 +46,10 @@ namespace AutoTrader.Repository
 
             return new WrappedResponse(task);
         }
+
+        public Task<IResponse> GetWallets()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

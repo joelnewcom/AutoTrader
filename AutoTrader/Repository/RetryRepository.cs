@@ -99,5 +99,9 @@ namespace AutoTrader.Repository
             return assetPairs;
         }
 
+        public Task<List<IWalletEntry>> GetWallets()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

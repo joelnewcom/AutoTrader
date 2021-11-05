@@ -4,6 +4,7 @@ using System.IO;
 using System.Text.Json;
 using System.Threading;
 using System.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace AutoTrader.Data
 {
@@ -19,9 +20,12 @@ namespace AutoTrader.Data
         private String assetPairFileLocation = "assetPair.json";
         private readonly int timeWindowsInDays = 7;
 
-        public DataInFile()
+        private ILogger<DataInFile> logger { get; }
+
+        public DataInFile(ILogger<DataInFile> logger)
         {
             loadData();
+            this.logger = logger;
         }
 
         public String AddAssetPairHistoryEntry(String assetPairId, AssetPairHistoryEntry assetPairHistoryEntry)
@@ -36,7 +40,7 @@ namespace AutoTrader.Data
                 data.Add(assetPairId, new List<AssetPairHistoryEntry> { assetPairHistoryEntry });
             }
 
-            PersistData(null);
+            PersistData();
             return assetPairId;
         }
 
@@ -73,8 +77,9 @@ namespace AutoTrader.Data
             return new List<AssetPair>(assetPairs.Values);
         }
 
-        public void PersistData(object stateInfo)
+        public void PersistData()
         {
+            logger.LogInformation("About to persist the data");
             try
             {
                 _readWriteConfigLock.EnterWriteLock();

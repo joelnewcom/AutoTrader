@@ -1,9 +1,8 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
-import { Link } from 'react-router-dom';
 import { ApplicationState } from '../store';
-import * as AutoTradersStore from "../store/AutoTrader";
+import * as AutoTradersStore from "../store/AssetPairStore";
 
 // At runtime, Redux will merge together...
 type AutoTraderProps =
@@ -12,7 +11,7 @@ type AutoTraderProps =
   & RouteComponentProps<{ startDateIndex: string }>; // ... plus incoming routing parameters
 
 
-class AutoTraderSite extends React.PureComponent<AutoTraderProps> {
+class Wallet extends React.PureComponent<AutoTraderProps> {
   // This method is called when the component is first added to the document
   public componentDidMount() {
     this.ensureDataFetched();
@@ -93,4 +92,4 @@ class AutoTraderSite extends React.PureComponent<AutoTraderProps> {
 export default connect(
   (state: ApplicationState) => state.autoTrader, // Selects which state properties are merged into the component's props
   AutoTradersStore.actionCreators // Selects which action creators are merged into the component's props
-)(AutoTraderSite as any); // eslint-disable-line @typescript-eslint/no-explicit-any
+)(Wallet as any); // eslint-disable-line @typescript-eslint/no-explicit-any

@@ -27,13 +27,13 @@ export interface AutoTraderIAssetPairHistoryEntry {
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
 // They do not themselves have any side-effects; they just describe something that is going to happen.
 
-interface RequestAutoTraderDataAction {
-    type: 'REQUEST_AUTOTRADER_DATA';
+interface RequestAssetPairHistoryDataAction {
+    type: 'REQUEST_ASSETPAIR_HISTORY_DATA';
     selectedAssetPair: string;
 }
 
-interface ReceiveAutoTraderDataAction {
-    type: 'RECEIVE_AUTOTRADER_DATA';
+interface ReceiveAssetPairHistoryDataAction {
+    type: 'RECEIVE_ASSETPAIR_HISTORY_DATA';
     assetPairHistoryEntries: AutoTraderIAssetPairHistoryEntry[];
 }
 
@@ -48,7 +48,7 @@ interface ReceiveAssetPairs {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = RequestAutoTraderDataAction | ReceiveAutoTraderDataAction | ReceiveAssetPairs | RequestAssetPairAction;
+type KnownAction = RequestAssetPairHistoryDataAction | ReceiveAssetPairHistoryDataAction | ReceiveAssetPairs | RequestAssetPairAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -63,9 +63,9 @@ export const actionCreators = {
             fetch(`/Trader/api/AssetPairHistoryEntries`)
                 .then(response => response.json() as Promise<AutoTraderIAssetPairHistoryEntry[]>)
                 .then(data => {
-                    dispatch({ type: 'RECEIVE_AUTOTRADER_DATA', assetPairHistoryEntries: data });
+                    dispatch({ type: 'RECEIVE_ASSETPAIR_HISTORY_DATA', assetPairHistoryEntries: data });
                 });
-            dispatch({ type: 'REQUEST_AUTOTRADER_DATA', selectedAssetPair:"ETHCHF-Harcoded" });
+            dispatch({ type: 'REQUEST_ASSETPAIR_HISTORY_DATA', selectedAssetPair:"ETHCHF-Harcoded" });
         }
     },
 
@@ -77,9 +77,9 @@ export const actionCreators = {
             fetch(`/Trader/api/AssetPairHistoryEntries/` + assetPair)
                 .then(response => response.json() as Promise<AutoTraderIAssetPairHistoryEntry[]>)
                 .then(data => {
-                    dispatch({ type: 'RECEIVE_AUTOTRADER_DATA', assetPairHistoryEntries: data });
+                    dispatch({ type: 'RECEIVE_ASSETPAIR_HISTORY_DATA', assetPairHistoryEntries: data });
                 });
-            dispatch({ type: 'REQUEST_AUTOTRADER_DATA', selectedAssetPair: assetPair });
+            dispatch({ type: 'REQUEST_ASSETPAIR_HISTORY_DATA', selectedAssetPair: assetPair });
         }
     },
 
@@ -110,14 +110,14 @@ export const reducer: Reducer<AutoTraderState> = (state: AutoTraderState | undef
 
     const action = incomingAction as KnownAction;
     switch (action.type) {
-        case 'REQUEST_AUTOTRADER_DATA':
+        case 'REQUEST_ASSETPAIR_HISTORY_DATA':
             return {
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
                 isLoading: true,
                 selectedAssetPair: action.selectedAssetPair
             };
-        case 'RECEIVE_AUTOTRADER_DATA':
+        case 'RECEIVE_ASSETPAIR_HISTORY_DATA':
             return {
                 isLoading: false,
                 assetPairs: state.assetPairs,

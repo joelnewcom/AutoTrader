@@ -34,7 +34,6 @@ namespace AutoTrader
                  services.AddSingleton<IDataAccess, DataInFile>();
                  services.AddMvcCore().AddApiExplorer();
                  services.AddSwaggerGen();
-                 
              });
     }
 }

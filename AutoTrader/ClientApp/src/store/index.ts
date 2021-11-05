@@ -1,6 +1,6 @@
 import * as WeatherForecasts from './WeatherForecasts';
 import * as Counter from './Counter';
-import * as AutoTrader from "./AutoTrader";
+import * as AutoTrader from "./AssetPairStore";
 
 // The top-level state object
 export interface ApplicationState {

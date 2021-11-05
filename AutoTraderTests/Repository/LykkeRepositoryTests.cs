@@ -1,35 +1,22 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using AutoTrader.Repository;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using AutoTrader.Data;
+using System.Net.Http;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Threading.Tasks;
 
 namespace AutoTraderTests.Repository
 {
     [TestClass()]
     public class LykkeRepositoryTests
     {
-        IRepository repository = new RetryRepository(
-            new NullLogger<RetryRepository>(),
-            new RawResponseRepository(new NullLogger<RawResponseRepository>(), new LykkeRepository(new NullLogger<LykkeRepository>()))
-        );
+        IRepositoryGen<Task<HttpResponseMessage>> repository = new LykkeRepository(new NullLogger<LykkeRepository>(), 
+        new TraderConfig { apiKey = "" });
 
         [TestMethod()]
-        public async Task GetHistoryRatePerDayTest()
+        public async Task GetWalletTest()
         {
-            Task<IAssetPairHistoryEntry> historyRatePerDay = repository.GetHistoryRatePerDay("BTCCHF", DateTime.Today);
-            await historyRatePerDay;
-            IAssetPairHistoryEntry assetPairHistoryEntry = historyRatePerDay.Result;
-            Assert.AreEqual(DateTime.Today, assetPairHistoryEntry.Date);
-        }
-
-        [TestMethod()]
-        public async Task GetDictionaryTest()
-        {
-            Dictionary<string, AssetPair> task = await repository.GetAssetPairsDictionary();
-            Assert.IsTrue(task.Count > 1);
+            HttpResponseMessage message = await repository.GetWallets();
+            Assert.IsTrue(System.Net.HttpStatusCode.Unauthorized.Equals(message.StatusCode));
         }
     }
 }
