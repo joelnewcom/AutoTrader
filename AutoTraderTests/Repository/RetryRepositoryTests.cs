@@ -14,7 +14,7 @@ namespace AutoTraderTests.Repository
         IRepository repository = new RetryRepository(
             new NullLogger<RetryRepository>(),
             new RawResponseRepository(new NullLogger<RawResponseRepository>(), 
-                new LykkeRepository(new NullLogger<LykkeRepository>(), new TraderConfig { apiKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6InRyYWRpbmctd2FsbGV0LTEiLCJhdWQiOiJoZnQtYXBpdjIubHlra2UuY29tIiwia2V5LWlkIjoiYjc1NWYzMzctNzFlNy00N2VmLWJmNGUtOTgyMmI3ZTkwYTdlIiwiY2xpZW50LWlkIjoiNDg3YzQxOWYtMGI2YS00MzIyLWFkYzctZjRmOTc5NjA1YTA4Iiwid2FsbGV0LWlkIjoiODdjNDIyNmQtMWRhYi00NjM2LTgwNDMtN2I2MzhkM2I4NzAwIiwibmJmIjoxNTkzMzQ2MjgzLCJleHAiOjE5MDg4NzkwODMsImlhdCI6MTU5MzM0NjI4M30.FCCkW9qTaUUPP6pFVIPunNR-clEgN9k2gZB0ZtHidtk" }))
+                new LykkeRepository(new NullLogger<LykkeRepository>(), new TraderConfig { apiKey = "" }))
         );
 
         [TestMethod()]

@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 
 namespace AutoTrader.Repository
 {
+    // Takes the specific repository and transforms it into own domain. 
     public class RetryRepository : IRepository
     {
         private readonly ILogger<RetryRepository> _logger;
@@ -99,9 +100,22 @@ namespace AutoTrader.Repository
             return assetPairs;
         }
 
-        public Task<List<IWalletEntry>> GetWallets()
+        public async Task<List<IWalletEntry>> GetWallets()
         {
-            throw new NotImplementedException();
+            IResponse reponse = await wrappedResponeRepo.GetWallets();
+            HttpResponseMessage responseMessage = await reponse.GetResponse();
+
+            List<PayloadBalance> deserializeObject = JsonConvert.DeserializeObject<List<PayloadBalance>>(await responseMessage.Content.ReadAsStringAsync());
+
+            List<IWalletEntry> responseObjects = new List<IWalletEntry>();
+
+            foreach (PayloadBalance item in deserializeObject)
+            {
+                responseObjects.Add(new WalletEntry(item.AssetId, item.Available, item.Reserved));
+            }
+
+            return responseObjects;
+
         }
     }
 }

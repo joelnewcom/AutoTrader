@@ -8,7 +8,6 @@ namespace AutoTrader.Repository
     {
         Task<HttpResponseMessage> GetResponse(); 
         Boolean IsSuccess();
-
         ReasonOfFailure GetReasonOfFailure();
     }
 }
