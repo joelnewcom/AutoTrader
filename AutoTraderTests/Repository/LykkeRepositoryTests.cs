@@ -10,7 +10,7 @@ namespace AutoTraderTests.Repository
     public class LykkeRepositoryTests
     {
         IRepositoryGen<Task<HttpResponseMessage>> repository = new LykkeRepository(new NullLogger<LykkeRepository>(), 
-        new TraderConfig { apiKey = "" });
+        new TraderConfig { apiKey = "not-valid-jwt-token" });
 
         [TestMethod()]
         public async Task GetWalletTest()

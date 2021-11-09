@@ -85,12 +85,12 @@ namespace AutoTrader.Repository
 
             List<PayloadAssetPairDict> deserializeObject = JsonConvert.DeserializeObject<List<PayloadAssetPairDict>>(responseString);
 
+            Dictionary<String, AssetPair> assetPairs = new Dictionary<string, AssetPair>();
+
             if (deserializeObject is null)
             {
-                return new Dictionary<string, AssetPair>();
+                return assetPairs;
             }
-
-            Dictionary<String, AssetPair> assetPairs = new Dictionary<string, AssetPair>();
 
             foreach (PayloadAssetPairDict item in deserializeObject)
             {
@@ -105,17 +105,20 @@ namespace AutoTrader.Repository
             IResponse reponse = await wrappedResponeRepo.GetWallets();
             HttpResponseMessage responseMessage = await reponse.GetResponse();
 
-            List<PayloadBalance> deserializeObject = JsonConvert.DeserializeObject<List<PayloadBalance>>(await responseMessage.Content.ReadAsStringAsync());
+            PayloadWrapper<List<PayloadBalance>> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<List<PayloadBalance>>>(await responseMessage.Content.ReadAsStringAsync());
 
             List<IWalletEntry> responseObjects = new List<IWalletEntry>();
 
-            foreach (PayloadBalance item in deserializeObject)
+            if (deserializeObject is null && deserializeObject.Payload is null){
+                return responseObjects;
+            }
+
+            foreach (PayloadBalance item in deserializeObject.Payload)
             {
                 responseObjects.Add(new WalletEntry(item.AssetId, item.Available, item.Reserved));
             }
 
             return responseObjects;
-
         }
     }
 }

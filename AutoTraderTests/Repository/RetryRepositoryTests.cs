@@ -36,8 +36,8 @@ namespace AutoTraderTests.Repository
         [TestMethod()]
         public async Task GetWalletTest()
         {
-            List<IWalletEntry> task = await repository.GetWallets();
-            Assert.IsTrue(task.Count > 1);
+            List<IWalletEntry> walletList = await repository.GetWallets();
+            Assert.IsTrue(walletList.Count == 0);
         }
     }
 }

@@ -13,6 +13,8 @@ namespace AutoTrader.Repository
         private readonly String publicApi = "https://public-api.lykke.com";
 
         private readonly String privateApi = "https://hft-api.lykke.com";
+
+        private readonly String privateApiv2 = "https://hft-apiv2.lykke.com";
         private readonly HttpClient httpClient;
         private string applicationJson = "application/json";
 
@@ -22,11 +24,12 @@ namespace AutoTrader.Repository
 
         public LykkeRepository(ILogger<LykkeRepository> logger, TraderConfig traderConfig)
         {
+            this.apiKey = traderConfig.apiKey;
             httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Accept.Clear();
             httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue(applicationJson));
+            httpClient.DefaultRequestHeaders.Authorization =  new AuthenticationHeaderValue("Bearer", apiKey);
             _logger = logger;
-            this.apiKey = traderConfig.apiKey;
         }
 
         public async Task<HttpResponseMessage> IsAliveAsync()
@@ -50,9 +53,7 @@ namespace AutoTrader.Repository
 
         public async Task<HttpResponseMessage> GetWallets()
         {
-            HttpRequestMessage requestMessage = new HttpRequestMessage(HttpMethod.Get, privateApi + "/api/Wallets");
-            requestMessage.Headers.Add("api-key", apiKey);
-            return await httpClient.SendAsync(requestMessage);
+            return await httpClient.GetAsync(privateApiv2 + "/api/balance");
         }
     }
 }

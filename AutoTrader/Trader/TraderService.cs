@@ -13,6 +13,7 @@ namespace AutoTrader.Trader
 {
     public class TraderService : IHostedService, IDisposable
     {
+        private const int SECONDS_TO_WAIT = 10;
         private readonly ILogger<TraderService> _logger;
         private Timer _timer;
         private readonly IRepository repo;
@@ -22,8 +23,6 @@ namespace AutoTrader.Trader
         private IDataAccess dataAccess;
 
         private DataRefresher dataRefresher;
-
-        private int secondsToWaitForNextRequest = 10;
 
         private int invokeCount;
 
@@ -81,10 +80,24 @@ namespace AutoTrader.Trader
             _logger.LogInformation("Lykke trader started to do work");
 
             AutoResetEvent autoEvent = (AutoResetEvent)stateInfo;
-            Console.WriteLine("{0} Checking status {1,2}.",
-                DateTime.Now.ToString("h:mm:ss.fff"),
-                (++invokeCount).ToString());
+            Console.WriteLine("{0} Checking status {1,2}.", DateTime.Now.ToString("h:mm:ss.fff"), (++invokeCount).ToString());
+            await RefreshHistory();
+            Trade();
+        }
 
+        private void Trade()
+        {
+            // Go through assetPairHistory and check if we can buy/sell something
+            foreach (AssetPair assetPair in dataAccess.GetAssetPairs())
+            {
+                List<AssetPairHistoryEntry> assetPairHistoryEntries = dataAccess.GetAssetPairHistory(assetPair.Id);
+                
+
+            }
+        }
+
+        private async Task RefreshHistory()
+        {
             foreach (AssetPair assetPair in dataAccess.GetAssetPairs())
             {
                 await dataRefresher.RefreshAssetPairHistory(assetPair.Id);

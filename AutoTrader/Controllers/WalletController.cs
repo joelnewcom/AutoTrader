@@ -1,7 +1,9 @@
 ﻿using AutoTrader.Data;
+using AutoTrader.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AutoTrader.Controllers
 {
@@ -14,18 +16,21 @@ namespace AutoTrader.Controllers
 
         private IDataAccess dataAccess;
 
-        public WalletController(ILogger<TraderController> logger, IDataAccess dataAccess)
+        private IRepository repo;
+
+        public WalletController(ILogger<TraderController> logger, IDataAccess dataAccess, IRepository repo)
         {
             _logger = logger;
             this.dataAccess = dataAccess;
+            this.repo = repo;
         }
 
         [HttpGet]
-        [Route("api/AssetPairHistoryEntries")]
-        public List<AssetPairHistoryEntry> AssetPairHistoryEntries()
+        [Route("api/balance")]
+        public async Task<List<IWalletEntry>> Wallets()
         {
-            _logger.LogDebug("Called endpoint: Get AssetPairHistoryEntries");
-            return dataAccess.GetAssetPairHistory("ETHCHF");
+            _logger.LogDebug("Called endpoint: Get Wallets");
+            return await repo.GetWallets();
         }
     }
 }
