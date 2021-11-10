@@ -109,7 +109,7 @@ namespace AutoTrader.Repository
 
             List<IWalletEntry> responseObjects = new List<IWalletEntry>();
 
-            if (deserializeObject is null && deserializeObject.Payload is null){
+            if (deserializeObject is null || deserializeObject.Payload is null){
                 return responseObjects;
             }
 
