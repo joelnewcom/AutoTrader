@@ -1,17 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
-namespace AutoTrader.Data
+namespace AutoTrader.Advisor
 {
     public class LeastSquareMethod
     {
-        public float Slope(List<float> dataIn)
+        public static float Slope(IEnumerable<float> dataIn)
         {
 
             // Equation: m =  (n*sum(xy) - sum(x)*sum(y)) / (n*sum(x^2) - sum(x)^2)
-
-            int n = dataIn.Count;
-
+            int n = dataIn.Count();
             int x = 1;
             int sumX = 0;
             float sumY = 0;
