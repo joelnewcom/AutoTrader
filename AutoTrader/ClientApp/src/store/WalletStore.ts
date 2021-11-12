@@ -6,94 +6,48 @@ import { AppThunkAction } from '.';
 
 export interface WalletState {
     isLoading: boolean;
-    assetPairs: AssetPairs[];
-    selectedAssetPair: string;
-    assetPairHistoryEntries: AutoTraderIAssetPairHistoryEntry[];
+    balances: Balance[];
 }
 
-export interface AssetPairs {
-    id: string;
-    name: string;
-    accuracy: number;
-}
-
-export interface AutoTraderIAssetPairHistoryEntry {
-    date: string;
-    ask: number;
-    buy: number;
+export interface Balance {
+    assetId: string;
+    balance: number;
 }
 
 // -----------------
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
 // They do not themselves have any side-effects; they just describe something that is going to happen.
 
-interface RequestAssetPairHistoryDataAction {
-    type: 'REQUEST_ASSETPAIR_HISTORY_DATA';
-    selectedAssetPair: string;
+interface RequestBalances {
+    type: 'REQUEST_BALANCES';
 }
 
-interface ReceiveAssetPairHistoryDataAction {
-    type: 'RECEIVE_ASSETPAIR_HISTORY_DATA';
-    assetPairHistoryEntries: AutoTraderIAssetPairHistoryEntry[];
-}
-
-interface RequestAssetPairAction {
-    type: 'REQUEST_ASSETPAIRS';
-}
-
-interface ReceiveAssetPairs {
-    type: 'RECEIVE_ASSET_PAIRS';
-    assetPairs: AssetPairs[];
+interface ReceiveBalances {
+    type: 'RECEIVE_BALANCES';
+    balances: Balance[];
 }
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = RequestAssetPairHistoryDataAction | ReceiveAssetPairHistoryDataAction | ReceiveAssetPairs | RequestAssetPairAction;
+type KnownAction = RequestBalances | ReceiveBalances;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    requestAutoTraderData: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+    requestBalances: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
         // Only load data if it's something we don't already have (and are not already loading)
         const appState = getState();
-        if (appState && appState.autoTrader) {
-            console.log("Call AssetPairHistoryEntries");
-            fetch(`/Trader/api/AssetPairHistoryEntries`)
-                .then(response => response.json() as Promise<AutoTraderIAssetPairHistoryEntry[]>)
+        console.log("Call Balance");
+        if (appState && appState.wallet) {
+            console.log("Call Balance");
+            fetch(`/Wallet/api/balance`)
+                .then(response => response.json() as Promise<Balance[]>)
                 .then(data => {
-                    dispatch({ type: 'RECEIVE_ASSETPAIR_HISTORY_DATA', assetPairHistoryEntries: data });
+                    dispatch({ type: 'RECEIVE_BALANCES', balances: data });
                 });
-            dispatch({ type: 'REQUEST_ASSETPAIR_HISTORY_DATA', selectedAssetPair:"ETHCHF-Harcoded" });
-        }
-    },
-
-    requestHistoryEntries: (assetPair: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
-        // Only load data if it's something we don't already have (and are not already loading)
-        const appState = getState();
-        if (appState && appState.autoTrader) {
-            console.log("Call AssetPairHistoryEntries");
-            fetch(`/Trader/api/AssetPairHistoryEntries/` + assetPair)
-                .then(response => response.json() as Promise<AutoTraderIAssetPairHistoryEntry[]>)
-                .then(data => {
-                    dispatch({ type: 'RECEIVE_ASSETPAIR_HISTORY_DATA', assetPairHistoryEntries: data });
-                });
-            dispatch({ type: 'REQUEST_ASSETPAIR_HISTORY_DATA', selectedAssetPair: assetPair });
-        }
-    },
-
-    requestAssetPairs: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
-        // Only load data if it's something we don't already have (and are not already loading)
-        const appState = getState();
-        if (appState && appState.autoTrader) {
-            console.log("Call GET AssetPairs");
-            fetch(`/Trader/api/AssetPairs`)
-                .then(response => response.json() as Promise<AssetPairs[]>)
-                .then(data => {
-                    dispatch({ type: 'RECEIVE_ASSET_PAIRS', assetPairs: data });
-                });
-            dispatch({ type: 'REQUEST_ASSETPAIRS' });
+            dispatch({ type: 'REQUEST_BALANCES' });
         }
     }
 };
@@ -101,7 +55,7 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: WalletState = { assetPairs: [], isLoading: false, assetPairHistoryEntries: [], selectedAssetPair: "" };
+const unloadedState: WalletState = { balances: [], isLoading: false };
 
 export const reducer: Reducer<WalletState> = (state: WalletState | undefined, incomingAction: Action): WalletState => {
     if (state === undefined) {
@@ -110,35 +64,16 @@ export const reducer: Reducer<WalletState> = (state: WalletState | undefined, in
 
     const action = incomingAction as KnownAction;
     switch (action.type) {
-        case 'REQUEST_ASSETPAIR_HISTORY_DATA':
+        case 'REQUEST_BALANCES':
             return {
-                assetPairs: state.assetPairs,
-                assetPairHistoryEntries: state.assetPairHistoryEntries,
+                balances: state.balances,
                 isLoading: true,
-                selectedAssetPair: action.selectedAssetPair
             };
-        case 'RECEIVE_ASSETPAIR_HISTORY_DATA':
+        case 'RECEIVE_BALANCES':
             return {
                 isLoading: false,
-                assetPairs: state.assetPairs,
-                assetPairHistoryEntries: action.assetPairHistoryEntries,
-                selectedAssetPair: state.selectedAssetPair
-            };
-        case 'REQUEST_ASSETPAIRS':
-            return {
-                isLoading: true,
-                assetPairs: state.assetPairs,
-                assetPairHistoryEntries: state.assetPairHistoryEntries,
-                selectedAssetPair: state.selectedAssetPair
-            }
-        case 'RECEIVE_ASSET_PAIRS':
-            return {
-                isLoading: false,
-                assetPairs: action.assetPairs,
-                assetPairHistoryEntries: state.assetPairHistoryEntries,
-                selectedAssetPair: state.selectedAssetPair
+                balances: action.balances
             };
     }
-
     return state;
 };
