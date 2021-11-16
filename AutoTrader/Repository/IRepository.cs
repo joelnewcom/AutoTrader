@@ -14,6 +14,8 @@ namespace AutoTrader.Repository
         Task<IAssetPairHistoryEntry> GetHistoryRatePerDay(String assetPairId, DateTime date);
 
         Task<List<IWalletEntry>> GetWallets();
+
+        Task<List<TradeEntry>> GetTrades();
     }
 
     public interface IRepositoryGen<T>
@@ -25,6 +27,8 @@ namespace AutoTrader.Repository
         T GetHistoryRatePerDay(String assetPairId, DateTime date);
 
         T GetWallets();
+
+        T GetTrades();
     }
 
 }

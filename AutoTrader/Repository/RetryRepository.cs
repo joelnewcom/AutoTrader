@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace AutoTrader.Repository
 {
-    // Takes the specific repository and transforms it into own domain. 
+    // Takes the specific repository and transforms it into own domain language.
     public class RetryRepository : IRepository
     {
         private readonly ILogger<RetryRepository> _logger;
@@ -109,7 +109,8 @@ namespace AutoTrader.Repository
 
             List<IWalletEntry> responseObjects = new List<IWalletEntry>();
 
-            if (deserializeObject is null || deserializeObject.Payload is null){
+            if (deserializeObject is null || deserializeObject.Payload is null)
+            {
                 return responseObjects;
             }
 
@@ -119,6 +120,26 @@ namespace AutoTrader.Repository
             }
 
             return responseObjects;
+        }
+
+        public async Task<List<TradeEntry>> GetTrades()
+        {
+            IResponse reponse = await wrappedResponeRepo.GetTrades();
+            HttpResponseMessage responseMessage = await reponse.GetResponse();
+            PayloadWrapper<List<PayloadTradeHistory>> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<List<PayloadTradeHistory>>>(await responseMessage.Content.ReadAsStringAsync());
+            List<TradeEntry> responseObjects = new List<TradeEntry>();
+            if (deserializeObject is null || deserializeObject.Payload is null)
+            {
+                return responseObjects;
+            }
+
+            foreach (PayloadTradeHistory item in deserializeObject.Payload)
+            {
+                responseObjects.Add(new TradeEntry(item.Id, item.timestamp, item.assetPairId, item.price, item.baseAssetId, item.quoteAssetId));
+            }
+
+            return responseObjects;
+
         }
     }
 }

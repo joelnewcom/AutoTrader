@@ -44,16 +44,16 @@ namespace AutoTrader.Trader
             _logger.LogInformation("Got disposed");
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public async Task StartAsync(CancellationToken cancellationToken)
         {
-            doPrepWorkAsync();
+            await doPrepWorkAsync();
             var autoEvent = new AutoResetEvent(false);
             _timer = new Timer(DoWork, autoEvent, TimeSpan.Zero, TimeSpan.FromHours(8));
-            return Task.CompletedTask;
+            return;
         }
 
 
-        private async void doPrepWorkAsync()
+        private async Task doPrepWorkAsync()
         {
             _logger.LogInformation("Starting with Prework");
             Dictionary<String, AssetPair> assetPairDict = await repo.GetAssetPairsDictionary();
@@ -73,6 +73,7 @@ namespace AutoTrader.Trader
             }
 
             _logger.LogInformation("Prework is done, following data is prepared [dataAccess]: {dataAccess}", string.Join(", ", dataAccess.GetAssetPairs().Select(assetPair => assetPair.Id)));
+            return;
         }
 
         private async void DoWork(object stateInfo)

@@ -47,9 +47,14 @@ namespace AutoTrader.Repository
             return new WrappedResponse(task);
         }
 
-        public async Task<IResponse> GetWallets()
+        public Task<IResponse> GetWallets()
         {
-            return new WrappedResponse(lykkeRepository.GetWallets());
+            return Task.FromResult<IResponse>(new WrappedResponse(lykkeRepository.GetWallets()));
+        }
+
+        public Task<IResponse> GetTrades()
+        {
+            return Task.FromResult<IResponse>(new WrappedResponse(lykkeRepository.GetTrades()));
         }
     }
 }

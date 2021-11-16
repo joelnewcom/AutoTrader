@@ -1,7 +1,9 @@
 ﻿using AutoTrader.Data;
+using AutoTrader.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AutoTrader.Controllers
 {
@@ -13,12 +15,15 @@ namespace AutoTrader.Controllers
         private readonly ILogger<TraderController> _logger;
 
         private IDataAccess dataAccess;
+        private IRepository repo;
 
-        public TraderController(ILogger<TraderController> logger, IDataAccess dataAccess)
+        public TraderController(ILogger<TraderController> logger, IDataAccess dataAccess, IRepository repo)
         {
             _logger = logger;
             this.dataAccess = dataAccess;
+            this.repo = repo;
         }
+
 
         [HttpGet]
         [Route("api/AssetPairHistoryEntries")]
@@ -44,6 +49,14 @@ namespace AutoTrader.Controllers
             _logger.LogDebug("Called endpoint: Get AssetPairs");
             List<AssetPair> assetPair = dataAccess.GetAssetPairs();
             return assetPair;
+        }
+
+        [HttpGet]
+        [Route("api/Trades")]
+        public async Task<List<TradeEntry>> Trades()
+        {
+            _logger.LogDebug("Called endpoint: Get Trades");
+            return await repo.GetTrades();
         }
     }
 }
