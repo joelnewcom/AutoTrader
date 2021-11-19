@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoTrader.Data;
+using AutoTrader.Trader.Repository.Lykke.PocoMapper;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
@@ -135,7 +136,7 @@ namespace AutoTrader.Repository
 
             foreach (PayloadTradeHistory item in deserializeObject.Payload)
             {
-                responseObjects.Add(new TradeEntry(item.Id, item.timestamp, item.assetPairId, item.price, item.baseAssetId, item.quoteAssetId));
+                responseObjects.Add(TradeEntryMapper.build(item));
             }
 
             return responseObjects;
