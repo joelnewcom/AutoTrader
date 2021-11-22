@@ -8,13 +8,13 @@ namespace AutoTrader.Data
 
         public float Ask { get; set; }
 
-        public float Buy { get; set; }
+        public float Bid { get; set; }
 
-        public AssetPairHistoryEntry(DateTime date, float ask, float buy)
+        public AssetPairHistoryEntry(DateTime date, float ask, float bid)
         {
             Date = date;
             Ask = ask;
-            Buy = buy;
+            Bid = bid;
         }
     }
 }

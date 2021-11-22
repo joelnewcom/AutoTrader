@@ -21,6 +21,9 @@ namespace AutoTrader.Repository
 
         private IRepositoryGen<Task<IResponse>> wrappedResponeRepo;
 
+        private AssetPairHistoryEntryMapper assetPairHistoryEntryMapper = new AssetPairHistoryEntryMapper();
+        private TradeEntryMapper tradeEntryMapper = new TradeEntryMapper();
+
         public RetryRepository(ILogger<RetryRepository> logger, IRepositoryGen<Task<IResponse>> wrappedResponseRepo)
         {
             this.wrappedResponeRepo = wrappedResponseRepo;
@@ -57,7 +60,7 @@ namespace AutoTrader.Repository
                     return new NoDataHistoryEntry();
                 }
 
-                return new AssetPairHistoryEntry(date, deserializeObject.Ask, deserializeObject.Bid);
+                return assetPairHistoryEntryMapper.create(deserializeObject, date);
             }
 
             catch (JsonSerializationException)
@@ -136,7 +139,7 @@ namespace AutoTrader.Repository
 
             foreach (PayloadTradeHistory item in deserializeObject.Payload)
             {
-                responseObjects.Add(TradeEntryMapper.build(item));
+                responseObjects.Add(tradeEntryMapper.build(item));
             }
 
             return responseObjects;

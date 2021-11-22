@@ -16,7 +16,7 @@ namespace AutoTrader.Data
             set => throw new NotImplementedException();
         }
 
-        public float Buy
+        public float Bid
         {
             get => throw new NotImplementedException();
             set => throw new NotImplementedException();

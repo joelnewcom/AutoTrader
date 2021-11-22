@@ -13,11 +13,14 @@ namespace AutoTrader.Data
 
         List<float> GetAskHistory(String assetPairId);
 
-        // Summary:
-        // Returns the newest entry of the specific assetPairId. 
+        /// Summary:
+        /// Returns the newest entry of the specific assetPairId
         DateTime GetDateOfLatestEntry(String assetPairId);
 
+        /// Summary:
+        /// Returns all assetPairIds which are available in the store 
         List<AssetPair> GetAssetPairs();
+        
         void AddAssetPair(AssetPair assetPair);
 
         void PersistData();

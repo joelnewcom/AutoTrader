@@ -1,4 +1,5 @@
-﻿using AutoTrader.Data;
+﻿using AutoTrader.Advisor;
+using AutoTrader.Data;
 using AutoTrader.Library;
 using AutoTrader.Repository;
 using Microsoft.Extensions.Hosting;
@@ -88,12 +89,29 @@ namespace AutoTrader.Trader
 
         private void Trade()
         {
-            // Go through assetPairHistory and check if we can buy/sell something
             foreach (AssetPair assetPair in dataAccess.GetAssetPairs())
             {
                 List<AssetPairHistoryEntry> assetPairHistoryEntries = dataAccess.GetAssetPairHistory(assetPair.Id);
-                
+                IEnumerable<AssetPairHistoryEntry> enumerable = assetPairHistoryEntries.Skip(Math.Max(0, assetPairHistoryEntries.Count() - 7));
 
+                IAdvisor advisor = new LinearSlopeAdvisor();
+                List<float> ask = (from AssetPairHistoryEntry entry in enumerable select entry.Ask).ToList();
+                List<float> bid = (from AssetPairHistoryEntry entry in enumerable select entry.Bid).ToList();
+
+                _logger.LogInformation(String.Join(", ", ask));
+
+                if (Advice.Buy.Equals(advisor.advice(ask)))
+                {
+                    _logger.LogInformation("We should buy: " + assetPair.Id);
+                }
+                else if (Advice.Sell.Equals(advisor.advice(bid)))
+                {
+                    _logger.LogInformation("We should sell: " + assetPair.Id);
+                }
+                else if (Advice.HoldOn.Equals(advisor.advice(bid)))
+                {
+                    _logger.LogInformation("We should hold on: " + assetPair.Id);
+                }
             }
         }
 

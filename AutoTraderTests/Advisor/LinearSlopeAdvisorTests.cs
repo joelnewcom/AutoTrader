@@ -32,5 +32,14 @@ namespace AutoTraderTests.Library
         {
             Assert.AreEqual(Advice.HoldOn, advisor.advice(new List<float> { 1, 2, 3, 4, 5, 3, 3 }));
         }
+
+        //0.00899, 0.0085, 0.00767, 0.0085, 0.00833, 0.00767, 0.00766
+
+        
+        [TestMethod()]
+        public void HoldOn_GoingDownOverallButStableTail()
+        {
+            Assert.AreEqual(Advice.HoldOn, advisor.advice(new List<float> {0.00899f, 0.0085f, 0.00767f, 0.0085f, 0.00833f, 0.00767f, 0.00766f }));
+        }
     }
 }

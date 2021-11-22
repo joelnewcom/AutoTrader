@@ -5,7 +5,6 @@
 * [Hft API v2 Definition](https://hft-apiv2.lykke.com/swagger/ui)
 
 
-
 * BCHCHF        BCH/CHF
 * BTCCHF        BTC/CHF
 * EOScoinCHF    EOS/CHF
@@ -28,3 +27,4 @@
 2. run dotnet build --configuration Release
 3. run: dotnet publish -c Release -o <whatever>/myapp
 4. Goto <whatever>/myapp and run AutoTrader.exe
+

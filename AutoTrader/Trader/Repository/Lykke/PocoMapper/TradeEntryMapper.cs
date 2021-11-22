@@ -6,7 +6,7 @@ namespace AutoTrader.Trader.Repository.Lykke.PocoMapper
 {
     public class TradeEntryMapper
     {
-        public static TradeEntry build(PayloadTradeHistory item)
+        public TradeEntry build(PayloadTradeHistory item)
         {
             if (item is not null)
             {

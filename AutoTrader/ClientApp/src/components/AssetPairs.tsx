@@ -3,6 +3,8 @@ import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { ApplicationState } from '../store';
 import * as AutoTradersStore from "../store/AssetPairStore";
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, Tooltip } from 'recharts';
+import moment from 'moment';
 
 // At runtime, Redux will merge together...
 type AutoTraderProps =
@@ -32,7 +34,6 @@ class AssetPairs extends React.PureComponent<AutoTraderProps> {
   }
 
   private ensureDataFetched() {
-    this.props.requestAutoTraderData();
     this.props.requestAssetPairs();
   }
 
@@ -70,24 +71,48 @@ class AssetPairs extends React.PureComponent<AutoTraderProps> {
             <tr>
               <th>Date</th>
               <th>Ask</th>
-              <th>Buy</th>
+              <th>Bid</th>
             </tr>
           </thead>
           <tbody>
             {this.props.assetPairHistoryEntries.map((assetPairHistoryEntries: AutoTradersStore.AutoTraderIAssetPairHistoryEntry) =>
-              <tr key={assetPairHistoryEntries.date}>
-                <td>{assetPairHistoryEntries.date}</td>
+              <tr key={this.formatDateString(assetPairHistoryEntries.date)}>
+                <td>{this.formatDateString(assetPairHistoryEntries.date)}</td>
                 <td>{assetPairHistoryEntries.ask}</td>
-                <td>{assetPairHistoryEntries.buy}</td>
+                <td>{assetPairHistoryEntries.bid}</td>
               </tr>
             )}
           </tbody>
         </table>
+        <h1>Chart</h1>
+        <ResponsiveContainer width="100%" height={400}>
+          <LineChart
+            data={this.props.assetPairHistoryEntries}
+            margin={{
+              top: 5,
+              right: 5,
+              left: 20,
+              bottom: 25,
+            }}
+          >
+            <Line type="monotone" dataKey="ask" stroke="#8884d8" />
+            <Line type="monotone" dataKey="bid" stroke="#82ca9d" />
+            <CartesianGrid stroke="#ccc" strokeDasharray="5 5" />
+            <Legend />
+            <Tooltip />
+            <XAxis dataKey="date" tickFormatter={this.formatDateString} />
+            <YAxis orientation="left" domain={["dataMin", "dataMax"]} />
+          </LineChart>
+        </ResponsiveContainer>
       </div>
     );
   }
 
+  private formatDateString(tickItem: string) {
+    return moment(tickItem).format('DD-MM-YYYY')
+  }
 }
+
 
 export default connect(
   (state: ApplicationState) => state.autoTrader, // Selects which state properties are merged into the component's props

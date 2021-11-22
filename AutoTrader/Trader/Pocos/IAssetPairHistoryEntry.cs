@@ -6,6 +6,6 @@ namespace AutoTrader.Data
     {
         DateTime Date { get; set; }
         float Ask { get; set; }
-        float Buy { get; set; }
+        float Bid { get; set; }
     }
 }

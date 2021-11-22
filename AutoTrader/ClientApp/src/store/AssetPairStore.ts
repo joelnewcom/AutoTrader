@@ -20,7 +20,7 @@ export interface AssetPairs {
 export interface AutoTraderIAssetPairHistoryEntry {
     date: string;
     ask: number;
-    buy: number;
+    bid: number;
 }
 
 // -----------------
@@ -55,20 +55,7 @@ type KnownAction = RequestAssetPairHistoryDataAction | ReceiveAssetPairHistoryDa
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-    requestAutoTraderData: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
-        // Only load data if it's something we don't already have (and are not already loading)
-        const appState = getState();
-        if (appState && appState.autoTrader) {
-            console.log("Call AssetPairHistoryEntries");
-            fetch(`/Trader/api/AssetPairHistoryEntries`)
-                .then(response => response.json() as Promise<AutoTraderIAssetPairHistoryEntry[]>)
-                .then(data => {
-                    dispatch({ type: 'RECEIVE_ASSETPAIR_HISTORY_DATA', assetPairHistoryEntries: data });
-                });
-            dispatch({ type: 'REQUEST_ASSETPAIR_HISTORY_DATA', selectedAssetPair:"ETHCHF-Harcoded" });
-        }
-    },
-
+   
     requestHistoryEntries: (assetPair: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
         // Only load data if it's something we don't already have (and are not already loading)
         const appState = getState();
