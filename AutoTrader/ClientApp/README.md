@@ -1,5 +1,6 @@
 npm install rechart
 npm install moment
+npm install @types/recharts
 
 ---
 
