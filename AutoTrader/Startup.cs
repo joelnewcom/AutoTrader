@@ -49,8 +49,8 @@ namespace AutoTrader
             }
 
             app.UseHttpsRedirection();
-            //app.UseStaticFiles();
-            //app.UseSpaStaticFiles();
+            app.UseDefaultFiles(); //rewrites ./ to ./index.html
+            app.UseSpaStaticFiles(); //Serves the configured spaStatic files at ./
 
             app.UseRouting();
 
