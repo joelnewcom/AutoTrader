@@ -2,7 +2,7 @@
   "name": "autotrader",
   "version": "0.1.0",
   "private": true,
-  "homepage": "./",
+  "homepage": "https://lykke-trader-app.azurewebsites.net/",
   "dependencies": {
     "bootstrap": "^4.6.1",
     "connected-react-router": "6.5.2",
