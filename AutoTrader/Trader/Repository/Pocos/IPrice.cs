@@ -2,7 +2,7 @@
 
 namespace AutoTrader.Data
 {
-    public interface IAssetPairHistoryEntry
+    public interface IPrice
     {
         DateTime Date { get; set; }
         float Ask { get; set; }

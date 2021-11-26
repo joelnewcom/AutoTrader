@@ -2,7 +2,7 @@
 
 namespace AutoTrader.Data
 {
-    public class AssetPairHistoryEntry : IAssetPairHistoryEntry
+    public class Price : IPrice
     {
         public DateTime Date { get; set; }
 
@@ -10,7 +10,7 @@ namespace AutoTrader.Data
 
         public float Bid { get; set; }
 
-        public AssetPairHistoryEntry(DateTime date, float ask, float bid)
+        public Price(DateTime date, float ask, float bid)
         {
             Date = date;
             Ask = ask;

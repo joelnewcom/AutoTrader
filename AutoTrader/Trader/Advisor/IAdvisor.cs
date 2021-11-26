@@ -1,10 +1,14 @@
-using System;
-using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AutoTrader.Advisor
 {
-    public interface IAdvisor
+    public interface IAdvisor<T>
     {
-        Advice advice(List<float> dataIn);
+        Advice advice(T dataIn);
+    }
+
+    public interface IAsyncAdvisor<T>
+    {
+        Task<Advice> advice(T dataIn);
     }
 }

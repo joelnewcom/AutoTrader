@@ -25,6 +25,10 @@ namespace AutoTrader.Trader
 
         private DataRefresher dataRefresher;
 
+        private IAdvisor<List<float>> advisor = new LinearSlopeAdvisor();
+
+        private IAsyncAdvisor<String> alwaysWinSeller;
+
         private int invokeCount;
 
         public TraderService(ILogger<TraderService> logger,
@@ -38,6 +42,7 @@ namespace AutoTrader.Trader
             repo = lykkeRepository;
             this.dataAccess = dataAccess;
             this.dataRefresher = dataRefresher;
+            this.alwaysWinSeller = new AlwaysWinSeller(repo);
         }
 
         public void Dispose()
@@ -87,28 +92,27 @@ namespace AutoTrader.Trader
             Trade();
         }
 
-        private void Trade()
+        private async void Trade()
         {
             foreach (AssetPair assetPair in dataAccess.GetAssetPairs())
             {
-                List<AssetPairHistoryEntry> assetPairHistoryEntries = dataAccess.GetAssetPairHistory(assetPair.Id);
-                IEnumerable<AssetPairHistoryEntry> enumerable = assetPairHistoryEntries.Skip(Math.Max(0, assetPairHistoryEntries.Count() - 7));
+                List<Price> assetPairHistoryEntries = dataAccess.GetAssetPairHistory(assetPair.Id);
+                IEnumerable<Price> enumerable = assetPairHistoryEntries.Skip(Math.Max(0, assetPairHistoryEntries.Count() - 7));
+                
+                List<float> asks = (from Price entry in enumerable select entry.Ask).ToList();
+                List<float> bids = (from Price entry in enumerable select entry.Bid).ToList();
 
-                IAdvisor advisor = new LinearSlopeAdvisor();
-                List<float> ask = (from AssetPairHistoryEntry entry in enumerable select entry.Ask).ToList();
-                List<float> bid = (from AssetPairHistoryEntry entry in enumerable select entry.Bid).ToList();
+                _logger.LogInformation(String.Join(", ", asks));
 
-                _logger.LogInformation(String.Join(", ", ask));
-
-                if (Advice.Buy.Equals(advisor.advice(ask)))
+                if (Advice.Buy.Equals(advisor.advice(asks)))
                 {
                     _logger.LogInformation("We should buy: " + assetPair.Id);
                 }
-                else if (Advice.Sell.Equals(advisor.advice(bid)))
+                else if (Advice.Sell.Equals(advisor.advice(bids)) && Advice.Sell.Equals(alwaysWinSeller.advice(assetPair.Id)))
                 {
                     _logger.LogInformation("We should sell: " + assetPair.Id);
                 }
-                else if (Advice.HoldOn.Equals(advisor.advice(bid)))
+                else if (Advice.HoldOn.Equals(advisor.advice(bids)))
                 {
                     _logger.LogInformation("We should hold on: " + assetPair.Id);
                 }

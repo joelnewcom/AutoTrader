@@ -60,5 +60,10 @@ namespace AutoTrader.Repository
         {
             return httpClient.GetAsync(PRIVATE_API_V2 + "/api/trades");
         }
+
+        public Task<HttpResponseMessage> GetPrice(string assetPairId)
+        {
+            return httpClient.GetAsync(PRIVATE_API_V2 + "/api/prices?assetPairIds=" + assetPairId);
+        }
     }
 }

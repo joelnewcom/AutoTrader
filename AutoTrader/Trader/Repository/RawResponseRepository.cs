@@ -56,5 +56,10 @@ namespace AutoTrader.Repository
         {
             return Task.FromResult<IResponse>(new WrappedResponse(lykkeRepository.GetTrades()));
         }
+
+        public Task<IResponse> GetPrice(string assetPairId)
+        {
+            return Task.FromResult<IResponse>(new WrappedResponse(lykkeRepository.GetPrice(assetPairId)));
+        }
     }
 }

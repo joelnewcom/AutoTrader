@@ -5,30 +5,30 @@ namespace AutoTrader.Data
 {
     public class DataInMemory : IDataAccess
     {
-        private Dictionary<String, List<AssetPairHistoryEntry>> data = new Dictionary<String, List<AssetPairHistoryEntry>>();
+        private Dictionary<String, List<Price>> data = new Dictionary<String, List<Price>>();
         
         private Dictionary<String, AssetPair> assetPairs = new Dictionary<String, AssetPair>();          
         
         private readonly int timeWindowsInDays = 7;
 
-        public String AddAssetPairHistoryEntry(String assetPairId, AssetPairHistoryEntry assetPairHistoryEntry)
+        public String AddAssetPairHistoryEntry(String assetPairId, Price assetPairHistoryEntry)
         {
             if (data.ContainsKey(assetPairId))
             {
-                List<AssetPairHistoryEntry> assetPairHistoryEntries = data.GetValueOrDefault(assetPairId, new List<AssetPairHistoryEntry>());
+                List<Price> assetPairHistoryEntries = data.GetValueOrDefault(assetPairId, new List<Price>());
                 assetPairHistoryEntries.Add(assetPairHistoryEntry);
             }
             else
             {
-                data.Add(assetPairId, new List<AssetPairHistoryEntry> { assetPairHistoryEntry });
+                data.Add(assetPairId, new List<Price> { assetPairHistoryEntry });
             }
 
             return assetPairId;
         }
 
-        public List<AssetPairHistoryEntry> GetAssetPairHistory(String assetPairId)
+        public List<Price> GetAssetPairHistory(String assetPairId)
         {
-            return data.GetValueOrDefault(assetPairId, new List<AssetPairHistoryEntry>());
+            return data.GetValueOrDefault(assetPairId, new List<Price>());
         }
 
         public List<float> GetBidHistory(String assetPairId)
@@ -43,7 +43,7 @@ namespace AutoTrader.Data
 
         public DateTime GetDateOfLatestEntry(String assetPairId)
         {
-            List<AssetPairHistoryEntry> assetPairHistoryEntries = GetAssetPairHistory(assetPairId);
+            List<Price> assetPairHistoryEntries = GetAssetPairHistory(assetPairId);
             if (assetPairHistoryEntries.Count > 1)
                 return assetPairHistoryEntries[0].Date;
             return DateTime.Today.AddDays(-timeWindowsInDays);

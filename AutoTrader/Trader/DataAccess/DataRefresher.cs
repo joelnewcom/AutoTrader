@@ -17,17 +17,17 @@ namespace AutoTrader.Library
             this.data = data;
         }
 
-        public async Task<IAssetPairHistoryEntry> RefreshAssetPairHistory(String assetPairId)
+        public async Task<IPrice> RefreshAssetPairHistory(String assetPairId)
         {
             DateTime lastDayWeAlreadyHave = data.GetDateOfLatestEntry(assetPairId);
-            IAssetPairHistoryEntry historyRatePerDay = new NoDataHistoryEntry();
+            IPrice historyRatePerDay = new NoDataPrice();
             while (lastDayWeAlreadyHave < DateTime.Today)
             {
                 lastDayWeAlreadyHave = lastDayWeAlreadyHave.AddDays(1);
                 historyRatePerDay =  await repository.GetHistoryRatePerDay(assetPairId, lastDayWeAlreadyHave);
-                if (historyRatePerDay is AssetPairHistoryEntry)
+                if (historyRatePerDay is Price)
                 {
-                    data.AddAssetPairHistoryEntry(assetPairId, (AssetPairHistoryEntry) historyRatePerDay);
+                    data.AddAssetPairHistoryEntry(assetPairId, (Price) historyRatePerDay);
                 }
                 await Task.Delay(secondsToWaitForNextRequest * 1000);
             }

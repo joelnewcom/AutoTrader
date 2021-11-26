@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace AutoTrader.Advisor
 {
-    public class LinearSlopeAdvisor : IAdvisor
+    public class LinearSlopeAdvisor : IAdvisor<List<float>>
     {
         int lastDays = 2;
         float slopeThreshold = 0;

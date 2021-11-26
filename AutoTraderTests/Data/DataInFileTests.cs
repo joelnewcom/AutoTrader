@@ -10,8 +10,6 @@ namespace AutoTraderTests.Library
     [TestClass()]
     public class DataInFileTests
     {
-        readonly Mock<IRepository> repoMock = new Mock<IRepository>();
-        readonly Mock<IDataAccess> dataAccessMock = new Mock<IDataAccess>();
         readonly AssetPair assetPair = new AssetPair("eth/chf", "testAssetPair", 1000);
 
         [TestMethod()]
@@ -21,9 +19,9 @@ namespace AutoTraderTests.Library
             DataInFile dataInFile = new DataInFile(new NullLogger<DataInFile>());
             DateTime today = DateTime.Today;
 
-            AssetPairHistoryEntry firstAssetPairHistoryEntry = new AssetPairHistoryEntry(DateTime.Today.AddDays(-2), 10, 10);
-            AssetPairHistoryEntry secondAssetPairHistoryEntry = new AssetPairHistoryEntry(DateTime.Today.AddDays(-1), 10, 10);
-            AssetPairHistoryEntry thirdAssetPairHistoryEntry = new AssetPairHistoryEntry(today, 10, 10);
+            Price firstAssetPairHistoryEntry = new Price(DateTime.Today.AddDays(-2), 10, 10);
+            Price secondAssetPairHistoryEntry = new Price(DateTime.Today.AddDays(-1), 10, 10);
+            Price thirdAssetPairHistoryEntry = new Price(today, 10, 10);
 
             dataInFile.AddAssetPairHistoryEntry("eth/chf", firstAssetPairHistoryEntry);
             dataInFile.AddAssetPairHistoryEntry("eth/chf", secondAssetPairHistoryEntry);

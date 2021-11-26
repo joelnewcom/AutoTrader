@@ -5,9 +5,9 @@ namespace AutoTrader.Data
 {
     public interface IDataAccess
     {
-        String AddAssetPairHistoryEntry(String assetPairId, AssetPairHistoryEntry assetPairHistoryEntry);
+        String AddAssetPairHistoryEntry(String assetPairId, Price assetPairHistoryEntry);
 
-        List<AssetPairHistoryEntry> GetAssetPairHistory(String assetPairId);
+        List<Price> GetAssetPairHistory(String assetPairId);
 
         List<float> GetBidHistory(String assetPairId);
 

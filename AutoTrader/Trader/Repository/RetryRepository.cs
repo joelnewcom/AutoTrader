@@ -21,13 +21,23 @@ namespace AutoTrader.Repository
 
         private IRepositoryGen<Task<IResponse>> wrappedResponeRepo;
 
-        private AssetPairHistoryEntryMapper assetPairHistoryEntryMapper = new AssetPairHistoryEntryMapper();
-        private TradeEntryMapper tradeEntryMapper = new TradeEntryMapper();
+        private AssetPairHistoryEntryMapper assetPairHistoryEntryMapper;
+        private TradeEntryMapper tradeEntryMapper;
+        private PriceMapper priceMapper;
 
-        public RetryRepository(ILogger<RetryRepository> logger, IRepositoryGen<Task<IResponse>> wrappedResponseRepo)
+        public RetryRepository(
+            ILogger<RetryRepository> logger,
+            IRepositoryGen<Task<IResponse>> wrappedResponseRepo,
+            AssetPairHistoryEntryMapper assetPairHistoryEntryMapper,
+            TradeEntryMapper tradeEntryMapper,
+            PriceMapper priceMapper
+            )
         {
-            this.wrappedResponeRepo = wrappedResponseRepo;
             _logger = logger;
+            this.wrappedResponeRepo = wrappedResponseRepo;
+            this.assetPairHistoryEntryMapper = assetPairHistoryEntryMapper;
+            this.tradeEntryMapper = tradeEntryMapper;
+            this.priceMapper = priceMapper;
         }
 
         public async Task<Boolean> IsAliveAsync()
@@ -37,7 +47,7 @@ namespace AutoTrader.Repository
             return msg.IsSuccessStatusCode;
         }
 
-        public async Task<IAssetPairHistoryEntry> GetHistoryRatePerDay(String assetPairId, DateTime date)
+        public async Task<IPrice> GetHistoryRatePerDay(String assetPairId, DateTime date)
         {
             String responseString = "";
             foreach (int value in Enumerable.Range(1, retries))
@@ -57,7 +67,7 @@ namespace AutoTrader.Repository
                 PayloadResponseGetHistoryRate deserializeObject = JsonConvert.DeserializeObject<PayloadResponseGetHistoryRate>(responseString);
                 if (deserializeObject is null)
                 {
-                    return new NoDataHistoryEntry();
+                    return new NoDataPrice();
                 }
 
                 return assetPairHistoryEntryMapper.create(deserializeObject, date);
@@ -66,7 +76,7 @@ namespace AutoTrader.Repository
             catch (JsonSerializationException)
             {
                 _logger.LogWarning("Not able to parse history rate response of assetId" + assetPairId + " raw response: " + responseString);
-                return new NoDataHistoryEntry();
+                return new NoDataPrice();
             }
         }
 
@@ -143,7 +153,20 @@ namespace AutoTrader.Repository
             }
 
             return responseObjects;
+        }
 
+        public async Task<IPrice> GetPrice(string assetPairId)
+        {
+            IResponse reponse = await wrappedResponeRepo.GetPrice(assetPairId);
+            HttpResponseMessage responseMessage = await reponse.GetResponse();
+            PayloadWrapper<PayloadPrice> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<PayloadPrice>>(await responseMessage.Content.ReadAsStringAsync());
+
+            if (deserializeObject is null || deserializeObject.Payload is null)
+            {
+                return new NoDataPrice();
+            }
+
+            return priceMapper.build(deserializeObject.Payload);
         }
     }
 }

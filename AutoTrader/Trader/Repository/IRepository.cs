@@ -11,11 +11,13 @@ namespace AutoTrader.Repository
 
         Task<Boolean> IsAliveAsync();
 
-        Task<IAssetPairHistoryEntry> GetHistoryRatePerDay(String assetPairId, DateTime date);
+        Task<IPrice> GetHistoryRatePerDay(String assetPairId, DateTime date);
 
         Task<List<IWalletEntry>> GetWallets();
 
         Task<List<TradeEntry>> GetTrades();
+
+        Task<IPrice> GetPrice(String assetPairId);
     }
 
     public interface IRepositoryGen<T>
@@ -29,6 +31,8 @@ namespace AutoTrader.Repository
         T GetWallets();
 
         T GetTrades();
+
+        T GetPrice(String assetPairId);
     }
 
 }

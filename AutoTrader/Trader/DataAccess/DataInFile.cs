@@ -10,7 +10,7 @@ namespace AutoTrader.Data
 {
     public class DataInFile : IDataAccess
     {
-        private Dictionary<String, List<AssetPairHistoryEntry>> data = new Dictionary<String, List<AssetPairHistoryEntry>>();
+        private Dictionary<String, List<Price>> data = new Dictionary<String, List<Price>>();
         private Dictionary<String, AssetPair> assetPairs = new Dictionary<String, AssetPair>();
 
         private readonly ReaderWriterLockSlim _readWriteConfigLock = new ReaderWriterLockSlim();
@@ -28,29 +28,29 @@ namespace AutoTrader.Data
             this.logger = logger;
         }
 
-        public String AddAssetPairHistoryEntry(String assetPairId, AssetPairHistoryEntry assetPairHistoryEntry)
+        public String AddAssetPairHistoryEntry(String assetPairId, Price assetPairHistoryEntry)
         {
             if (data.ContainsKey(assetPairId))
             {
-                List<AssetPairHistoryEntry> assetPairHistoryEntries = data.GetValueOrDefault(assetPairId, new List<AssetPairHistoryEntry>());
+                List<Price> assetPairHistoryEntries = data.GetValueOrDefault(assetPairId, new List<Price>());
                 assetPairHistoryEntries.Add(assetPairHistoryEntry);
             }
             else
             {
-                data.Add(assetPairId, new List<AssetPairHistoryEntry> { assetPairHistoryEntry });
+                data.Add(assetPairId, new List<Price> { assetPairHistoryEntry });
             }
 
             PersistData();
             return assetPairId;
         }
 
-        public List<AssetPairHistoryEntry> GetAssetPairHistory(String assetPairId)
+        public List<Price> GetAssetPairHistory(String assetPairId)
         {
             if (assetPairId is null)
             {
-                return new List<AssetPairHistoryEntry>();
+                return new List<Price>();
             }
-            List<AssetPairHistoryEntry> assetPairHistoryEntries = data.GetValueOrDefault(assetPairId, new List<AssetPairHistoryEntry>());
+            List<Price> assetPairHistoryEntries = data.GetValueOrDefault(assetPairId, new List<Price>());
             return assetPairHistoryEntries.TakeLast(timeWindowsInDays).ToList();
         }
 
@@ -66,7 +66,7 @@ namespace AutoTrader.Data
 
         public DateTime GetDateOfLatestEntry(String assetPairId)
         {
-            List<AssetPairHistoryEntry> assetPairHistoryEntries = GetAssetPairHistory(assetPairId);
+            List<Price> assetPairHistoryEntries = GetAssetPairHistory(assetPairId);
             if (assetPairHistoryEntries.Count > 1)
                 return assetPairHistoryEntries.Last().Date;
             return DateTime.Today.AddDays(-timeWindowsInDays);
@@ -97,7 +97,7 @@ namespace AutoTrader.Data
             if (File.Exists(dataFileLocation))
             {
                 String dataString = File.ReadAllText(dataFileLocation);
-                data = JsonSerializer.Deserialize<Dictionary<String, List<AssetPairHistoryEntry>>>(dataString);
+                data = JsonSerializer.Deserialize<Dictionary<String, List<Price>>>(dataString);
             }
 
             if (File.Exists(assetPairFileLocation))

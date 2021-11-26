@@ -27,7 +27,7 @@ namespace AutoTrader.Controllers
 
         [HttpGet]
         [Route("api/AssetPairHistoryEntries")]
-        public List<AssetPairHistoryEntry> AssetPairHistoryEntries()
+        public List<Price> AssetPairHistoryEntries()
         {
             _logger.LogDebug("Called endpoint: Get AssetPairHistoryEntries");
             return dataAccess.GetAssetPairHistory("ETHCHF");
@@ -35,7 +35,7 @@ namespace AutoTrader.Controllers
 
         [HttpGet]
         [Route("api/AssetPairHistoryEntries/{id}")]
-        public List<AssetPairHistoryEntry> AssetPairHistoryEntries(string id)
+        public List<Price> AssetPairHistoryEntries(string id)
         {
             _logger.LogDebug("Called endpoint: Get AssetPairHistoryEntries id: " + id);
             return dataAccess.GetAssetPairHistory(id);

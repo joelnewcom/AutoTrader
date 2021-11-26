@@ -19,7 +19,7 @@ namespace AutoTraderTests.Library
         public async Task NewEntryGetsAdded()
         {
             // given
-            AssetPairHistoryEntry assetPairHistoryEntry = new AssetPairHistoryEntry(DateTime.Today, 10, 10);
+            Price assetPairHistoryEntry = new Price(DateTime.Today, 10, 10);
             dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(DateTime.Today.AddDays(-1));
             repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<String>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(assetPairHistoryEntry);
@@ -37,7 +37,7 @@ namespace AutoTraderTests.Library
         {
             // given
             DateTime dateTime = DateTime.Today;
-            AssetPairHistoryEntry assetPairHistoryEntry = new AssetPairHistoryEntry(dateTime, 10, 10);
+            Price assetPairHistoryEntry = new Price(dateTime, 10, 10);
 
             dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(dateTime);
             repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<String>(), It.IsAny<DateTime>()))
@@ -50,7 +50,7 @@ namespace AutoTraderTests.Library
 
             // then
             dataAccessMock.Verify(
-                s => s.AddAssetPairHistoryEntry(It.IsAny<String>(), It.IsAny<AssetPairHistoryEntry>()),
+                s => s.AddAssetPairHistoryEntry(It.IsAny<String>(), It.IsAny<Price>()),
                 Times.Never);
         }
 
@@ -59,7 +59,7 @@ namespace AutoTraderTests.Library
         {
             // given
             DateTime today = DateTime.Today;
-            AssetPairHistoryEntry assetPairHistoryEntry = new AssetPairHistoryEntry(today, 10, 10);
+            Price assetPairHistoryEntry = new Price(today, 10, 10);
 
             dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(today.AddDays(-2));
             repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<String>(), It.IsAny<DateTime>()))
@@ -72,7 +72,7 @@ namespace AutoTraderTests.Library
 
             // then
             dataAccessMock.Verify(
-                s => s.AddAssetPairHistoryEntry(It.IsAny<String>(), It.IsAny<AssetPairHistoryEntry>()),
+                s => s.AddAssetPairHistoryEntry(It.IsAny<String>(), It.IsAny<Price>()),
                 Times.Exactly(2));
         }
     }

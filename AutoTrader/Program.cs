@@ -2,6 +2,7 @@ using AutoTrader.Data;
 using AutoTrader.Library;
 using AutoTrader.Repository;
 using AutoTrader.Trader;
+using AutoTrader.Trader.Repository.Lykke.PocoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,6 +33,9 @@ namespace AutoTrader
                  services.AddSingleton<IRepository, RetryRepository>();
                  services.AddSingleton<DataRefresher>();
                  services.AddSingleton<IDataAccess, DataInFile>();
+                 services.AddSingleton<AssetPairHistoryEntryMapper>();
+                 services.AddSingleton<TradeEntryMapper>();
+                 services.AddSingleton<PriceMapper>();
                  services.AddMvcCore().AddApiExplorer();
                  services.AddSwaggerGen();
              });

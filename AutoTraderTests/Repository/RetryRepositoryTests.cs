@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoTrader.Data;
 using Microsoft.Extensions.Logging.Abstractions;
+using AutoTrader.Trader.Repository.Lykke.PocoMapper;
 
 namespace AutoTraderTests.Repository
 {
@@ -14,15 +15,18 @@ namespace AutoTraderTests.Repository
         IRepository repository = new RetryRepository(
             new NullLogger<RetryRepository>(),
             new RawResponseRepository(new NullLogger<RawResponseRepository>(), 
-                new LykkeRepository(new NullLogger<LykkeRepository>(), new TraderConfig { apiKey = "" }))
+                new LykkeRepository(new NullLogger<LykkeRepository>(), new TraderConfig { apiKey = "" })),
+                new AssetPairHistoryEntryMapper(),
+                new TradeEntryMapper(),
+                new PriceMapper()             
         );
 
         [TestMethod()]
         public async Task GetHistoryRatePerDayTest()
         {
-            Task<IAssetPairHistoryEntry> historyRatePerDay = repository.GetHistoryRatePerDay("BTCCHF", DateTime.Today);
+            Task<IPrice> historyRatePerDay = repository.GetHistoryRatePerDay("BTCCHF", DateTime.Today);
             await historyRatePerDay;
-            IAssetPairHistoryEntry assetPairHistoryEntry = historyRatePerDay.Result;
+            IPrice assetPairHistoryEntry = historyRatePerDay.Result;
             Assert.AreEqual(DateTime.Today, assetPairHistoryEntry.Date);
         }
 

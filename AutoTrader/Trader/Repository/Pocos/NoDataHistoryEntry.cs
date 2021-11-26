@@ -2,7 +2,7 @@
 
 namespace AutoTrader.Data
 {
-    public class NoDataHistoryEntry : IAssetPairHistoryEntry
+    public class NoDataPrice : IPrice
     {
         public DateTime Date
         {

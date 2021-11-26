@@ -9,14 +9,14 @@ namespace AutoTrader.Data
         public string assetPairId { get; }
         public string role { get; }
         public string side { get; }
-        public string price { get; }
+        public float price { get; }
         public string baseAssetId { get; }
-        public string baseVolume { get; }
+        public float baseVolume { get; }
         public string quoteAssetId { get; }
-        public string quoteVolume { get; }
+        public float quoteVolume { get; }
         public TradeFee fee { get; }
 
-        public TradeEntry(string id, DateTime timestamp, string assetPairId, string price, string baseAssetId, string quoteAssetId, string role, string side, string baseVolume, string quoteVolume, TradeFee fee)
+        public TradeEntry(string id, DateTime timestamp, string assetPairId, float price, string baseAssetId, string quoteAssetId, string role, string side, float baseVolume, float quoteVolume, TradeFee fee)
         {
             this.id = id;
             this.timestamp = timestamp;

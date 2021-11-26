@@ -7,7 +7,7 @@ namespace AutoTraderTests.Library
     [TestClass()]
     public class LinearSlopeAdvisorTests
     {
-        IAdvisor advisor = new LinearSlopeAdvisor();
+        IAdvisor<List<float>> advisor = new LinearSlopeAdvisor();
 
         [TestMethod()]
         public void ShouldBuy_GoingDownOverallButUpAtTail()

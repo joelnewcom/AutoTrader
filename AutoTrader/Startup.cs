@@ -49,8 +49,8 @@ namespace AutoTrader
             }
 
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
-            app.UseSpaStaticFiles(); //Serves the configured spaStatic files at ./
+            app.UseStaticFiles(); // Enables  serving of static files at webroot
+            app.UseSpaStaticFiles(); // Serves the configured spaStatic files in ClientApp/build
 
             app.UseRouting();
 
@@ -77,7 +77,6 @@ namespace AutoTrader
                     spa.UseReactDevelopmentServer(npmScript: "start");
                 }
             });
-
 
         }
     }
