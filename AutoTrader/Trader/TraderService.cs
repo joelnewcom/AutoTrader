@@ -31,6 +31,8 @@ namespace AutoTrader.Trader
 
         private IAsyncAdvisor<String> buyIfNotAlreadyOwned;
 
+        private IAsyncAdvisor<float> buyIfEnoughMoney;
+
         private int invokeCount;
 
         public TraderService(ILogger<TraderService> logger,
@@ -46,6 +48,7 @@ namespace AutoTrader.Trader
             this.dataRefresher = dataRefresher;
             this.alwaysWinSeller = new AlwaysWinSeller(repo);
             this.buyIfNotAlreadyOwned = new BuyIfNotAlreadyOwned(repo);
+            this.buyIfEnoughMoney = new BuyIfEnoughCHFAsset(repo);
         }
 
         public void Dispose()

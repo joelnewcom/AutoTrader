@@ -160,8 +160,8 @@ namespace AutoTrader.Repository
 
         public async Task<IPrice> GetPrice(string assetPairId)
         {
-            IResponse reponse = await wrappedResponeRepo.GetPrice(assetPairId);
-            HttpResponseMessage responseMessage = await reponse.GetResponse();
+            IResponse response = await wrappedResponeRepo.GetPrice(assetPairId);
+            HttpResponseMessage responseMessage = await response.GetResponse();
             PayloadWrapper<PayloadPrice> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<PayloadPrice>>(await responseMessage.Content.ReadAsStringAsync());
 
             if (deserializeObject is null || deserializeObject.Payload is null)
@@ -170,6 +170,35 @@ namespace AutoTrader.Repository
             }
 
             return priceMapper.build(deserializeObject.Payload);
+        }
+
+        public async Task<string> LimitOrderBuy(string assetPairId, float price, float volume)
+        {
+            IResponse response = await wrappedResponeRepo.LimitOrderBuy(assetPairId, price, volume);
+            HttpResponseMessage responseMessage = await response.GetResponse();
+            PayloadWrapper<PayloadOrderId> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<PayloadOrderId>>(await responseMessage.Content.ReadAsStringAsync());
+
+            if (deserializeObject is null || deserializeObject.Payload is null)
+            {
+                throw new HttpRequestException("ErrorCode " + responseMessage.StatusCode + " LimitOrder Buy did not work due to " + responseMessage.Content.ReadAsStringAsync());
+            }
+
+            return deserializeObject.Payload.orderId;
+        }
+
+        public async Task<string> LimitOrderSell(string assetPairId, float price, float volume)
+        {
+            IResponse response = await wrappedResponeRepo.LimitOrderSell(assetPairId, price, volume);
+            HttpResponseMessage responseMessage = await response.GetResponse();
+            PayloadWrapper<PayloadOrderId> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<PayloadOrderId>>(await responseMessage.Content.ReadAsStringAsync());
+
+            if (deserializeObject is null || deserializeObject.Payload is null)
+            {
+                throw new HttpRequestException("ErrorCode " + responseMessage.StatusCode + " LimitOrder Sell did not work due to " + responseMessage.Content.ReadAsStringAsync());
+            }
+
+            return deserializeObject.Payload.orderId;
+
         }
     }
 }

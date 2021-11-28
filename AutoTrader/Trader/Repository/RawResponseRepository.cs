@@ -61,5 +61,15 @@ namespace AutoTrader.Repository
         {
             return Task.FromResult<IResponse>(new WrappedResponse(lykkeRepository.GetPrice(assetPairId)));
         }
+
+        public Task<IResponse> LimitOrderBuy(string assetPairId, float price, float volume)
+        {
+            return Task.FromResult<IResponse>(new WrappedResponse(lykkeRepository.LimitOrderBuy(assetPairId, price, volume)));
+        }
+
+        public Task<IResponse> LimitOrderSell(string assetPairId, float price, float volume)
+        {
+            return Task.FromResult<IResponse>(new WrappedResponse(lykkeRepository.LimitOrderSell(assetPairId, price, volume)));
+        }
     }
 }

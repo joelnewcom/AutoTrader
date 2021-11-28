@@ -18,6 +18,10 @@ namespace AutoTrader.Repository
         Task<List<TradeEntry>> GetTrades();
 
         Task<IPrice> GetPrice(String assetPairId);
+
+        Task<String> LimitOrderBuy(String assetPairId, float price, float volume);
+
+        Task<String> LimitOrderSell(String assetPairId, float price, float volume);
     }
 
     public interface IRepositoryGen<T>
@@ -33,6 +37,10 @@ namespace AutoTrader.Repository
         T GetTrades();
 
         T GetPrice(String assetPairId);
+
+        T LimitOrderBuy(String assetPairId, float price, float volume);
+
+        T LimitOrderSell(String assetPairId, float price, float volume);
     }
 
 }
