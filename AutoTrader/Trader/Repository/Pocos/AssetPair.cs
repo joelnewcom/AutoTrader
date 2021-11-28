@@ -10,11 +10,17 @@ namespace AutoTrader.Data
 
         public int Accuracy { get; }
 
-        public AssetPair(String id, String name, int accuracy)
+        public string baseAssetId { get; }
+
+        public string quotingAssetId { get; }
+
+        public AssetPair(String id, String name, int accuracy, string baseAssetId, string quotingAssetId)
         {
             this.Id = id;
             this.Name = name;
             this.Accuracy = accuracy;
+            this.baseAssetId = baseAssetId;
+            this.quotingAssetId = quotingAssetId;
         }
 
         public override bool Equals(object obj)

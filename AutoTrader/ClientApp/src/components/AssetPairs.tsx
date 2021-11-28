@@ -47,6 +47,8 @@ class AssetPairs extends React.PureComponent<AutoTraderProps> {
               <th>Id</th>
               <th>Name</th>
               <th>Accuracy</th>
+              <th>baseAssetId</th>
+              <th>quotingAssetId</th>
             </tr>
           </thead>
           <tbody>
@@ -61,6 +63,8 @@ class AssetPairs extends React.PureComponent<AutoTraderProps> {
                 </td>
                 <td>{assetPairs.name}</td>
                 <td>{assetPairs.accuracy}</td>
+                <td>{assetPairs.baseAssetId}</td>
+                <td>{assetPairs.quotingAssetId}</td>
               </tr>
             )}
           </tbody>

@@ -15,6 +15,8 @@ export interface AssetPairs {
     id: string;
     name: string;
     accuracy: number;
+    baseAssetId:string;
+    quotingAssetId:string;
 }
 
 export interface AutoTraderIAssetPairHistoryEntry {

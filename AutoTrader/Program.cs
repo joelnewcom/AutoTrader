@@ -36,6 +36,7 @@ namespace AutoTrader
                  services.AddSingleton<AssetPairHistoryEntryMapper>();
                  services.AddSingleton<TradeEntryMapper>();
                  services.AddSingleton<PriceMapper>();
+                 services.AddSingleton<AssetPairMapper>();
                  services.AddMvcCore().AddApiExplorer();
                  services.AddSwaggerGen();
              });

@@ -25,19 +25,22 @@ namespace AutoTrader.Repository
         private TradeEntryMapper tradeEntryMapper;
         private PriceMapper priceMapper;
 
+        private AssetPairMapper assetPairMapper;
+
         public RetryRepository(
             ILogger<RetryRepository> logger,
             IRepositoryGen<Task<IResponse>> wrappedResponseRepo,
             AssetPairHistoryEntryMapper assetPairHistoryEntryMapper,
             TradeEntryMapper tradeEntryMapper,
-            PriceMapper priceMapper
-            )
+            PriceMapper priceMapper,
+            AssetPairMapper assetPairMapper)
         {
             _logger = logger;
             this.wrappedResponeRepo = wrappedResponseRepo;
             this.assetPairHistoryEntryMapper = assetPairHistoryEntryMapper;
             this.tradeEntryMapper = tradeEntryMapper;
             this.priceMapper = priceMapper;
+            this.assetPairMapper = assetPairMapper;
         }
 
         public async Task<Boolean> IsAliveAsync()
@@ -75,7 +78,7 @@ namespace AutoTrader.Repository
 
             catch (JsonSerializationException)
             {
-                _logger.LogWarning("Not able to parse history rate response of assetId" + assetPairId + " raw response: " + responseString);
+                _logger.LogWarning("Not able to parse history rate response of assetId: " + assetPairId + " raw response: " + responseString);
                 return new NoDataPrice();
             }
         }
@@ -97,7 +100,7 @@ namespace AutoTrader.Repository
                 await Task.Delay(delayBetweenReriesInSeconds * 1000);
             }
 
-            List<PayloadAssetPairDict> deserializeObject = JsonConvert.DeserializeObject<List<PayloadAssetPairDict>>(responseString);
+            List<PayloadAssetPairDictEntry> deserializeObject = JsonConvert.DeserializeObject<List<PayloadAssetPairDictEntry>>(responseString);
 
             Dictionary<String, AssetPair> assetPairs = new Dictionary<string, AssetPair>();
 
@@ -106,9 +109,9 @@ namespace AutoTrader.Repository
                 return assetPairs;
             }
 
-            foreach (PayloadAssetPairDict item in deserializeObject)
+            foreach (PayloadAssetPairDictEntry item in deserializeObject)
             {
-                assetPairs.Add(item.id, new AssetPair(item.id, item.name, item.accuracy));
+                assetPairs.Add(item.id, assetPairMapper.create(item));
             }
 
             return assetPairs;

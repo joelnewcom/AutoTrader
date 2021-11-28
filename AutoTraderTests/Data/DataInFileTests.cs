@@ -10,7 +10,7 @@ namespace AutoTraderTests.Library
     [TestClass()]
     public class DataInFileTests
     {
-        readonly AssetPair assetPair = new AssetPair("eth/chf", "testAssetPair", 1000);
+        readonly AssetPair assetPair = new AssetPair("eth/chf", "testAssetPair", 1000, "CHF", "ETH");
 
         [TestMethod()]
         public void NewestDataAvailableGetReturned()

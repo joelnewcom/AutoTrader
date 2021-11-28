@@ -2,7 +2,7 @@ using System;
 
 namespace AutoTrader.Repository
 {
-    public class PayloadAssetPairDict
+    public class PayloadAssetPairDictEntry
     {
         public string id { get; set; }
         public string name { get; set; }

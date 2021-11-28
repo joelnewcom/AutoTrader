@@ -25,9 +25,11 @@ namespace AutoTrader.Trader
 
         private DataRefresher dataRefresher;
 
-        private IAdvisor<List<float>> advisor = new LinearSlopeAdvisor();
+        private IAdvisor<List<float>> linearSlope = new LinearSlopeAdvisor();
 
         private IAsyncAdvisor<String> alwaysWinSeller;
+
+        private IAsyncAdvisor<String> buyIfNotAlreadyOwned;
 
         private int invokeCount;
 
@@ -43,6 +45,7 @@ namespace AutoTrader.Trader
             this.dataAccess = dataAccess;
             this.dataRefresher = dataRefresher;
             this.alwaysWinSeller = new AlwaysWinSeller(repo);
+            this.buyIfNotAlreadyOwned = new BuyIfNotAlreadyOwned(repo);
         }
 
         public void Dispose()
@@ -87,34 +90,35 @@ namespace AutoTrader.Trader
             _logger.LogInformation("Lykke trader started to do work");
 
             AutoResetEvent autoEvent = (AutoResetEvent)stateInfo;
-            Console.WriteLine("{0} Checking status {1,2}.", DateTime.Now.ToString("h:mm:ss.fff"), (++invokeCount).ToString());
+            Console.WriteLine("Time: {0}, InvokeCount:  {1,2}.", DateTime.Now.ToString("h:mm:ss.fff"), (++invokeCount).ToString());
             await RefreshHistory();
-            Trade();
+            trade();
         }
 
-        private async void Trade()
+        private async void trade()
         {
             foreach (AssetPair assetPair in dataAccess.GetAssetPairs())
             {
                 List<Price> assetPairHistoryEntries = dataAccess.GetAssetPairHistory(assetPair.Id);
                 IEnumerable<Price> enumerable = assetPairHistoryEntries.Skip(Math.Max(0, assetPairHistoryEntries.Count() - 7));
-                
+
                 List<float> asks = (from Price entry in enumerable select entry.Ask).ToList();
                 List<float> bids = (from Price entry in enumerable select entry.Bid).ToList();
 
-                _logger.LogInformation(String.Join(", ", asks));
-
-                if (Advice.Buy.Equals(advisor.advice(asks)))
+                if (Advice.Buy.Equals(linearSlope.advice(asks)) &&
+                    Advice.Buy.Equals(await buyIfNotAlreadyOwned.advice(assetPair.baseAssetId)) &&
+                    Advice.Buy.Equals(await buyIfEnoughMoney.advice(50))
+                )
                 {
-                    _logger.LogInformation("We should buy: " + assetPair.Id);
+                    _logger.LogInformation("Should buy: " + assetPair.Id);
                 }
-                else if (Advice.Sell.Equals(advisor.advice(bids)) && Advice.Sell.Equals(alwaysWinSeller.advice(assetPair.Id)))
+                else if (Advice.Sell.Equals(linearSlope.advice(bids)) && Advice.Sell.Equals(await alwaysWinSeller.advice(assetPair.Id)))
                 {
-                    _logger.LogInformation("We should sell: " + assetPair.Id);
+                    _logger.LogInformation("Should sell: " + assetPair.Id);
                 }
-                else if (Advice.HoldOn.Equals(advisor.advice(bids)))
+                else
                 {
-                    _logger.LogInformation("We should hold on: " + assetPair.Id);
+                    _logger.LogInformation("Should hold on: " + assetPair.Id);
                 }
             }
         }

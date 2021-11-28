@@ -18,7 +18,8 @@ namespace AutoTraderTests.Repository
                 new LykkeRepository(new NullLogger<LykkeRepository>(), new TraderConfig { apiKey = "" })),
                 new AssetPairHistoryEntryMapper(),
                 new TradeEntryMapper(),
-                new PriceMapper()             
+                new PriceMapper(),
+                new AssetPairMapper()        
         );
 
         [TestMethod()]
