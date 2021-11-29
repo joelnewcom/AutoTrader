@@ -117,14 +117,14 @@ namespace AutoTrader.Repository
             return assetPairs;
         }
 
-        public async Task<List<IWalletEntry>> GetWallets()
+        public async Task<List<IBalance>> GetWallets()
         {
             IResponse reponse = await wrappedResponeRepo.GetWallets();
             HttpResponseMessage responseMessage = await reponse.GetResponse();
 
             PayloadWrapper<List<PayloadBalance>> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<List<PayloadBalance>>>(await responseMessage.Content.ReadAsStringAsync());
 
-            List<IWalletEntry> responseObjects = new List<IWalletEntry>();
+            List<IBalance> responseObjects = new List<IBalance>();
 
             if (deserializeObject is null || deserializeObject.Payload is null)
             {
@@ -133,7 +133,7 @@ namespace AutoTrader.Repository
 
             foreach (PayloadBalance item in deserializeObject.Payload)
             {
-                responseObjects.Add(new WalletEntry(item.AssetId, item.Available, item.Reserved));
+                responseObjects.Add(new Balance(item.AssetId, item.Available, item.Reserved));
             }
 
             return responseObjects;
@@ -162,14 +162,22 @@ namespace AutoTrader.Repository
         {
             IResponse response = await wrappedResponeRepo.GetPrice(assetPairId);
             HttpResponseMessage responseMessage = await response.GetResponse();
-            PayloadWrapper<PayloadPrice> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<PayloadPrice>>(await responseMessage.Content.ReadAsStringAsync());
 
-            if (deserializeObject is null || deserializeObject.Payload is null)
-            {
-                return new NoDataPrice();
+            try{
+                PayloadWrapper<List<PayloadPrice>> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<List<PayloadPrice>>>(await responseMessage.Content.ReadAsStringAsync());
+                if (deserializeObject is null || deserializeObject.Payload is null || deserializeObject.Payload.Count != 1)
+                {
+                    return new NoDataPrice();
+                }
+
+                return priceMapper.build(deserializeObject.Payload.Last());
             }
 
-            return priceMapper.build(deserializeObject.Payload);
+            catch (JsonSerializationException)
+            {
+                _logger.LogWarning("Not able to parse price response of assetId: " + assetPairId + " raw response: " + await responseMessage.Content.ReadAsStringAsync());
+                return new NoDataPrice();
+            }
         }
 
         public async Task<string> LimitOrderBuy(string assetPairId, float price, float volume)

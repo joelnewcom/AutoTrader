@@ -27,7 +27,7 @@ namespace AutoTrader.Controllers
 
         [HttpGet]
         [Route("api/balance")]
-        public async Task<List<IWalletEntry>> Wallets()
+        public async Task<List<IBalance>> Wallets()
         {
             _logger.LogDebug("Called endpoint: Get Wallets");
             return await repo.GetWallets();

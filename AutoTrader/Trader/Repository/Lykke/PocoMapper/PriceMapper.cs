@@ -10,7 +10,7 @@ namespace AutoTrader.Trader.Repository.Lykke.PocoMapper
         {
             if (price is not null)
             {
-                return new Price(price.TimeStamp, price.ask, price.bid);
+                return new Price(price.timestamp, price.ask, price.bid);
             }
 
             throw new ArgumentException();

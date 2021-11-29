@@ -13,7 +13,7 @@ namespace AutoTrader.Repository
 
         Task<IPrice> GetHistoryRatePerDay(String assetPairId, DateTime date);
 
-        Task<List<IWalletEntry>> GetWallets();
+        Task<List<IBalance>> GetWallets();
 
         Task<List<TradeEntry>> GetTrades();
 

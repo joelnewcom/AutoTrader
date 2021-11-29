@@ -1,9 +1,6 @@
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoTrader.Data;
-using AutoTrader.Repository;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Moq;
 
 namespace AutoTrader.Advisor
 {
@@ -11,34 +8,28 @@ namespace AutoTrader.Advisor
     public class BuyIfNotAlreadyOwnedTests
     {
 
-        readonly Mock<IRepository> repoMock = new Mock<IRepository>();
-
         [TestMethod()]
-        public async Task DontBuyIfAlreadyOwned()
+        public void DontBuyIfAlreadyOwned()
         {
-            repoMock.Setup(repo => repo.GetWallets()).ReturnsAsync(new List<IWalletEntry>()
+            BuyIfNotAlreadyOwned buyIfNotAlreadyOwned = new BuyIfNotAlreadyOwned();
+            Advice advice = buyIfNotAlreadyOwned.advice("LKK", new List<IBalance>()
             {
-                new WalletEntry("LKK", 100, 100)
+                new Balance("LKK", 100, 100)
             });
-            
-            BuyIfNotAlreadyOwned buyIfNotAlreadyOwned = new BuyIfNotAlreadyOwned(repoMock.Object);
-            Advice advice = await buyIfNotAlreadyOwned.advice("LKK");
 
             Assert.AreEqual(Advice.HoldOn, advice);
         }
 
         [TestMethod()]
-        public async Task BuyIfAlreadyOwned()
+        public void BuyIfAlreadyOwned()
         {
-            repoMock.Setup(repo => repo.GetWallets()).ReturnsAsync(new List<IWalletEntry>()
+            BuyIfNotAlreadyOwned buyIfNotAlreadyOwned = new BuyIfNotAlreadyOwned();
+            Advice advice = buyIfNotAlreadyOwned.advice("Eur", new List<IBalance>()
             {
-                new WalletEntry("LKK", 100, 100),
-                new WalletEntry("CHF", 100, 100),
-                new WalletEntry("BTC", 100, 100),
+                new Balance("LKK", 100, 100),
+                new Balance("CHF", 100, 100),
+                new Balance("BTC", 100, 100),
             });
-            
-            BuyIfNotAlreadyOwned buyIfNotAlreadyOwned = new BuyIfNotAlreadyOwned(repoMock.Object);
-            Advice advice = await buyIfNotAlreadyOwned.advice("Eur");
 
             Assert.AreEqual(Advice.Buy, advice);
         }

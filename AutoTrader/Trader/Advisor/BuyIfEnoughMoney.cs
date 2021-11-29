@@ -1,27 +1,16 @@
-using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoTrader.Data;
-using AutoTrader.Repository;
 
 namespace AutoTrader.Advisor
 {
-    public class BuyIfEnoughCHFAsset : IAsyncAdvisor<float>
+    public class BuyIfEnoughCHFAsset : IAdvisor<float, List<IBalance>>
     {
 
-        IRepository repo;
-        public BuyIfEnoughCHFAsset(IRepository lykkeRepository)
+        public Advice advice(float dataIn, List<IBalance> dataIn2)
         {
-            this.repo = lykkeRepository;
-        }
-
-        public async Task<Advice> advice(float volume)
-        {
-            List<IWalletEntry> walletEntries = await repo.GetWallets();
-
-            foreach (IWalletEntry item in walletEntries)
+            foreach (IBalance item in dataIn2)
             {
-                if ("CHF".Equals(item.AssetId) && item.Balance > volume)
+                if ("CHF".Equals(item.AssetId) && item.Available > dataIn)
                 {
                     return Advice.Buy;
                 }

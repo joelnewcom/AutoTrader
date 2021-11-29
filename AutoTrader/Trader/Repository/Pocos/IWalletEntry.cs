@@ -2,11 +2,11 @@ using System;
 
 namespace AutoTrader.Data
 {
-    public interface IWalletEntry
+    public interface IBalance
     {
         String AssetId { get; set; }
 
-        float Balance { get; set; }
+        float Available { get; set; }
 
         float Reserved { get; set; }
     }

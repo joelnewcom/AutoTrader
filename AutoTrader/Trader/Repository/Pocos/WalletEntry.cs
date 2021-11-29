@@ -2,18 +2,18 @@
 
 namespace AutoTrader.Data
 {
-    public class WalletEntry : IWalletEntry
+    public class Balance : IBalance
     {
         public String AssetId { get; set; }
 
-        public float Balance { get; set; }
+        public float Available { get; set; }
 
         public float Reserved { get; set; }
 
-        public WalletEntry(String assetId, float balance, float reserved)
+        public Balance(String assetId, float balance, float reserved)
         {
             AssetId = assetId;
-            Balance = balance;
+            Available = balance;
             Reserved = reserved;
         }
     }

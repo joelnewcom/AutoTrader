@@ -15,6 +15,7 @@ namespace AutoTrader.Trader
     public class TraderService : IHostedService, IDisposable
     {
         private const int SECONDS_TO_WAIT = 10;
+        private const int CHF_TO_SPEND_AT_ONCE = 50;
         private readonly ILogger<TraderService> _logger;
         private Timer _timer;
         private readonly IRepository repo;
@@ -27,11 +28,11 @@ namespace AutoTrader.Trader
 
         private IAdvisor<List<float>> linearSlope = new LinearSlopeAdvisor();
 
-        private IAsyncAdvisor<String> alwaysWinSeller;
+        private IAdvisor<String, Price, List<TradeEntry>> alwaysWinSeller;
 
-        private IAsyncAdvisor<String> buyIfNotAlreadyOwned;
+        private IAdvisor<String, List<IBalance>> buyIfNotAlreadyOwned;
 
-        private IAsyncAdvisor<float> buyIfEnoughMoney;
+        private IAdvisor<float, List<IBalance>> buyIfEnoughMoney;
 
         private int invokeCount;
 
@@ -46,9 +47,9 @@ namespace AutoTrader.Trader
             repo = lykkeRepository;
             this.dataAccess = dataAccess;
             this.dataRefresher = dataRefresher;
-            this.alwaysWinSeller = new AlwaysWinSeller(repo);
-            this.buyIfNotAlreadyOwned = new BuyIfNotAlreadyOwned(repo);
-            this.buyIfEnoughMoney = new BuyIfEnoughCHFAsset(repo);
+            this.alwaysWinSeller = new AlwaysWinSeller();
+            this.buyIfNotAlreadyOwned = new BuyIfNotAlreadyOwned();
+            this.buyIfEnoughMoney = new BuyIfEnoughCHFAsset();
         }
 
         public void Dispose()
@@ -107,15 +108,28 @@ namespace AutoTrader.Trader
 
                 List<float> asks = (from Price entry in enumerable select entry.Ask).ToList();
                 List<float> bids = (from Price entry in enumerable select entry.Bid).ToList();
+                IPrice iPrice = await repo.GetPrice(assetPair.Id);
+                List<TradeEntry> trades = await repo.GetTrades();
+                List<IBalance> balances = await repo.GetWallets();
 
-                if (Advice.Buy.Equals(linearSlope.advice(asks)) &&
-                    Advice.Buy.Equals(await buyIfNotAlreadyOwned.advice(assetPair.baseAssetId)) &&
-                    Advice.Buy.Equals(await buyIfEnoughMoney.advice(50))
-                )
+                if (iPrice is not Price)
                 {
-                    _logger.LogInformation("Should buy: " + assetPair.Id);
+                    continue;
                 }
-                else if (Advice.Sell.Equals(linearSlope.advice(bids)) && Advice.Sell.Equals(await alwaysWinSeller.advice(assetPair.Id)))
+
+                Price price = (Price)iPrice;
+
+                if (Advice.Buy.Equals(linearSlope.advice(asks)))
+                {
+                    if (Advice.Buy.Equals(buyIfEnoughMoney.advice(CHF_TO_SPEND_AT_ONCE, balances)) && Advice.Buy.Equals(buyIfNotAlreadyOwned.advice(assetPair.baseAssetId, balances)))
+                    {
+                        _logger.LogInformation("Should buy: " + assetPair.Id);
+                        float volume = CHF_TO_SPEND_AT_ONCE / price.Ask;
+                        //Task<string> orderId = repo.LimitOrderBuy(assetPair.Id, price.Ask, volume);
+                    }
+                }
+
+                else if (Advice.Sell.Equals(linearSlope.advice(bids)) && Advice.Sell.Equals(alwaysWinSeller.advice(assetPair.Id, price, trades)))
                 {
                     _logger.LogInformation("Should sell: " + assetPair.Id);
                 }

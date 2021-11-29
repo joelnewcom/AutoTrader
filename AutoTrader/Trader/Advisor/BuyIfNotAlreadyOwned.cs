@@ -1,27 +1,16 @@
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using AutoTrader.Data;
-using AutoTrader.Repository;
 
 namespace AutoTrader.Advisor
 {
-    public class BuyIfNotAlreadyOwned : IAsyncAdvisor<String>
+    public class BuyIfNotAlreadyOwned : IAdvisor<String, List<IBalance>>
     {
-
-        IRepository repo;
-        public BuyIfNotAlreadyOwned(IRepository lykkeRepository)
+        public Advice advice(String dataIn, List<IBalance> dataIn2)
         {
-            this.repo = lykkeRepository;
-        }
-
-        public async Task<Advice> advice(string assetId)
-        {
-            List<IWalletEntry> walletEntries = await repo.GetWallets();
-
-            foreach (IWalletEntry item in walletEntries)
+            foreach (IBalance item in dataIn2)
             {
-                if (assetId.Equals(item.AssetId))
+                if (dataIn.Equals(item.AssetId))
                 {
                     return Advice.HoldOn;
                 }

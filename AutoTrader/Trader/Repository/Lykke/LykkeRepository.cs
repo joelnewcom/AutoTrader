@@ -14,7 +14,7 @@ namespace AutoTrader.Repository
 
         private const String PRIVATE_API = "https://hft-api.lykke.com";
 
-        private const String PRIVATE_API_V2 = "https://hft-apiv2.lykke.com";
+        private const String LYKKE_API_V2 = "https://hft-apiv2.lykke.com";
         private readonly HttpClient httpClient;
         private string applicationJson = "application/json";
 
@@ -53,17 +53,17 @@ namespace AutoTrader.Repository
 
         public Task<HttpResponseMessage> GetWallets()
         {
-            return httpClient.GetAsync(PRIVATE_API_V2 + "/api/balance");
+            return httpClient.GetAsync(LYKKE_API_V2 + "/api/balance");
         }
 
         public Task<HttpResponseMessage> GetTrades()
         {
-            return httpClient.GetAsync(PRIVATE_API_V2 + "/api/trades");
+            return httpClient.GetAsync(LYKKE_API_V2 + "/api/trades");
         }
 
         public Task<HttpResponseMessage> GetPrice(string assetPairId)
         {
-            return httpClient.GetAsync(PRIVATE_API_V2 + "/api/prices?assetPairIds=" + assetPairId);
+            return httpClient.GetAsync(LYKKE_API_V2 + "/api/prices?assetPairIds=" + assetPairId);
         }
 
         public Task<HttpResponseMessage> LimitOrderBuy(String assetPairId, float price, float volume)
@@ -71,7 +71,7 @@ namespace AutoTrader.Repository
             PayloadLimitOrder payload = new PayloadLimitOrder { AssetPairId = assetPairId, Price = price, Side = "buy", Volume = volume };
             string content = JsonConvert.SerializeObject(payload);
             HttpContent httpContent = new StringContent(content, Encoding.UTF8, applicationJson);
-            return httpClient.PostAsync(PRIVATE_API_V2 + "/api/orders/limit", httpContent);
+            return httpClient.PostAsync(LYKKE_API_V2 + "/api/orders/limit", httpContent);
         }
 
         public Task<HttpResponseMessage> LimitOrderSell(String assetPairId, float price, float volume)
@@ -79,7 +79,7 @@ namespace AutoTrader.Repository
             PayloadLimitOrder payload = new PayloadLimitOrder { AssetPairId = assetPairId, Price = price, Side = "sell", Volume = volume };
             string content = JsonConvert.SerializeObject(payload);
             HttpContent httpContent = new StringContent(content, Encoding.UTF8, applicationJson);
-            return httpClient.PostAsync(PRIVATE_API_V2 + "/api/orders/limit", httpContent);
+            return httpClient.PostAsync(LYKKE_API_V2 + "/api/orders/limit", httpContent);
         }
     }
 }

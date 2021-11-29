@@ -6,9 +6,5 @@ namespace AutoTrader.Repository
     {
         public T Payload { get; set; }
         public ErrorPayload Error { get; set; }
-        public float Ask { get; set; }
-        public float TradingVolume { get; set; }
-        public float TradingOppositeVolume { get; set; }
     }
-
 }
