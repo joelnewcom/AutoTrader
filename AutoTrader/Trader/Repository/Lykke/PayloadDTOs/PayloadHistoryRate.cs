@@ -2,7 +2,7 @@
 
 namespace AutoTrader.Repository
 {
-    public class PayloadResponseGetHistoryRate
+    public class PayloadHistoryRate
     {
         public string Id { get; set; }
         public float Bid { get; set; }

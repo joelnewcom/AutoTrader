@@ -28,15 +28,16 @@ namespace AutoTrader
              .ConfigureServices(services =>
              {
                  services.AddHostedService<TraderService>();
-                 services.AddSingleton<IRepositoryGen<Task<HttpResponseMessage>>, LykkeRepository>();
-                 services.AddSingleton<IRepositoryGen<Task<IResponse>>, RawResponseRepository>();
-                 services.AddSingleton<IRepository, RetryRepository>();
-                 services.AddSingleton<DataRefresher>();
-                 services.AddSingleton<IDataAccess, DataInFile>();
-                 services.AddSingleton<AssetPairHistoryEntryMapper>();
-                 services.AddSingleton<TradeEntryMapper>();
-                 services.AddSingleton<PriceMapper>();
-                 services.AddSingleton<AssetPairMapper>();
+                 services.AddScoped<IRepositoryGen<Task<HttpResponseMessage>>, LykkeRepository>();
+                 services.AddScoped<IRepositoryGen<Task<IResponse>>, RawResponseRepository>();
+                 services.AddScoped<IRepository, RetryRepository>();
+                 services.AddScoped<DataRefresher>();
+                //  services.AddSingleton<IDataAccess, DataInFile>();
+                 services.AddScoped<IDataAccessAsync, DataInDB>();
+                 services.AddScoped<AssetPairHistoryEntryMapper>();
+                 services.AddScoped<TradeEntryMapper>();
+                 services.AddScoped<PriceMapper>();
+                 services.AddScoped<AssetPairMapper>();
                  services.AddMvcCore().AddApiExplorer();
                  services.AddSwaggerGen();
              });

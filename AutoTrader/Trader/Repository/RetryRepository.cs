@@ -67,7 +67,7 @@ namespace AutoTrader.Repository
 
             try
             {
-                PayloadResponseGetHistoryRate deserializeObject = JsonConvert.DeserializeObject<PayloadResponseGetHistoryRate>(responseString);
+                PayloadHistoryRate deserializeObject = JsonConvert.DeserializeObject<PayloadHistoryRate>(responseString);
                 if (deserializeObject is null)
                 {
                     return new NoDataPrice();

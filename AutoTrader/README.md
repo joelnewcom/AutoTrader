@@ -28,3 +28,8 @@
 3. run: dotnet publish -c Release -o <whatever>/myapp
 4. Goto <whatever>/myapp and run AutoTrader.exe
 
+
+## Entity framework
+
+
+dotnet add package Microsoft.EntityFrameworkCore.Design

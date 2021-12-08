@@ -14,10 +14,10 @@ namespace AutoTrader.Controllers
 
         private readonly ILogger<TraderController> _logger;
 
-        private IDataAccess dataAccess;
+        private IDataAccessAsync dataAccess;
         private IRepository repo;
 
-        public TraderController(ILogger<TraderController> logger, IDataAccess dataAccess, IRepository repo)
+        public TraderController(ILogger<TraderController> logger, IDataAccessAsync dataAccess, IRepository repo)
         {
             _logger = logger;
             this.dataAccess = dataAccess;
@@ -27,28 +27,27 @@ namespace AutoTrader.Controllers
 
         [HttpGet]
         [Route("api/AssetPairHistoryEntries")]
-        public List<Price> AssetPairHistoryEntries()
+        public async Task<List<Price>> AssetPairHistoryEntries()
         {
             _logger.LogDebug("Called endpoint: Get AssetPairHistoryEntries");
-            return dataAccess.GetAssetPairHistory("ETHCHF");
+            return await dataAccess.GetAssetPairHistory("ETHCHF");
         }
 
         [HttpGet]
         [Route("api/AssetPairHistoryEntries/{id}")]
-        public List<Price> AssetPairHistoryEntries(string id)
+        public async Task<List<Price>> AssetPairHistoryEntries(string id)
         {
             _logger.LogDebug("Called endpoint: Get AssetPairHistoryEntries id: " + id);
-            return dataAccess.GetAssetPairHistory(id);
+            return await dataAccess.GetAssetPairHistory(id);
         }
 
 
         [HttpGet]
         [Route("api/AssetPairs")]
-        public List<AssetPair> AssetPairs()
+        public async Task<List<AssetPair>> AssetPairs()
         {
             _logger.LogDebug("Called endpoint: Get AssetPairs");
-            List<AssetPair> assetPair = dataAccess.GetAssetPairs();
-            return assetPair;
+            return await dataAccess.GetAssetPairs();
         }
 
         [HttpGet]

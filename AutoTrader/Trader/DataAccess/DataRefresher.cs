@@ -8,10 +8,10 @@ namespace AutoTrader.Library
     public class DataRefresher
     {
         private readonly IRepository repository;
-        private readonly IDataAccess data;
+        private readonly IDataAccessAsync data;
         private int secondsToWaitForNextRequest = 10;
 
-        public DataRefresher(IRepository repository, IDataAccess data)
+        public DataRefresher(IRepository repository, IDataAccessAsync data)
         {
             this.repository = repository;
             this.data = data;
@@ -19,7 +19,7 @@ namespace AutoTrader.Library
 
         public async Task<IPrice> RefreshAssetPairHistory(String assetPairId)
         {
-            DateTime lastDayWeAlreadyHave = data.GetDateOfLatestEntry(assetPairId);
+            DateTime lastDayWeAlreadyHave = await data.GetDateOfLatestEntry(assetPairId);
             IPrice historyRatePerDay = new NoDataPrice();
             while (lastDayWeAlreadyHave < DateTime.Today)
             {
@@ -27,7 +27,7 @@ namespace AutoTrader.Library
                 historyRatePerDay =  await repository.GetHistoryRatePerDay(assetPairId, lastDayWeAlreadyHave);
                 if (historyRatePerDay is Price)
                 {
-                    data.AddAssetPairHistoryEntry(assetPairId, (Price) historyRatePerDay);
+                    await data.AddAssetPairHistoryEntry(assetPairId, (Price) historyRatePerDay);
                 }
                 await Task.Delay(secondsToWaitForNextRequest * 1000);
             }

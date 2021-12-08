@@ -4,23 +4,23 @@ namespace AutoTrader.Data
 {
     public class AssetPair : IEquatable<AssetPair>
     {
-        public string Id { get; }
+        public String Id { get; }
 
-        public string Name { get; }
+        public String Name { get; private set; }
 
-        public int Accuracy { get; }
+        public int Accuracy { get; private set; }
 
-        public string baseAssetId { get; }
+        public String BaseAssetId { get; private set; }
 
-        public string quotingAssetId { get; }
+        public String QuotingAssetId { get; private set; }
 
-        public AssetPair(String id, String name, int accuracy, string baseAssetId, string quotingAssetId)
+        public AssetPair(String id, String name, int accuracy, String baseAssetId, String quotingAssetId)
         {
             this.Id = id;
             this.Name = name;
             this.Accuracy = accuracy;
-            this.baseAssetId = baseAssetId;
-            this.quotingAssetId = quotingAssetId;
+            this.BaseAssetId = baseAssetId;
+            this.QuotingAssetId = quotingAssetId;
         }
 
         public override bool Equals(object obj)

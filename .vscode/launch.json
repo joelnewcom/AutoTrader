@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             // If you have changed target frameworks, make sure to update the program path.
-            "program": "${workspaceFolder}/AutoTrader/bin/Debug/net5.0/AutoTrader.dll",
+            "program": "${workspaceFolder}/AutoTrader/bin/Debug/net6.0/AutoTrader.dll",
             "args": [],
             "cwd": "${workspaceFolder}/AutoTrader",
             "stopAtEntry": false,

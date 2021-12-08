@@ -12,15 +12,15 @@ namespace AutoTraderTests.Library
     public class DataRefresherTests
     {
         readonly Mock<IRepository> repoMock = new Mock<IRepository>();
-        readonly Mock<IDataAccess> dataAccessMock = new Mock<IDataAccess>();
+        readonly Mock<IDataAccessAsync> dataAccessMock = new Mock<IDataAccessAsync>();
         readonly AssetPair assetPair = new AssetPair("eth/chf", "testAssetPair", 1000, "CHF", "ETH");
 
         [TestMethod()]
         public async Task NewEntryGetsAdded()
         {
             // given
-            Price assetPairHistoryEntry = new Price(DateTime.Today, 10, 10);
-            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(DateTime.Today.AddDays(-1));
+            Price assetPairHistoryEntry = new Price(DateTime.Today, 10, 10, "ETHCHF");
+            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(Task.FromResult(DateTime.Today.AddDays(-1)));
             repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<String>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(assetPairHistoryEntry);
             DataRefresher dataRefresher = new DataRefresher(repoMock.Object, dataAccessMock.Object);
@@ -37,9 +37,9 @@ namespace AutoTraderTests.Library
         {
             // given
             DateTime dateTime = DateTime.Today;
-            Price assetPairHistoryEntry = new Price(dateTime, 10, 10);
+            Price assetPairHistoryEntry = new Price(dateTime, 10, 10, "ETHCHF");
 
-            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(dateTime);
+            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(Task.FromResult(dateTime));
             repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<String>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(assetPairHistoryEntry);
 
@@ -59,9 +59,9 @@ namespace AutoTraderTests.Library
         {
             // given
             DateTime today = DateTime.Today;
-            Price assetPairHistoryEntry = new Price(today, 10, 10);
+            Price assetPairHistoryEntry = new Price(today, 10, 10, "ETHCHF");
 
-            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(today.AddDays(-2));
+            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(Task.FromResult(today.AddDays(-2)));
             repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<String>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(assetPairHistoryEntry);
 

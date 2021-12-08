@@ -4,13 +4,13 @@ using AutoTrader.Repository;
 
 namespace AutoTrader.Trader.Repository.Lykke.PocoMapper
 {
-    public class AssetPairHistoryEntryMapper
+    public class PriceMapper
     {
-        public Price create(PayloadResponseGetHistoryRate item, DateTime dateTime)
+        public Price build(PayloadPrice price)
         {
-            if (item is not null)
+            if (price is not null)
             {
-                return new Price(dateTime, item.Ask, item.Bid);
+                return new Price(price.timestamp, price.ask, price.bid, price.assetPairId);
             }
 
             throw new ArgumentException();

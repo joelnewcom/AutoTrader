@@ -19,9 +19,9 @@ namespace AutoTraderTests.Library
             DataInFile dataInFile = new DataInFile(new NullLogger<DataInFile>());
             DateTime today = DateTime.Today;
 
-            Price firstAssetPairHistoryEntry = new Price(DateTime.Today.AddDays(-2), 10, 10);
-            Price secondAssetPairHistoryEntry = new Price(DateTime.Today.AddDays(-1), 10, 10);
-            Price thirdAssetPairHistoryEntry = new Price(today, 10, 10);
+            Price firstAssetPairHistoryEntry = new Price(DateTime.Today.AddDays(-2), 10, 10, "ETHCHF");
+            Price secondAssetPairHistoryEntry = new Price(DateTime.Today.AddDays(-1), 10, 10, "ETHCHF");
+            Price thirdAssetPairHistoryEntry = new Price(today, 10, 10, "ETHCHF");
 
             dataInFile.AddAssetPairHistoryEntry("eth/chf", firstAssetPairHistoryEntry);
             dataInFile.AddAssetPairHistoryEntry("eth/chf", secondAssetPairHistoryEntry);
