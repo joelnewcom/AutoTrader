@@ -13,11 +13,11 @@ namespace AutoTrader.Migrations
                 name: "assetPairEntities",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Accuracy = table.Column<int>(type: "int", nullable: false),
-                    BaseAssetId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    QuotingAssetId = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                    Id = table.Column<string>(type: "TEXT", nullable: false),
+                    Name = table.Column<string>(type: "TEXT", nullable: true),
+                    Accuracy = table.Column<int>(type: "INTEGER", nullable: false),
+                    BaseAssetId = table.Column<string>(type: "TEXT", nullable: true),
+                    QuotingAssetId = table.Column<string>(type: "TEXT", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -28,11 +28,11 @@ namespace AutoTrader.Migrations
                 name: "priceEntities",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    AssetPairId = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Date = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Ask = table.Column<float>(type: "real", nullable: false),
-                    Bid = table.Column<float>(type: "real", nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    AssetPairId = table.Column<string>(type: "TEXT", nullable: true),
+                    Date = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    Ask = table.Column<float>(type: "REAL", nullable: false),
+                    Bid = table.Column<float>(type: "REAL", nullable: false)
                 },
                 constraints: table =>
                 {

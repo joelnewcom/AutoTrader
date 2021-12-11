@@ -24,7 +24,7 @@ namespace AutoTrader
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDbContext<AutoTraderDBContext>(options => options.UseSqlServer (Configuration.GetConnectionString("AutoTrader")));
+            services.AddDbContext<AutoTraderDBContext>(options => options.UseSqlite (Configuration.GetConnectionString("AutoTrader")));
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>

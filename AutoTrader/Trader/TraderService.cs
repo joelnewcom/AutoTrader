@@ -13,19 +13,25 @@ using System.Threading.Tasks;
 
 namespace AutoTrader.Trader
 {
+    //## Always win strategy
+    // Only sell when bid is higher than the ask you bought at
+    // Buy at any price
+
+    // ## Ask/Bid
+    // The bid price represents the price that a buyer is willing to pay for a share of stock or other security.
+    // -> Use the max(bid) to sell your stuff immediatelly.
+    // -> Use the min(ask) to sell at the same "lowest" price the others wants to sell.
+
+    // The ask price represents the price that a seller is willing to take for this security.
+    // -> Use the min(ask) to buy new stuff. 
     public class TraderService : IHostedService, IDisposable
     {
         private const int SECONDS_TO_WAIT = 10;
         private const int CHF_TO_SPEND_AT_ONCE = 50;
         private readonly ILogger<TraderService> _logger;
         private Timer _timer;
-        // private readonly IRepository repo;
 
         private readonly TraderConfig conf;
-
-        // private IDataAccessAsync dataAccess;
-
-        // private DataRefresher dataRefresher;
 
         private IAdvisor<List<float>> linearSlope = new LinearSlopeAdvisor();
 
@@ -41,19 +47,11 @@ namespace AutoTrader.Trader
 
         public TraderService(ILogger<TraderService> logger,
         TraderConfig traderConfig,
-        // IRepository lykkeRepository,
-        // IDataAccessAsync dataAccess,
-        // DataRefresher dataRefresher,
         IServiceScopeFactory scopeFactory)
         {
             _logger = logger;
             this.scopeFactory = scopeFactory;
             conf = traderConfig;
-
-            // this.repo = lykkeRepository;
-            // this.dataAccess = dataAccess;
-            // this.dataRefresher = dataRefresher;
-
             this.alwaysWinSeller = new AlwaysWinSeller();
             this.buyIfNotAlreadyOwned = new BuyIfNotAlreadyOwned();
             this.buyIfEnoughMoney = new BuyIfEnoughCHFAsset();
@@ -72,7 +70,6 @@ namespace AutoTrader.Trader
             _timer = new Timer(DoWork, autoEvent, TimeSpan.Zero, TimeSpan.FromHours(8));
             return;
         }
-
 
         private async Task doPrepWorkAsync()
         {
