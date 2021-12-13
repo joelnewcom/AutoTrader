@@ -1,12 +1,13 @@
+using System;
 using System.Collections.Generic;
 using AutoTrader.Data;
 
 namespace AutoTrader.Advisor
 {
-    public class BuyIfEnoughCHFAsset : IAdvisor<float, List<IBalance>>
+    public class BuyIfEnoughCHFAsset : IAdvisor<Decimal, List<IBalance>>
     {
 
-        public Advice advice(float dataIn, List<IBalance> dataIn2)
+        public Advice advice(Decimal dataIn, List<IBalance> dataIn2)
         {
             foreach (IBalance item in dataIn2)
             {

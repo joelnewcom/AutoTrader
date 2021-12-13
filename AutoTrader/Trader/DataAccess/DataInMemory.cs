@@ -1,17 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace AutoTrader.Data
 {
-    public class DataInMemory : IDataAccess
+    public class DataInMemory : IDataAccessAsync
     {
         private Dictionary<String, List<Price>> data = new Dictionary<String, List<Price>>();
-        
-        private Dictionary<String, AssetPair> assetPairs = new Dictionary<String, AssetPair>();          
-        
+
+        private Dictionary<String, AssetPair> assetPairs = new Dictionary<String, AssetPair>();
+
         private readonly int timeWindowsInDays = 7;
 
-        public String AddAssetPairHistoryEntry(String assetPairId, Price assetPairHistoryEntry)
+        public ILogger<DataInMemory> logger { get; }
+
+        public DataInMemory(ILogger<DataInMemory> logger)
+        {
+            this.logger = logger;
+        }
+
+
+        public Task<String> AddAssetPairHistoryEntry(String assetPairId, Price assetPairHistoryEntry)
         {
             if (data.ContainsKey(assetPairId))
             {
@@ -23,43 +33,51 @@ namespace AutoTrader.Data
                 data.Add(assetPairId, new List<Price> { assetPairHistoryEntry });
             }
 
-            return assetPairId;
+            return Task.FromResult(assetPairId);
         }
 
-        public List<Price> GetAssetPairHistory(String assetPairId)
+        public Task<List<Price>> GetAssetPairHistory(String assetPairId)
         {
-            return data.GetValueOrDefault(assetPairId, new List<Price>());
+            return Task.FromResult(data.GetValueOrDefault(assetPairId, new List<Price>()));
         }
 
-        public List<float> GetBidHistory(String assetPairId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public List<float> GetAskHistory(String assetPairId)
+        public Task<List<float>> GetBidHistory(String assetPairId)
         {
             throw new NotImplementedException();
         }
 
-        public DateTime GetDateOfLatestEntry(String assetPairId)
+        public Task<List<float>> GetAskHistory(String assetPairId)
         {
-            List<Price> assetPairHistoryEntries = GetAssetPairHistory(assetPairId);
+            throw new NotImplementedException();
+        }
+
+        public async Task<DateTime> GetDateOfLatestEntry(String assetPairId)
+        {
+            List<Price> assetPairHistoryEntries = await GetAssetPairHistory(assetPairId);
+            assetPairHistoryEntries.Sort(delegate (Price x, Price y)
+            {
+                if (x.Date == null && y.Date == null) return 0;
+                else if (x.Date == null) return -1;
+                else if (y.Date == null) return 1;
+                else return y.Date.CompareTo(x.Date);
+            });
+
             if (assetPairHistoryEntries.Count > 1)
                 return assetPairHistoryEntries[0].Date;
             return DateTime.Today.AddDays(-timeWindowsInDays);
         }
 
-        public List<AssetPair> GetAssetPairs()
+        public Task<List<AssetPair>> GetAssetPairs()
         {
-            return new List<AssetPair>(assetPairs.Values);
+            return Task.FromResult(new List<AssetPair>(assetPairs.Values));
         }
 
-        public void AddAssetPair(AssetPair assetPair)
+        Task<string> IDataAccessAsync.AddAssetPair(AssetPair assetPair)
         {
             throw new NotImplementedException();
         }
 
-        public void PersistData()
+        public Task<AssetPair> GetAssetPair(string assetPairId)
         {
             throw new NotImplementedException();
         }

@@ -14,9 +14,9 @@ namespace AutoTrader.Repository
         public string orderId { get; set; }
         public string role { get; set; }
         public string side { get; set; }
-        public float price { get; set; }
-        public float baseVolume { get; set; }
-        public float quoteVolume { get; set; }
+        public Decimal price { get; set; }
+        public Decimal baseVolume { get; set; }
+        public Decimal quoteVolume { get; set; }
         public string baseAssetId { get; set; }
         public string quoteAssetId { get; set; }
         public PayloadFee fee { get; set; }

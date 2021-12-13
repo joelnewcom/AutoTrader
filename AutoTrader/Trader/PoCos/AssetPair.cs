@@ -2,6 +2,28 @@
 
 namespace AutoTrader.Data
 {
+
+    public interface IAssetPair{
+        public String Id { get; }
+
+        public String Name { get; set; }
+
+        public int Accuracy { get; set; }
+
+        public String BaseAssetId { get; set; }
+
+        public String QuotingAssetId { get; set; }
+    }
+
+    public class NoDataAssetPair : IAssetPair
+    {
+        public string Id => throw new NotImplementedException();
+        public string Name { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public int Accuracy { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string BaseAssetId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+        public string QuotingAssetId { get => throw new NotImplementedException(); set => throw new NotImplementedException(); }
+    }
+
     public class AssetPair : IEquatable<AssetPair>
     {
         public String Id { get; }

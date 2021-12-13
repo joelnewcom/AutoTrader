@@ -4,15 +4,15 @@ using System.Linq;
 
 namespace AutoTrader.Advisor
 {
-    public class LinearSlopeAdvisor : IAdvisor<List<float>>
+    public class LinearSlopeAdvisor : IAdvisor<List<Decimal>>
     {
         int lastDays = 2;
-        float slopeThreshold = 0;
+        Decimal slopeThreshold = 0;
 
-        public Advice advice(List<float> dataIn)
+        public Advice advice(List<Decimal> dataIn)
         {
-            float slopeOverall = LeastSquareMethod.Slope(dataIn);
-            float slopeLastDays = LeastSquareMethod.Slope(dataIn.Skip(Math.Max(0, dataIn.Count() - lastDays)));
+            Decimal slopeOverall = LeastSquareMethod.Slope(dataIn);
+            Decimal slopeLastDays = LeastSquareMethod.Slope(dataIn.Skip(Math.Max(0, dataIn.Count() - lastDays)));
 
             if (slopeOverall > slopeThreshold && slopeLastDays < slopeThreshold)
             {

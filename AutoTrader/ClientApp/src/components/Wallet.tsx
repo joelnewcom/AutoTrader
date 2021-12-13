@@ -43,14 +43,16 @@ class Wallet extends React.PureComponent<WalletProps> {
           <thead>
             <tr>
               <th>assetId</th>
-              <th>Balance</th>
+              <th>Available</th>
+              <th>Reserved</th>
             </tr>
           </thead>
           <tbody>
             {this.props.balances.map((balance: WalletStore.Balance) =>
               <tr key={balance.assetId}>
                 <td>{balance.assetId}</td>
-                <td>{balance.balance}</td>
+                <td>{balance.available}</td>
+                <td>{balance.reserved}</td>
               </tr>
             )}
           </tbody>

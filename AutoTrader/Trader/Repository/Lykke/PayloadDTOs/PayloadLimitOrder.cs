@@ -6,7 +6,7 @@ namespace AutoTrader.Repository
         public string AssetPairId { get; set; }
         public string Side { get; set; }
 
-        public float Volume { get; set; }
-        public float Price { get; set;}
+        public Decimal Volume { get; set; }
+        public Decimal Price { get; set;}
     }
 }

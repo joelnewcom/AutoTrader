@@ -5,7 +5,7 @@ namespace AutoTrader.Data
     public interface IPrice
     {
         DateTime Date { get; set; }
-        float Ask { get; set; }
-        float Bid { get; set; }
+        Decimal Ask { get; set; }
+        Decimal Bid { get; set; }
     }
 }

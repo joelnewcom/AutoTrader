@@ -33,13 +33,13 @@ namespace AutoTrader.Trader
 
         private readonly TraderConfig conf;
 
-        private IAdvisor<List<float>> linearSlope = new LinearSlopeAdvisor();
+        private IAdvisor<List<Decimal>> linearSlope = new LinearSlopeAdvisor();
 
         private IAdvisor<String, Price, List<TradeEntry>> alwaysWinSeller;
 
         private IAdvisor<String, List<IBalance>> buyIfNotAlreadyOwned;
 
-        private IAdvisor<float, List<IBalance>> buyIfEnoughMoney;
+        private IAdvisor<Decimal, List<IBalance>> buyIfEnoughMoney;
 
         private int invokeCount;
 
@@ -91,7 +91,10 @@ namespace AutoTrader.Trader
                     AssetPair assetPair = assetPairDict.GetValueOrDefault(item);
                     if (assetPair != null)
                     {
-                        await dataAccess.AddAssetPair(assetPair);
+                        AssetPair storedAssetPair = await dataAccess.GetAssetPair(assetPair.Id);
+                        if (storedAssetPair is null){
+                            await dataAccess.AddAssetPair(assetPair);
+                        }
                         await dataRefresher.RefreshAssetPairHistory(assetPair.Id);
                     }
                 }
@@ -122,8 +125,8 @@ namespace AutoTrader.Trader
                     List<Price> assetPairHistoryEntries = await dataAccess.GetAssetPairHistory(assetPair.Id);
                     IEnumerable<Price> enumerable = assetPairHistoryEntries.Skip(Math.Max(0, assetPairHistoryEntries.Count() - 7));
 
-                    List<float> asks = (from Price entry in enumerable select entry.Ask).ToList();
-                    List<float> bids = (from Price entry in enumerable select entry.Bid).ToList();
+                    List<Decimal> asks = (from Price entry in enumerable select entry.Ask).ToList();
+                    List<Decimal> bids = (from Price entry in enumerable select entry.Bid).ToList();
                     IPrice iPrice = await repo.GetPrice(assetPair.Id);
                     List<TradeEntry> trades = await repo.GetTrades();
                     List<IBalance> balances = await repo.GetWallets();
@@ -140,8 +143,8 @@ namespace AutoTrader.Trader
                         if (Advice.Buy.Equals(buyIfEnoughMoney.advice(CHF_TO_SPEND_AT_ONCE, balances)) && Advice.Buy.Equals(buyIfNotAlreadyOwned.advice(assetPair.BaseAssetId, balances)))
                         {
                             _logger.LogInformation("Should buy: " + assetPair.Id);
-                            float volume = CHF_TO_SPEND_AT_ONCE / price.Ask;
-                            //Task<string> orderId = repo.LimitOrderBuy(assetPair.Id, price.Ask, volume);
+                            Decimal volume = CHF_TO_SPEND_AT_ONCE / price.Ask;
+                            Task<string> orderId = repo.LimitOrderBuy(assetPair.Id, price.Ask, Decimal.Round(volume, assetPair.Accuracy));
                         }
                     }
 

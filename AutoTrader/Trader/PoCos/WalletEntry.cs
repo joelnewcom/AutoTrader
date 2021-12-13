@@ -6,11 +6,11 @@ namespace AutoTrader.Data
     {
         public String AssetId { get; set; }
 
-        public float Available { get; set; }
+        public Decimal Available { get; set; }
 
-        public float Reserved { get; set; }
+        public Decimal Reserved { get; set; }
 
-        public Balance(String assetId, float balance, float reserved)
+        public Balance(String assetId, Decimal balance, Decimal reserved)
         {
             AssetId = assetId;
             Available = balance;

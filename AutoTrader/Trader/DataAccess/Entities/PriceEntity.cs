@@ -9,11 +9,11 @@ namespace AutoTrader.Data
         public String AssetPairId { get; private set; }
         public DateTime Date { get; private set; }
 
-        public float Ask { get; private set; }
+        public Decimal Ask { get; private set; }
 
-        public float Bid { get; private set; }
+        public Decimal Bid { get; private set; }
 
-        public PriceEntity(DateTime date, float ask, float bid, string assetPairId)
+        public PriceEntity(DateTime date, Decimal ask, Decimal bid, string assetPairId)
         {
             Id = Guid.NewGuid();
             Date = date;

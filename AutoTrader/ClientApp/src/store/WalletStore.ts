@@ -11,7 +11,8 @@ export interface WalletState {
 
 export interface Balance {
     assetId: string;
-    balance: number;
+    available: number;
+    reserved: number;
 }
 
 // -----------------

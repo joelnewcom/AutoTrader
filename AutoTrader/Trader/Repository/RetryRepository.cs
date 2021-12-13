@@ -180,7 +180,7 @@ namespace AutoTrader.Repository
             }
         }
 
-        public async Task<string> LimitOrderBuy(string assetPairId, float price, float volume)
+        public async Task<string> LimitOrderBuy(string assetPairId, Decimal price, Decimal volume)
         {
             IResponse response = await wrappedResponeRepo.LimitOrderBuy(assetPairId, price, volume);
             HttpResponseMessage responseMessage = await response.GetResponse();
@@ -194,7 +194,7 @@ namespace AutoTrader.Repository
             return deserializeObject.Payload.orderId;
         }
 
-        public async Task<string> LimitOrderSell(string assetPairId, float price, float volume)
+        public async Task<string> LimitOrderSell(string assetPairId, Decimal price, Decimal volume)
         {
             IResponse response = await wrappedResponeRepo.LimitOrderSell(assetPairId, price, volume);
             HttpResponseMessage responseMessage = await response.GetResponse();

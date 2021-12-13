@@ -32,7 +32,6 @@ namespace AutoTrader
                  services.AddScoped<IRepositoryGen<Task<IResponse>>, RawResponseRepository>();
                  services.AddScoped<IRepository, RetryRepository>();
                  services.AddScoped<DataRefresher>();
-                //  services.AddSingleton<IDataAccess, DataInFile>();
                  services.AddScoped<IDataAccessAsync, DataInDB>();
                  services.AddScoped<AssetPairHistoryEntryMapper>();
                  services.AddScoped<TradeEntryMapper>();

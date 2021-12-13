@@ -7,11 +7,11 @@ namespace AutoTrader.Data
         public String AssetPairId { get; set; }
         public DateTime Date { get; set; }
 
-        public float Ask { get; set; }
+        public Decimal Ask { get; set; }
 
-        public float Bid { get; set; }
+        public Decimal Bid { get; set; }
 
-        public Price(DateTime date, float ask, float bid, string assetPairId)
+        public Price(DateTime date, Decimal ask, Decimal bid, string assetPairId)
         {
             Date = date;
             Ask = ask;

@@ -13,12 +13,12 @@ namespace AutoTrader.Data
 
         private readonly AutoTraderDBContext _context;
 
-        private ILogger<DataInFile> logger { get; }
+        private ILogger<DataInDB> logger { get; }
 
         private AssetPairToEntity assetPairToEntity = new AssetPairToEntity();
         private PriceToEntity priceToEntity = new PriceToEntity();
 
-        public DataInDB(ILogger<DataInFile> logger, AutoTraderDBContext autoTraderDBContext)
+        public DataInDB(ILogger<DataInDB> logger, AutoTraderDBContext autoTraderDBContext)
         {
             _context = autoTraderDBContext;
             this.logger = logger;
@@ -69,16 +69,20 @@ namespace AutoTrader.Data
             return assetPairToEntities.Select(assetPairEntity => assetPairToEntity.create(assetPairEntity)).ToList();
         }
 
-        public void PersistData()
-        {
-
-        }
-
         public async Task<String> AddAssetPair(AssetPair assetPair)
         {
             var entityEntry = await _context.AddAsync(assetPairToEntity.create(assetPair));
             await _context.SaveChangesAsync();
             return entityEntry.Entity.Id;
+        }
+
+        public async Task<AssetPair> GetAssetPair(string assetPairId)
+        {
+            AssetPairEntity assetPairEntity = await _context.assetPairEntities.Where(assetPair => assetPair.Id.Equals(assetPairId)).FirstOrDefaultAsync();
+            if (assetPairEntity is null){
+                return null;
+            }
+            return assetPairToEntity.create(assetPairEntity);
         }
     }
 }

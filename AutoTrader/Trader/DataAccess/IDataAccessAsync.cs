@@ -22,7 +22,13 @@ namespace AutoTrader.Data
         /// Returns all assetPairIds which are available in the store 
         Task<List<AssetPair>> GetAssetPairs();
         
+        /// Summary:
+        /// Adds an assetpair to the store
         Task<String> AddAssetPair(AssetPair assetPair);
+
+        /// Summary:
+        /// Returns the assetPair from the store
+        Task <AssetPair> GetAssetPair(String assetPairId);
 
     }
 }

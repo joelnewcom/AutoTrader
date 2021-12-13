@@ -66,7 +66,7 @@ namespace AutoTrader.Repository
             return httpClient.GetAsync(LYKKE_API_V2 + "/api/prices?assetPairIds=" + assetPairId);
         }
 
-        public Task<HttpResponseMessage> LimitOrderBuy(String assetPairId, float price, float volume)
+        public Task<HttpResponseMessage> LimitOrderBuy(String assetPairId, Decimal price, Decimal volume)
         {
             PayloadLimitOrder payload = new PayloadLimitOrder { AssetPairId = assetPairId, Price = price, Side = "buy", Volume = volume };
             string content = JsonConvert.SerializeObject(payload);
@@ -74,7 +74,7 @@ namespace AutoTrader.Repository
             return httpClient.PostAsync(LYKKE_API_V2 + "/api/orders/limit", httpContent);
         }
 
-        public Task<HttpResponseMessage> LimitOrderSell(String assetPairId, float price, float volume)
+        public Task<HttpResponseMessage> LimitOrderSell(String assetPairId, Decimal price, Decimal volume)
         {
             PayloadLimitOrder payload = new PayloadLimitOrder { AssetPairId = assetPairId, Price = price, Side = "sell", Volume = volume };
             string content = JsonConvert.SerializeObject(payload);

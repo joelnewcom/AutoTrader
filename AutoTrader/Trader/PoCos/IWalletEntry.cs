@@ -6,8 +6,8 @@ namespace AutoTrader.Data
     {
         String AssetId { get; set; }
 
-        float Available { get; set; }
+        Decimal Available { get; set; }
 
-        float Reserved { get; set; }
+        Decimal Reserved { get; set; }
     }
 }

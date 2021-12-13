@@ -10,13 +10,13 @@ namespace AutoTrader.Data
             set => throw new NotImplementedException();
         }
 
-        public float Ask
+        public Decimal Ask
         {
             get => throw new NotImplementedException();
             set => throw new NotImplementedException();
         }
 
-        public float Bid
+        public Decimal Bid
         {
             get => throw new NotImplementedException();
             set => throw new NotImplementedException();

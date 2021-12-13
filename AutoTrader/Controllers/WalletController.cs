@@ -14,11 +14,11 @@ namespace AutoTrader.Controllers
 
         private readonly ILogger<TraderController> _logger;
 
-        private IDataAccess dataAccess;
+        private IDataAccessAsync dataAccess;
 
         private IRepository repo;
 
-        public WalletController(ILogger<TraderController> logger, IDataAccess dataAccess, IRepository repo)
+        public WalletController(ILogger<TraderController> logger, IDataAccessAsync dataAccess, IRepository repo)
         {
             _logger = logger;
             this.dataAccess = dataAccess;
