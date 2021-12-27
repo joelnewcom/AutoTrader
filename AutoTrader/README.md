@@ -31,5 +31,4 @@
 
 ## Entity framework
 
-
 dotnet add package Microsoft.EntityFrameworkCore.Design

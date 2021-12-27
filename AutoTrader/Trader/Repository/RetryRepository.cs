@@ -143,19 +143,28 @@ namespace AutoTrader.Repository
         {
             IResponse reponse = await wrappedResponeRepo.GetTrades();
             HttpResponseMessage responseMessage = await reponse.GetResponse();
-            PayloadWrapper<List<PayloadTradeHistory>> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<List<PayloadTradeHistory>>>(await responseMessage.Content.ReadAsStringAsync());
-            List<TradeEntry> responseObjects = new List<TradeEntry>();
-            if (deserializeObject is null || deserializeObject.Payload is null)
+
+            try
             {
+                PayloadWrapper<List<PayloadTradeHistory>> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<List<PayloadTradeHistory>>>(await responseMessage.Content.ReadAsStringAsync());
+                List<TradeEntry> responseObjects = new List<TradeEntry>();
+                if (deserializeObject is null || deserializeObject.Payload is null)
+                {
+                    return responseObjects;
+                }
+
+                foreach (PayloadTradeHistory item in deserializeObject.Payload)
+                {
+                    responseObjects.Add(tradeEntryMapper.build(item));
+                }
+
                 return responseObjects;
             }
-
-            foreach (PayloadTradeHistory item in deserializeObject.Payload)
+            catch (JsonSerializationException)
             {
-                responseObjects.Add(tradeEntryMapper.build(item));
+                _logger.LogWarning("Not able to parse trade history response. Raw response: " + await responseMessage.Content.ReadAsStringAsync());
+                return new List<TradeEntry>();
             }
-
-            return responseObjects;
         }
 
         public async Task<IPrice> GetPrice(string assetPairId)
@@ -163,7 +172,8 @@ namespace AutoTrader.Repository
             IResponse response = await wrappedResponeRepo.GetPrice(assetPairId);
             HttpResponseMessage responseMessage = await response.GetResponse();
 
-            try{
+            try
+            {
                 PayloadWrapper<List<PayloadPrice>> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<List<PayloadPrice>>>(await responseMessage.Content.ReadAsStringAsync());
                 if (deserializeObject is null || deserializeObject.Payload is null || deserializeObject.Payload.Count != 1)
                 {

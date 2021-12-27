@@ -1,4 +1,5 @@
 ﻿using AutoTrader.Advisor;
+using AutoTrader.Config;
 using AutoTrader.Data;
 using AutoTrader.Library;
 using AutoTrader.Repository;
@@ -13,17 +14,6 @@ using System.Threading.Tasks;
 
 namespace AutoTrader.Trader
 {
-    //## Always win strategy
-    // Only sell when bid is higher than the ask you bought at
-    // Buy at any price
-
-    // ## Ask/Bid
-    // The bid price represents the price that a buyer is willing to pay for a share of stock or other security.
-    // -> Use the max(bid) to sell your stuff immediatelly.
-    // -> Use the min(ask) to sell at the same "lowest" price the others wants to sell.
-
-    // The ask price represents the price that a seller is willing to take for this security.
-    // -> Use the min(ask) to buy new stuff. 
     public class TraderService : IHostedService, IDisposable
     {
         private const int SECONDS_TO_WAIT = 10;
@@ -39,7 +29,11 @@ namespace AutoTrader.Trader
 
         private IAdvisor<String, List<IBalance>> buyIfNotAlreadyOwned;
 
+        private IAdvisor<String, List<IBalance>> sellIfAlreadyOwned;
+
         private IAdvisor<Decimal, List<IBalance>> buyIfEnoughMoney;
+
+        private IAdvisor<Advice> safetyCatch;
 
         private int invokeCount;
 
@@ -55,6 +49,8 @@ namespace AutoTrader.Trader
             this.alwaysWinSeller = new AlwaysWinSeller();
             this.buyIfNotAlreadyOwned = new BuyIfNotAlreadyOwned();
             this.buyIfEnoughMoney = new BuyIfEnoughCHFAsset();
+            this.safetyCatch = new SafetyCatchAdvisor(conf.safetyCatch);
+            this.sellIfAlreadyOwned = new SellIfAlreadyOwned();
 
         }
 
@@ -92,7 +88,8 @@ namespace AutoTrader.Trader
                     if (assetPair != null)
                     {
                         AssetPair storedAssetPair = await dataAccess.GetAssetPair(assetPair.Id);
-                        if (storedAssetPair is null){
+                        if (storedAssetPair is null)
+                        {
                             await dataAccess.AddAssetPair(assetPair);
                         }
                         await dataRefresher.RefreshAssetPairHistory(assetPair.Id);
@@ -119,6 +116,8 @@ namespace AutoTrader.Trader
             {
                 IRepository repo = scope.ServiceProvider.GetRequiredService<IRepository>();
                 IDataAccessAsync dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccessAsync>();
+                List<TradeEntry> trades = await repo.GetTrades();
+                List<IBalance> balances = await repo.GetWallets();
 
                 foreach (AssetPair assetPair in await dataAccess.GetAssetPairs())
                 {
@@ -128,8 +127,6 @@ namespace AutoTrader.Trader
                     List<Decimal> asks = (from Price entry in enumerable select entry.Ask).ToList();
                     List<Decimal> bids = (from Price entry in enumerable select entry.Bid).ToList();
                     IPrice iPrice = await repo.GetPrice(assetPair.Id);
-                    List<TradeEntry> trades = await repo.GetTrades();
-                    List<IBalance> balances = await repo.GetWallets();
 
                     if (iPrice is not Price)
                     {
@@ -138,19 +135,27 @@ namespace AutoTrader.Trader
 
                     Price price = (Price)iPrice;
 
-                    if (Advice.Buy.Equals(linearSlope.advice(asks)))
+                    if (Advice.Buy.Equals(linearSlope.advice(asks)) && Advice.Buy.Equals(buyIfEnoughMoney.advice(CHF_TO_SPEND_AT_ONCE, balances)) && Advice.Buy.Equals(buyIfNotAlreadyOwned.advice(assetPair.BaseAssetId, balances)))
                     {
-                        if (Advice.Buy.Equals(buyIfEnoughMoney.advice(CHF_TO_SPEND_AT_ONCE, balances)) && Advice.Buy.Equals(buyIfNotAlreadyOwned.advice(assetPair.BaseAssetId, balances)))
+                        Decimal volume = CHF_TO_SPEND_AT_ONCE / price.Ask;
+                        _logger.LogInformation("Should buy: {0}, volume: {1}", assetPair.Id, volume);
+                        if (Advice.Buy.Equals(safetyCatch.advice(Advice.Buy)))
                         {
-                            _logger.LogInformation("Should buy: " + assetPair.Id);
-                            Decimal volume = CHF_TO_SPEND_AT_ONCE / price.Ask;
-                            Task<string> orderId = repo.LimitOrderBuy(assetPair.Id, price.Ask, Decimal.Round(volume, assetPair.Accuracy));
+                            string orderId = await repo.LimitOrderBuy(assetPair.Id, price.Ask, Decimal.Round(volume, assetPair.Accuracy));
+                            balances = await repo.GetWallets();
                         }
                     }
 
-                    else if (Advice.Sell.Equals(linearSlope.advice(bids)) && Advice.Sell.Equals(alwaysWinSeller.advice(assetPair.Id, price, trades)))
+                    else if (Advice.Sell.Equals(linearSlope.advice(bids)) && Advice.Sell.Equals(sellIfAlreadyOwned.advice(assetPair.BaseAssetId, balances)) && Advice.Sell.Equals(alwaysWinSeller.advice(assetPair.Id, price, trades)))
                     {
-                        _logger.LogInformation("Should sell: " + assetPair.Id);
+                        IBalance balance = balances.Where(b => assetPair.BaseAssetId.Equals(b.AssetId)).First();
+                        Decimal volume = balance.Available / price.Ask;
+                        _logger.LogInformation("Should sell: {0}, volume: {1}", assetPair.Id, volume);
+                        if (Advice.Sell.Equals(safetyCatch.advice(Advice.Sell)))
+                        {
+                            string orderId = await repo.LimitOrderSell(assetPair.Id, price.Ask, Decimal.Round(volume, assetPair.Accuracy));
+                            balances = await repo.GetWallets();
+                        }
                     }
                     else
                     {

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using AutoTrader.Data;
 using Microsoft.Extensions.Logging.Abstractions;
 using AutoTrader.Trader.Repository.Lykke.PocoMapper;
+using AutoTrader.Config;
 
 namespace AutoTraderTests.Repository
 {

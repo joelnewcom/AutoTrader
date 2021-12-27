@@ -7,7 +7,6 @@ namespace AutoTrader.Advisor
 {
     public class AlwaysWinSeller : IAdvisor<String, Price, List<TradeEntry>>
     {
-
         public Advice advice(string assetPairId, Price price, List<TradeEntry> trades)
         {
             if (price is not null && isHigherThanOurPrice(price, assetPairId, trades))

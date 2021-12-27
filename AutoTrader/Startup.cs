@@ -1,8 +1,6 @@
-using AutoTrader.Trader;
+using AutoTrader.Config;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -24,7 +22,7 @@ namespace AutoTrader
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDbContext<AutoTraderDBContext>(options => options.UseSqlite (Configuration.GetConnectionString("AutoTrader")));
+            services.AddDbContext<AutoTraderDBContext>(options => options.UseSqlite(Configuration.GetConnectionString("AutoTrader")));
 
             // In production, the React files will be served from this directory
             services.AddSpaStaticFiles(configuration =>
@@ -59,8 +57,9 @@ namespace AutoTrader
             app.UseSwagger();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.)
-            app.UseSwaggerUI(c => {  
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Test API V1");  
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Test API V1");
             });
 
             app.UseEndpoints(endpoints =>

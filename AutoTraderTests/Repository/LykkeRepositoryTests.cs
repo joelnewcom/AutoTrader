@@ -3,6 +3,7 @@ using AutoTrader.Repository;
 using System.Net.Http;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Threading.Tasks;
+using AutoTrader.Config;
 
 namespace AutoTraderTests.Repository
 {
