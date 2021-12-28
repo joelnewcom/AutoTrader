@@ -149,11 +149,10 @@ namespace AutoTrader.Trader
                     else if (Advice.Sell.Equals(linearSlope.advice(bids)) && Advice.Sell.Equals(sellIfAlreadyOwned.advice(assetPair.BaseAssetId, balances)) && Advice.Sell.Equals(alwaysWinSeller.advice(assetPair.Id, price, trades)))
                     {
                         IBalance balance = balances.Where(b => assetPair.BaseAssetId.Equals(b.AssetId)).First();
-                        Decimal volume = balance.Available / price.Ask;
-                        _logger.LogInformation("Should sell: {0}, volume: {1}", assetPair.Id, volume);
+                        _logger.LogInformation("Should sell: {0}, volume: {1}", assetPair.Id, balance.Available);
                         if (Advice.Sell.Equals(safetyCatch.advice(Advice.Sell)))
                         {
-                            string orderId = await repo.LimitOrderSell(assetPair.Id, price.Ask, Decimal.Round(volume, assetPair.Accuracy));
+                            string orderId = await repo.LimitOrderSell(assetPair.Id, price.Ask, Decimal.Round(balance.Available, assetPair.Accuracy));
                             balances = await repo.GetWallets();
                         }
                     }
