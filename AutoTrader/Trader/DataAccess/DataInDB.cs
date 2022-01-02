@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using AutoTrader.Trader.DataAccess.PoCoToEntityMappers;
 
 namespace AutoTrader.Data
 {
@@ -17,6 +18,8 @@ namespace AutoTrader.Data
 
         private AssetPairToEntity assetPairToEntity = new AssetPairToEntity();
         private PriceToEntity priceToEntity = new PriceToEntity();
+
+        private LogBookMapper logBookMapper = new LogBookMapper();
 
         public DataInDB(ILogger<DataInDB> logger, AutoTraderDBContext autoTraderDBContext)
         {
@@ -37,22 +40,12 @@ namespace AutoTrader.Data
             {
                 return new List<Price>();
             }
-            List<PriceEntity> priceEntities =  await _context.priceEntities
+            List<PriceEntity> priceEntities = await _context.priceEntities
             .Where(p => p.AssetPairId.Equals(assetPairId))
             .OrderBy(p => p.Date)
             .ToListAsync();
 
             return priceEntities.Select(priceEntity => priceToEntity.create(priceEntity)).ToList();
-        }
-
-        public Task<List<float>> GetBidHistory(String assetPairId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<float>> GetAskHistory(String assetPairId)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<DateTime> GetDateOfLatestEntry(String assetPairId)
@@ -79,10 +72,26 @@ namespace AutoTrader.Data
         public async Task<AssetPair> GetAssetPair(string assetPairId)
         {
             AssetPairEntity assetPairEntity = await _context.assetPairEntities.Where(assetPair => assetPair.Id.Equals(assetPairId)).FirstOrDefaultAsync();
-            if (assetPairEntity is null){
+            if (assetPairEntity is null)
+            {
                 return null;
             }
             return assetPairToEntity.create(assetPairEntity);
+        }
+
+        public async Task<List<LogBook>> GetLogBook(string assetPairId)
+        {
+            return await _context.logBooks
+            .Where(logBook => logBook.AssetPairId.Equals(assetPairId))
+            .Select(entity => logBookMapper.create(entity))
+            .ToListAsync();
+        }
+
+        public async Task<string> AddLogBook(LogBook logBook)
+        {
+            var logBookRecord = await _context.logBooks.AddAsync(logBookMapper.create(logBook));
+            await _context.SaveChangesAsync();
+            return logBookRecord.Entity.Id.ToString();
         }
     }
 }

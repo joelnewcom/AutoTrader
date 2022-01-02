@@ -41,16 +41,6 @@ namespace AutoTrader.Data
             return Task.FromResult(data.GetValueOrDefault(assetPairId, new List<Price>()));
         }
 
-        public Task<List<float>> GetBidHistory(String assetPairId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<List<float>> GetAskHistory(String assetPairId)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<DateTime> GetDateOfLatestEntry(String assetPairId)
         {
             List<Price> assetPairHistoryEntries = await GetAssetPairHistory(assetPairId);
@@ -78,6 +68,16 @@ namespace AutoTrader.Data
         }
 
         public Task<AssetPair> GetAssetPair(string assetPairId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<LogBook>> GetLogBook(string assetPairId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> AddLogBook(LogBook logBook)
         {
             throw new NotImplementedException();
         }

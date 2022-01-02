@@ -7,11 +7,6 @@ namespace AutoTrader.Advisor
         Advice advice(T dataIn);
     }
 
-    public interface IAdvisor
-    {
-        Advice advice();
-    }
-
     public interface IAdvisor<T, T2>
     {
         Advice advice(T dataIn, T2 dataIn2);

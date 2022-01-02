@@ -1,9 +1,5 @@
-﻿# lykkeTrader
-
-* [Public API Definition](https://public-api.lykke.com/swagger/ui)
-* [Hft API Definition](https://hft-api.lykke.com/swagger/ui/)
-* [Hft API v2 Definition](https://hft-apiv2.lykke.com/swagger/ui)
-
+﻿
+## AssetPairs to trade
 
 * BCHCHF        BCH/CHF
 * BTCCHF        BTC/CHF
@@ -28,7 +24,27 @@
 3. run: dotnet publish -c Release -o <whatever>/myapp
 4. Goto <whatever>/myapp and run AutoTrader.exe
 
+### Database
 
 ## Entity framework
+We used following commands to initialize entity framework:
 
+```
+dotnet add package Microsoft.EntityFrameworkCore.Sqlite
+dotnet tool install --global dotnet-ef
 dotnet add package Microsoft.EntityFrameworkCore.Design
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+* added new entity logBook
+dotnet ef migrations add AddLogBookTable
+dotnet ef database update
+
+```
+
+## Download prod db 
+1. Goto app service in azure portal.
+2. Click on Advanced Tool (Under development tools) -> This leads to KuDo
+3. Goto to Debug Console (Choose CMD or Powershell. We only want to use filebrowser)
+4. Navigate ```./site/wwwroot/```
+5. Download ```AutoTrader.db```
+

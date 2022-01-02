@@ -1,5 +1,5 @@
-using System;
 using AutoTrader.Data;
+using AutoTrader.Trader;
 using Microsoft.EntityFrameworkCore;
 
 public class AutoTraderDBContext : DbContext
@@ -11,6 +11,8 @@ public class AutoTraderDBContext : DbContext
 
     public DbSet<PriceEntity> priceEntities { get; set; }
 
-    public DbSet<AssetPairEntity> assetPairEntities { get; set;}
+    public DbSet<AssetPairEntity> assetPairEntities { get; set; }
+
+    public DbSet<LogBookEntity> logBooks { get; set; }
 
 }
