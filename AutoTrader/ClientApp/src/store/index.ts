@@ -1,3 +1,4 @@
+import * as WeatherForecasts from './WeatherForecasts';
 import * as Counter from './Counter';
 import * as AutoTrader from './AssetPairStore';
 import * as WalletStore from './WalletStore';
@@ -7,6 +8,7 @@ import * as ExceptionLogStore from './ExceptionLogStore';
 // The top-level state object
 export interface ApplicationState {
     counter: Counter.CounterState | undefined;
+    weatherForecasts: WeatherForecasts.WeatherForecastsState | undefined;
     autoTrader: AutoTrader.AutoTraderState | undefined;
     wallet: WalletStore.WalletState | undefined;
     trades: TradeStore.TradeState | undefined;
@@ -18,6 +20,7 @@ export interface ApplicationState {
 // acts on the corresponding ApplicationState property type.
 export const reducers = {
     counter: Counter.reducer,
+    weatherForecasts: WeatherForecasts.reducer,
     autoTrader: AutoTrader.reducer,
     wallet: WalletStore.reducer,
     trades: TradeStore.reducer,
