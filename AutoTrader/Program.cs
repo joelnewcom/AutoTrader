@@ -29,7 +29,7 @@ namespace AutoTrader
              {
                  services.AddHostedService<TraderService>();
                  services.AddScoped<IRepositoryGen<Task<HttpResponseMessage>>, LykkeRepository>();
-                 services.AddScoped<IRepositoryGen<Task<IResponse>>, RawResponseRepository>();
+                 services.AddScoped<IRepositoryGen<Task<IResponse<HttpResponseMessage>>>, RawResponseRepository>();
                  services.AddScoped<IRepository, RetryRepository>();
                  services.AddScoped<DataRefresher>();
                  services.AddScoped<IDataAccessAsync, DataInDB>();

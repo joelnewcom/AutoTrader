@@ -81,5 +81,10 @@ namespace AutoTrader.Data
         {
             throw new NotImplementedException();
         }
+
+        public Task<string> UpdateAssetPair(AssetPair assertPair)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

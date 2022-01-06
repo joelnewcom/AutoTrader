@@ -51,6 +51,10 @@ namespace AutoTrader.Repository
         {
             return httpClient.GetAsync(PUBLIC_API + "/api/AssetPairs/dictionary/Spot");
         }
+        public Task<HttpResponseMessage> GetAssetPairs()
+        {
+            return httpClient.GetAsync(LYKKE_API_V2 + "/api/assetpairs");
+        }
 
         public Task<HttpResponseMessage> GetWallets()
         {
@@ -82,5 +86,6 @@ namespace AutoTrader.Repository
             HttpContent httpContent = new StringContent(content, Encoding.UTF8, applicationJson);
             return httpClient.PostAsync(LYKKE_API_V2 + "/api/orders/limit", httpContent);
         }
+
     }
 }

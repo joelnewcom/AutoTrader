@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AutoTrader.Repository
 {
-    public class RawResponseRepository : IRepositoryGen<Task<IResponse>>
+    public class RawResponseRepository : IRepositoryGen<Task<IResponse<HttpResponseMessage>>>
     {
 
         private readonly ILogger<RawResponseRepository> _logger;
@@ -18,21 +18,27 @@ namespace AutoTrader.Repository
             _logger = logger;
         }
 
-        public async Task<IResponse> GetAssetPairsDictionary()
+        public async Task<IResponse<HttpResponseMessage>> GetAssetPairsDictionary()
         {
             Task<HttpResponseMessage> task = lykkeRepository.GetAssetPairsDictionary();
             HttpResponseMessage msg = await task;
-            return new WrappedResponse(task);
+            return new HttpResponse(task);
+        }
+        public async Task<IResponse<HttpResponseMessage>> GetAssetPairs()
+        {
+            Task<HttpResponseMessage> task = lykkeRepository.GetAssetPairs();
+            HttpResponseMessage msg = await task;
+            return new HttpResponse(task);
         }
 
-        public async Task<IResponse> IsAliveAsync()
+        public async Task<IResponse<HttpResponseMessage>> IsAliveAsync()
         {
             Task<HttpResponseMessage> task = lykkeRepository.IsAliveAsync();
             HttpResponseMessage msg = await task;
-            return new WrappedResponse(task, msg.IsSuccessStatusCode, ReasonOfFailure.None);
+            return new HttpResponse(task, msg.IsSuccessStatusCode, ReasonOfFailure.None, await msg.Content.ReadAsStringAsync());
         }
 
-        public async Task<IResponse> GetHistoryRatePerDay(String assetPairId, DateTime date)
+        public async Task<IResponse<HttpResponseMessage>> GetHistoryRatePerDay(String assetPairId, DateTime date)
         {
             Task<HttpResponseMessage> task = lykkeRepository.GetHistoryRatePerDay(assetPairId, date);
             HttpResponseMessage msg = await task;
@@ -41,35 +47,36 @@ namespace AutoTrader.Repository
             if (response.Contains("API calls quota exceeded"))
             {
                 _logger.LogWarning("API calls quota exceeded");
-                return new WrappedResponse(task, false, ReasonOfFailure.QuotaExceeded);
+                return new HttpResponse(task, false, ReasonOfFailure.QuotaExceeded, await msg.Content.ReadAsStringAsync());
             }
 
-            return new WrappedResponse(task);
+            return new HttpResponse(task);
         }
 
-        public Task<IResponse> GetWallets()
+        public Task<IResponse<HttpResponseMessage>> GetWallets()
         {
-            return Task.FromResult<IResponse>(new WrappedResponse(lykkeRepository.GetWallets()));
+            return Task.FromResult<IResponse<HttpResponseMessage>>(new HttpResponse(lykkeRepository.GetWallets()));
         }
 
-        public Task<IResponse> GetTrades()
+        public Task<IResponse<HttpResponseMessage>> GetTrades()
         {
-            return Task.FromResult<IResponse>(new WrappedResponse(lykkeRepository.GetTrades()));
+            return Task.FromResult<IResponse<HttpResponseMessage>>(new HttpResponse(lykkeRepository.GetTrades()));
         }
 
-        public Task<IResponse> GetPrice(string assetPairId)
+        public Task<IResponse<HttpResponseMessage>> GetPrice(string assetPairId)
         {
-            return Task.FromResult<IResponse>(new WrappedResponse(lykkeRepository.GetPrice(assetPairId)));
+            return Task.FromResult<IResponse<HttpResponseMessage>>(new HttpResponse(lykkeRepository.GetPrice(assetPairId)));
         }
 
-        public Task<IResponse> LimitOrderBuy(string assetPairId, Decimal price, Decimal volume)
+        public Task<IResponse<HttpResponseMessage>> LimitOrderBuy(string assetPairId, Decimal price, Decimal volume)
         {
-            return Task.FromResult<IResponse>(new WrappedResponse(lykkeRepository.LimitOrderBuy(assetPairId, price, volume)));
+            return Task.FromResult<IResponse<HttpResponseMessage>>(new HttpResponse(lykkeRepository.LimitOrderBuy(assetPairId, price, volume)));
         }
 
-        public Task<IResponse> LimitOrderSell(string assetPairId, Decimal price, Decimal volume)
+        public Task<IResponse<HttpResponseMessage>> LimitOrderSell(string assetPairId, Decimal price, Decimal volume)
         {
-            return Task.FromResult<IResponse>(new WrappedResponse(lykkeRepository.LimitOrderSell(assetPairId, price, volume)));
+            return Task.FromResult<IResponse<HttpResponseMessage>>(new HttpResponse(lykkeRepository.LimitOrderSell(assetPairId, price, volume)));
         }
+
     }
 }

@@ -35,7 +35,7 @@ namespace AutoTraderTests.Repository
         [TestMethod()]
         public async Task GetDictionaryTest()
         {
-            Dictionary<string, AssetPair> task = await repository.GetAssetPairsDictionary();
+            Dictionary<string, AssetPair> task = await repository.GetAssetPairs();
             Assert.IsTrue(task.Count > 1);
         }
 

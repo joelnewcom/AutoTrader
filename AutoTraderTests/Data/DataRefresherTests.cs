@@ -13,7 +13,7 @@ namespace AutoTraderTests.Library
     {
         readonly Mock<IRepository> repoMock = new Mock<IRepository>();
         readonly Mock<IDataAccessAsync> dataAccessMock = new Mock<IDataAccessAsync>();
-        readonly AssetPair assetPair = new AssetPair("eth/chf", "testAssetPair", 1000, "CHF", "ETH");
+        readonly AssetPair assetPair = new AssetPair("eth/chf", "testAssetPair", 1000, "CHF", "ETH", 0, 0, 0);
 
         [TestMethod()]
         public async Task NewEntryGetsAdded()

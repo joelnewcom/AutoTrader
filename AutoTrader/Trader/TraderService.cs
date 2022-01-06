@@ -47,6 +47,7 @@ namespace AutoTrader.Trader
         public async Task StartAsync(CancellationToken cancellationToken)
         {
             await doPrepWorkAsync();
+            await RefreshHistory();
             var autoEvent = new AutoResetEvent(false);
             _timer = new Timer(DoWork, autoEvent, TimeSpan.Zero, TimeSpan.FromHours(8));
             return;
@@ -61,7 +62,7 @@ namespace AutoTrader.Trader
                 DataRefresher dataRefresher = scope.ServiceProvider.GetRequiredService<DataRefresher>();
 
                 _logger.LogInformation("Starting with Prework");
-                Dictionary<String, AssetPair> assetPairDict = await repo.GetAssetPairsDictionary();
+                Dictionary<String, AssetPair> assetPairDict = await repo.GetAssetPairs();
                 _logger.LogInformation("Got some assetPairs from repo [assetPairDict]: {keys}", string.Join(", ", assetPairDict.Select(kvp => kvp.Key)));
 
                 List<string> knownAssetPairIds = conf.knownAssetPairIds;
@@ -75,9 +76,12 @@ namespace AutoTrader.Trader
                         AssetPair storedAssetPair = await dataAccess.GetAssetPair(assetPair.Id);
                         if (storedAssetPair is null)
                         {
-                            await dataAccess.AddAssetPair(assetPair);
+                            string v = await dataAccess.AddAssetPair(assetPair);
                         }
-                        await dataRefresher.RefreshAssetPairHistory(assetPair.Id);
+                        else
+                        {
+                            String task = await dataAccess.UpdateAssetPair(assetPair);
+                        }
                     }
                 }
 
@@ -123,18 +127,33 @@ namespace AutoTrader.Trader
                     {
                         Decimal volume = CHF_TO_SPEND_AT_ONCE / price.Ask;
                         _logger.LogInformation("Should buy: {0}, volume: {1}", assetPair.Id, volume);
-                        string orderId = await repo.LimitOrderBuy(assetPair.Id, price.Ask, Decimal.Round(volume, assetPair.Accuracy));
-                        reason = "buy orderId: " + orderId;
-                        balances = await repo.GetWallets();
+                        // Use baseAsset Accuracy to set volume (USDCHF = 2)
+                        IResponse<String> response = await repo.LimitOrderBuy(assetPair.Id, Decimal.Round(price.Ask, assetPair.PriceAccuracy), Decimal.Round(volume, assetPair.QuoteAssetAccuracy));
+                        if (response.IsSuccess())
+                        {
+                            reason = "buy orderId: " + await response.GetResponse();
+                            balances = await repo.GetWallets();
+                        }
+                        else
+                        {
+                            reason = "ReasonOfFailure: " + response.GetReasonOfFailure() + ", Errormessage: " + response.GetErrorMessage();
+                        }
                     }
 
                     else if (sell.Equals(decisionAudit))
                     {
                         IBalance balance = balances.Where(b => assetPair.BaseAssetId.Equals(b.AssetId)).First();
                         _logger.LogInformation("Should sell: {0}, volume: {1}", assetPair.Id, balance.Available);
-                        string orderId = await repo.LimitOrderSell(assetPair.Id, price.Ask, Decimal.Round(balance.Available, assetPair.Accuracy));
-                        reason = "sell orderId: " + orderId;
-                        balances = await repo.GetWallets();
+                        IResponse<String> response = await repo.LimitOrderSell(assetPair.Id, Decimal.Round(price.Ask, assetPair.PriceAccuracy), Decimal.Round(balance.Available, assetPair.QuoteAssetAccuracy));
+                        if (response.IsSuccess())
+                        {
+                            reason = "sell orderId: " + await response.GetResponse();
+                            balances = await repo.GetWallets();
+                        }
+                        else
+                        {
+                            reason = "ReasonOfFailure: " + response.GetReasonOfFailure() + ", Errormessage: " + response.GetErrorMessage();
+                        }
                     }
                     else
                     {

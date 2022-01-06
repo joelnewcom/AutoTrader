@@ -19,7 +19,7 @@ namespace AutoTrader.Repository
 
         private readonly int delayBetweenReriesInSeconds = 10;
 
-        private IRepositoryGen<Task<IResponse>> wrappedResponeRepo;
+        private IRepositoryGen<Task<IResponse<HttpResponseMessage>>> wrappedResponeRepo;
 
         private AssetPairHistoryEntryMapper assetPairHistoryEntryMapper;
         private TradeEntryMapper tradeEntryMapper;
@@ -29,7 +29,7 @@ namespace AutoTrader.Repository
 
         public RetryRepository(
             ILogger<RetryRepository> logger,
-            IRepositoryGen<Task<IResponse>> wrappedResponseRepo,
+            IRepositoryGen<Task<IResponse<HttpResponseMessage>>> wrappedResponseRepo,
             AssetPairHistoryEntryMapper assetPairHistoryEntryMapper,
             TradeEntryMapper tradeEntryMapper,
             PriceMapper priceMapper,
@@ -45,7 +45,7 @@ namespace AutoTrader.Repository
 
         public async Task<Boolean> IsAliveAsync()
         {
-            IResponse response = await wrappedResponeRepo.IsAliveAsync();
+            IResponse<HttpResponseMessage> response = await wrappedResponeRepo.IsAliveAsync();
             HttpResponseMessage msg = await response.GetResponse();
             return msg.IsSuccessStatusCode;
         }
@@ -55,7 +55,7 @@ namespace AutoTrader.Repository
             String responseString = "";
             foreach (int value in Enumerable.Range(1, retries))
             {
-                IResponse response = await wrappedResponeRepo.GetHistoryRatePerDay(assetPairId, date);
+                IResponse<HttpResponseMessage> response = await wrappedResponeRepo.GetHistoryRatePerDay(assetPairId, date);
                 if (response.IsSuccess())
                 {
                     HttpResponseMessage msg = await response.GetResponse();
@@ -83,13 +83,13 @@ namespace AutoTrader.Repository
             }
         }
 
-        public async Task<Dictionary<string, AssetPair>> GetAssetPairsDictionary()
+        public async Task<Dictionary<string, AssetPair>> GetAssetPairs()
         {
 
             String responseString = "";
             foreach (int value in Enumerable.Range(1, retries))
             {
-                IResponse response = await wrappedResponeRepo.GetAssetPairsDictionary();
+                IResponse<HttpResponseMessage> response = await wrappedResponeRepo.GetAssetPairs();
 
                 if (response.IsSuccess())
                 {
@@ -100,7 +100,7 @@ namespace AutoTrader.Repository
                 await Task.Delay(delayBetweenReriesInSeconds * 1000);
             }
 
-            List<PayloadAssetPairDictEntry> deserializeObject = JsonConvert.DeserializeObject<List<PayloadAssetPairDictEntry>>(responseString);
+            PayloadWrapper<List<PayloadAssetPair>> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<List<PayloadAssetPair>>>(responseString);
 
             Dictionary<String, AssetPair> assetPairs = new Dictionary<string, AssetPair>();
 
@@ -109,9 +109,9 @@ namespace AutoTrader.Repository
                 return assetPairs;
             }
 
-            foreach (PayloadAssetPairDictEntry item in deserializeObject)
+            foreach (PayloadAssetPair item in deserializeObject.Payload)
             {
-                assetPairs.Add(item.id, assetPairMapper.create(item));
+                assetPairs.Add(item.assetPairId, assetPairMapper.create(item));
             }
 
             return assetPairs;
@@ -119,7 +119,7 @@ namespace AutoTrader.Repository
 
         public async Task<List<IBalance>> GetWallets()
         {
-            IResponse reponse = await wrappedResponeRepo.GetWallets();
+            IResponse<HttpResponseMessage> reponse = await wrappedResponeRepo.GetWallets();
             HttpResponseMessage responseMessage = await reponse.GetResponse();
 
             PayloadWrapper<List<PayloadBalance>> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<List<PayloadBalance>>>(await responseMessage.Content.ReadAsStringAsync());
@@ -141,7 +141,7 @@ namespace AutoTrader.Repository
 
         public async Task<List<TradeEntry>> GetTrades()
         {
-            IResponse reponse = await wrappedResponeRepo.GetTrades();
+            IResponse<HttpResponseMessage> reponse = await wrappedResponeRepo.GetTrades();
             HttpResponseMessage responseMessage = await reponse.GetResponse();
 
             try
@@ -169,7 +169,7 @@ namespace AutoTrader.Repository
 
         public async Task<IPrice> GetPrice(string assetPairId)
         {
-            IResponse response = await wrappedResponeRepo.GetPrice(assetPairId);
+            IResponse<HttpResponseMessage> response = await wrappedResponeRepo.GetPrice(assetPairId);
             HttpResponseMessage responseMessage = await response.GetResponse();
 
             try
@@ -190,33 +190,45 @@ namespace AutoTrader.Repository
             }
         }
 
-        public async Task<string> LimitOrderBuy(string assetPairId, Decimal price, Decimal volume)
+        public async Task<IResponse<string>> LimitOrderBuy(string assetPairId, Decimal price, Decimal volume)
         {
-            IResponse response = await wrappedResponeRepo.LimitOrderBuy(assetPairId, price, volume);
+            IResponse<HttpResponseMessage> response = await wrappedResponeRepo.LimitOrderBuy(assetPairId, price, volume);
+
+            if (!response.IsSuccess())
+            {
+                return new StringResponse(Task.FromResult(""), false, ReasonOfFailure.Unknownfailure, response.GetErrorMessage());
+            }
+
             HttpResponseMessage responseMessage = await response.GetResponse();
             PayloadWrapper<PayloadOrderId> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<PayloadOrderId>>(await responseMessage.Content.ReadAsStringAsync());
 
             if (deserializeObject is null || deserializeObject.Payload is null)
             {
-                throw new HttpRequestException("ErrorCode " + responseMessage.StatusCode + " LimitOrder Buy did not work due to " + responseMessage.Content.ReadAsStringAsync());
+                return new StringResponse(Task.FromResult(""), false, ReasonOfFailure.Unknownfailure, "ErrorCode " + responseMessage.StatusCode + " LimitOrder Buy did not work due to " + await responseMessage.Content.ReadAsStringAsync());
             }
 
-            return deserializeObject.Payload.orderId;
+            return new StringResponse(Task.FromResult(deserializeObject.Payload.orderId));
         }
 
-        public async Task<string> LimitOrderSell(string assetPairId, Decimal price, Decimal volume)
+        public async Task<IResponse<string>> LimitOrderSell(string assetPairId, Decimal price, Decimal volume)
         {
-            IResponse response = await wrappedResponeRepo.LimitOrderSell(assetPairId, price, volume);
+            IResponse<HttpResponseMessage> response = await wrappedResponeRepo.LimitOrderSell(assetPairId, price, volume);
+
+            if (!response.IsSuccess())
+            {
+                return new StringResponse(Task.FromResult(""), false, ReasonOfFailure.Unknownfailure, response.GetErrorMessage());
+            }
+
+
             HttpResponseMessage responseMessage = await response.GetResponse();
             PayloadWrapper<PayloadOrderId> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<PayloadOrderId>>(await responseMessage.Content.ReadAsStringAsync());
 
             if (deserializeObject is null || deserializeObject.Payload is null)
             {
-                throw new HttpRequestException("ErrorCode " + responseMessage.StatusCode + " LimitOrder Sell did not work due to " + responseMessage.Content.ReadAsStringAsync());
+                return new StringResponse(Task.FromResult(""), false, ReasonOfFailure.Unknownfailure, "ErrorCode " + responseMessage.StatusCode + " LimitOrder Sell did not work due to " + await responseMessage.Content.ReadAsStringAsync());
             }
 
-            return deserializeObject.Payload.orderId;
-
+            return new StringResponse(Task.FromResult(deserializeObject.Payload.orderId));
         }
     }
 }

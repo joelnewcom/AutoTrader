@@ -10,19 +10,25 @@ namespace AutoTrader.Data
 
         public String Name { get; private set; }
 
-        public int Accuracy { get; private set; }
+        public int PriceAccuracy { get; private set; }
 
         public String BaseAssetId { get; private set; }
 
         public String QuotingAssetId { get; private set; }
+        
+        public int BaseAssetAccuracy { get; private set; }
 
-        public AssetPairEntity(String id, String name, int accuracy, String baseAssetId, String quotingAssetId)
+        public int QuotingAssetAccuracy { get; private set; }
+
+        public AssetPairEntity(String id, String name, int priceAccuracy, String baseAssetId, String quotingAssetId, int baseAssetAccuracy, int quotingAssetAccuracy)
         {
             this.Id = id;
             this.Name = name;
-            this.Accuracy = accuracy;
+            this.PriceAccuracy = priceAccuracy;
             this.BaseAssetId = baseAssetId;
             this.QuotingAssetId = quotingAssetId;
+            this.BaseAssetAccuracy = baseAssetAccuracy;
+            this.QuotingAssetAccuracy = quotingAssetAccuracy;
         }
     }
 }

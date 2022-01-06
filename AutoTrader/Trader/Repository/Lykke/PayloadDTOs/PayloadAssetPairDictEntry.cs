@@ -1,5 +1,3 @@
-using System;
-
 namespace AutoTrader.Repository
 {
     public class PayloadAssetPairDictEntry

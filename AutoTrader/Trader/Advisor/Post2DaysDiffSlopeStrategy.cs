@@ -47,19 +47,7 @@ namespace AutoTrader.Trader.Advisor
             Advice alreadyOwnerAdvice = sellIfAlreadyOwned.advice(assetPair.BaseAssetId, balances);
             Advice alwaysWinAdvice = alwaysWinSeller.advice(assetPair.Id, price, trades);
 
-            String logBookEntry = String.Format(@"Buy Group: [   
-                                                    linearSlopeAdvice: {0}, 
-                                                    enoughMoneyAdvice: {1}, 
-                                                    notAlreadyOwnedAdvice: {2}, 
-                                                    buySafetyCatch: {3}], 
-                                                Sell Group: [
-                                                    linearSlopeAdvice: {0}, 
-                                                    alreadyOwnerAdvice: {4}, 
-                                                    alwaysWinAdvice: {5}, 
-                                                    sellSafetyCatch: {6}
-                                                ]", linearSlopeAdvice, enoughMoneyAdvice, notAlreadyOwnedAdvice, buySafetyCatch, alreadyOwnerAdvice, alwaysWinAdvice, sellSafetyCatch);
-
-            
+            String logBookEntry = String.Format(@"Buy Group: [linearSlopeAdvice: {0}, enoughMoneyAdvice: {1}, notAlreadyOwnedAdvice: {2}, buySafetyCatch: {3}], Sell Group: [linearSlopeAdvice: {0}, alreadyOwnerAdvice: {4}, alwaysWinAdvice: {5}, sellSafetyCatch: {6}]", linearSlopeAdvice, enoughMoneyAdvice, notAlreadyOwnedAdvice, buySafetyCatch, alreadyOwnerAdvice, alwaysWinAdvice, sellSafetyCatch);
 
             if (buy.Equals(linearSlopeAdvice) && buy.Equals(enoughMoneyAdvice) && buy.Equals(notAlreadyOwnedAdvice) && buy.Equals(buySafetyCatch))
             {

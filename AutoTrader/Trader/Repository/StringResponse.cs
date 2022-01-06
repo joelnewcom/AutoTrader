@@ -1,27 +1,30 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace AutoTrader.Repository
 {
-    public class WrappedResponse : IResponse
+    public class StringResponse : IResponse<String>
     {
-        Task<HttpResponseMessage> response;
+        Task<String> response;
         Boolean success;
         ReasonOfFailure reasonOfFailure;
 
-        public WrappedResponse(Task<HttpResponseMessage> response, bool success, ReasonOfFailure reasonOfFailure)
+        String errorMessage;
+
+        public StringResponse(Task<String> response, bool success, ReasonOfFailure reasonOfFailure, string errorMessage)
         {
             this.response = response;
             this.success = success;
             this.reasonOfFailure = reasonOfFailure;
+            this.errorMessage = errorMessage;
         }
 
-        public WrappedResponse(Task<HttpResponseMessage> response)
+        public StringResponse(Task<String> response)
         {
             this.response = response;
             this.success = true;
             this.reasonOfFailure = ReasonOfFailure.None;
+            this.errorMessage = "";
         }
 
         public ReasonOfFailure GetReasonOfFailure()
@@ -29,7 +32,7 @@ namespace AutoTrader.Repository
             return reasonOfFailure;
         }
 
-        public Task<HttpResponseMessage> GetResponse()
+        public Task<String> GetResponse()
         {
             return response;
         }
@@ -37,6 +40,11 @@ namespace AutoTrader.Repository
         public bool IsSuccess()
         {
             return success;
+        }
+
+        public string GetErrorMessage()
+        {
+            return errorMessage;
         }
     }
 }

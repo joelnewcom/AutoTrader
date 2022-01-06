@@ -1,5 +1,4 @@
 using AutoTrader.Data;
-using AutoTrader.Trader;
 using Microsoft.EntityFrameworkCore;
 
 public class AutoTraderDBContext : DbContext

@@ -71,7 +71,10 @@ namespace AutoTrader.Data
 
         public async Task<AssetPair> GetAssetPair(string assetPairId)
         {
-            AssetPairEntity assetPairEntity = await _context.assetPairEntities.Where(assetPair => assetPair.Id.Equals(assetPairId)).FirstOrDefaultAsync();
+            AssetPairEntity assetPairEntity = await _context.assetPairEntities
+                .Where(assetPair => assetPair.Id.Equals(assetPairId))
+                .AsNoTracking()
+                .FirstOrDefaultAsync();
             if (assetPairEntity is null)
             {
                 return null;
@@ -92,6 +95,13 @@ namespace AutoTrader.Data
             var logBookRecord = await _context.logBooks.AddAsync(logBookMapper.create(logBook));
             await _context.SaveChangesAsync();
             return logBookRecord.Entity.Id.ToString();
+        }
+
+        public async Task<string> UpdateAssetPair(AssetPair assetPair)
+        {
+            var entityEntry = _context.Update(assetPairToEntity.create(assetPair));
+            await _context.SaveChangesAsync();
+            return entityEntry.Entity.Id;
         }
     }
 }

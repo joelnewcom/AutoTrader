@@ -1,13 +1,13 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace AutoTrader.Repository
 {
-    public interface IResponse
+    public interface IResponse<T>
     {
-        Task<HttpResponseMessage> GetResponse(); 
+        Task<T> GetResponse(); 
         Boolean IsSuccess();
         ReasonOfFailure GetReasonOfFailure();
+        String GetErrorMessage();
     }
 }

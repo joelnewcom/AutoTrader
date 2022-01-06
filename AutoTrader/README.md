@@ -38,6 +38,9 @@ dotnet ef database update
 * added new entity logBook
 dotnet ef migrations add AddLogBookTable
 dotnet ef database update
+* changed AssetPair entity
+dotnet ef migrations add NewFieldsInAssetPair
+dotnet ef database update
 
 ```
 

@@ -38,7 +38,7 @@ class Wallet extends React.PureComponent<WalletProps> {
   private renderBalances() {
     return (
       <div>
-        <h1>AssetPairs</h1>
+        <h1>Balances</h1>
         <table className='table table-striped' aria-labelledby="tabelLabel">
           <thead>
             <tr>

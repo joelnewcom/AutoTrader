@@ -7,7 +7,7 @@ namespace AutoTrader.Repository
 {
     public interface IRepository
     {
-        Task<Dictionary<String, AssetPair>> GetAssetPairsDictionary();
+        Task<Dictionary<String, AssetPair>> GetAssetPairs();
 
         Task<Boolean> IsAliveAsync();
 
@@ -19,14 +19,16 @@ namespace AutoTrader.Repository
 
         Task<IPrice> GetPrice(String assetPairId);
 
-        Task<String> LimitOrderBuy(String assetPairId, Decimal price, Decimal volume);
+        Task<IResponse<String>> LimitOrderBuy(String assetPairId, Decimal price, Decimal volume);
 
-        Task<String> LimitOrderSell(String assetPairId, Decimal price, Decimal volume);
+        Task<IResponse<String>> LimitOrderSell(String assetPairId, Decimal price, Decimal volume);
     }
 
     public interface IRepositoryGen<T>
     {
         T GetAssetPairsDictionary();
+
+        T GetAssetPairs();
 
         T IsAliveAsync();
 

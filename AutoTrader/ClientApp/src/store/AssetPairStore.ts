@@ -14,9 +14,11 @@ export interface AutoTraderState {
 export interface AssetPairs {
     id: string;
     name: string;
-    accuracy: number;
+    priceAccuracy: number;
     baseAssetId:string;
     quotingAssetId:string;
+    quoteAssetAccuracy:number;
+    baseAssetAccuracy:number;
 }
 
 export interface AutoTraderIAssetPairHistoryEntry {
