@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoTrader.Trader.PoCos;
 
 namespace AutoTrader.Data
 {
@@ -23,7 +24,6 @@ namespace AutoTrader.Data
         Task<String> AddAssetPair(AssetPair assetPair);
 
         /// <summary> Updates an assetPair in the store
-
         Task<String> UpdateAssetPair(AssetPair assertPair);
 
         /// <summary> Returns the assetPair with the privoded assetPairId from the store </summary>
@@ -36,5 +36,13 @@ namespace AutoTrader.Data
         /// <returns> id of the new record </returns>
         Task<String> AddLogBook(LogBook logBook);
 
+        /// <summary> Truncates the whole assetPairs table </summary>
+        Task<int> DeleteAllAssetPair();
+
+        /// <summary> Adds new Exception log to store </summary>
+        Task<String> AddExceptionLog(ExceptionLog exceptionLog);
+
+        /// <summary>Return all esceptionlogs available in store</summary>
+        Task<List<ExceptionLog>> GetExceptionLogs();
     }
 }

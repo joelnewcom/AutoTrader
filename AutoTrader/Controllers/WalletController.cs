@@ -11,17 +11,13 @@ namespace AutoTrader.Controllers
     [Route("[controller]")]
     public class WalletController : ControllerBase
     {
-
-        private readonly ILogger<TraderController> _logger;
-
-        private IDataAccessAsync dataAccess;
+        private readonly ILogger<WalletController> _logger;
 
         private IRepository repo;
 
-        public WalletController(ILogger<TraderController> logger, IDataAccessAsync dataAccess, IRepository repo)
+        public WalletController(ILogger<WalletController> logger, IRepository repo)
         {
             _logger = logger;
-            this.dataAccess = dataAccess;
             this.repo = repo;
         }
 

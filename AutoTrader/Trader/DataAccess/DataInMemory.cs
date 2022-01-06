@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoTrader.Trader.PoCos;
 using Microsoft.Extensions.Logging;
 
 namespace AutoTrader.Data
@@ -46,10 +47,7 @@ namespace AutoTrader.Data
             List<Price> assetPairHistoryEntries = await GetAssetPairHistory(assetPairId);
             assetPairHistoryEntries.Sort(delegate (Price x, Price y)
             {
-                if (x.Date == null && y.Date == null) return 0;
-                else if (x.Date == null) return -1;
-                else if (y.Date == null) return 1;
-                else return y.Date.CompareTo(x.Date);
+                return y.Date.CompareTo(x.Date);
             });
 
             if (assetPairHistoryEntries.Count > 1)
@@ -83,6 +81,21 @@ namespace AutoTrader.Data
         }
 
         public Task<string> UpdateAssetPair(AssetPair assertPair)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> DeleteAllAssetPair()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<string> AddExceptionLog(ExceptionLog exceptionLog)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<ExceptionLog>> GetExceptionLogs()
         {
             throw new NotImplementedException();
         }

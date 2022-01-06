@@ -19,6 +19,8 @@ namespace AutoTrader.Data
         public int BaseAssetAccuracy { get; private set; }
 
         public int QuotingAssetAccuracy { get; private set; }
+        public string Message { get; }
+        public DateTime DateTime { get; }
 
         public AssetPairEntity(String id, String name, int priceAccuracy, String baseAssetId, String quotingAssetId, int baseAssetAccuracy, int quotingAssetAccuracy)
         {

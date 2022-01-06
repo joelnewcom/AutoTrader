@@ -5,6 +5,7 @@ import { ApplicationState } from '../store';
 import * as AutoTradersStore from "../store/AssetPairStore";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, Tooltip } from 'recharts';
 import moment from 'moment';
+import { Button } from 'reactstrap';
 
 // At runtime, Redux will merge together...
 type AutoTraderProps =
@@ -57,11 +58,9 @@ class AssetPairs extends React.PureComponent<AutoTraderProps> {
             {this.props.assetPairs.map((assetPairs: AutoTradersStore.AssetPairs) =>
               <tr key={assetPairs.id}>
                 <td>
-                  <button type="button"
-                    className="btn btn-primary btn-lg"
-                    onClick={() => { this.props.requestHistoryEntries(assetPairs.id); }}>
+                  <Button color="primary" outline size="sm" onClick={() => { this.props.requestHistoryEntries(assetPairs.id); }}>
                     {assetPairs.id}
-                  </button>
+                  </Button>
                 </td>
                 <td>{assetPairs.name}</td>
                 <td>{assetPairs.priceAccuracy}</td>
@@ -73,25 +72,7 @@ class AssetPairs extends React.PureComponent<AutoTraderProps> {
             )}
           </tbody>
         </table>
-        <h1>History entries of {this.props.selectedAssetPair}</h1>
-        <table className='table table-striped' aria-labelledby="tabelLabel">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Ask</th>
-              <th>Bid</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.props.assetPairHistoryEntries.map((assetPairHistoryEntries: AutoTradersStore.AutoTraderIAssetPairHistoryEntry) =>
-              <tr key={this.formatDateString(assetPairHistoryEntries.date)}>
-                <td>{this.formatDateString(assetPairHistoryEntries.date)}</td>
-                <td>{assetPairHistoryEntries.ask}</td>
-                <td>{assetPairHistoryEntries.bid}</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+
         <h1>Chart</h1>
         <ResponsiveContainer width="100%" height={400}>
           <LineChart
@@ -112,6 +93,26 @@ class AssetPairs extends React.PureComponent<AutoTraderProps> {
             <YAxis orientation="left" domain={["dataMin", "dataMax"]} />
           </LineChart>
         </ResponsiveContainer>
+
+        <h1>History entries of {this.props.selectedAssetPair}</h1>
+        <table className='table table-striped' aria-labelledby="tabelLabel">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Ask</th>
+              <th>Bid</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.props.assetPairHistoryEntries.map((assetPairHistoryEntries: AutoTradersStore.AutoTraderIAssetPairHistoryEntry) =>
+              <tr key={this.formatDateString(assetPairHistoryEntries.date)}>
+                <td>{this.formatDateString(assetPairHistoryEntries.date)}</td>
+                <td>{assetPairHistoryEntries.ask}</td>
+                <td>{assetPairHistoryEntries.bid}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </div>
     );
   }

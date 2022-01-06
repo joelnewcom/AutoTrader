@@ -7,6 +7,7 @@ import AssetPairs from './components/AssetPairs'
 import Wallet from './components/Wallet';
 import Trades from './components/Trades';
 import './custom.css'
+import ExceptionLog from './components/ExceptionLogs';
 
 export default () => (
     <Layout>
@@ -15,5 +16,6 @@ export default () => (
         <Route path='/assetpairs' component={AssetPairs} />
         <Route path='/balance' component={Wallet} />
         <Route path='/trades' component={Trades} />
+        <Route path='/exceptionlog' component={ExceptionLog} />
     </Layout>
 );

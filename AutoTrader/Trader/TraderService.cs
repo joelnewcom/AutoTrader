@@ -4,6 +4,7 @@ using AutoTrader.Data;
 using AutoTrader.Library;
 using AutoTrader.Repository;
 using AutoTrader.Trader.Advisor;
+using AutoTrader.Trader.PoCos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -23,20 +24,20 @@ namespace AutoTrader.Trader
         private readonly ILogger<TraderService> _logger;
         private Timer _timer;
 
-        private readonly TraderConfig conf;
+        private readonly TraderConfig _conf;
 
-        private int invokeCount;
+        private int _invokeCount;
 
-        private readonly IServiceScopeFactory scopeFactory;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        private Post2DaysDiffSlopeStrategy post2DaysDiffSlopeStrategy;
+        private Post2DaysDiffSlopeStrategy _post2DaysDiffSlopeStrategy;
 
         public TraderService(ILogger<TraderService> logger, TraderConfig traderConfig, IServiceScopeFactory scopeFactory)
         {
             _logger = logger;
-            this.scopeFactory = scopeFactory;
-            conf = traderConfig;
-            this.post2DaysDiffSlopeStrategy = new Post2DaysDiffSlopeStrategy(conf.safetyCatch, CHF_TO_SPEND_AT_ONCE);
+            _scopeFactory = scopeFactory;
+            _conf = traderConfig;
+            _post2DaysDiffSlopeStrategy = new Post2DaysDiffSlopeStrategy(_conf.safetyCatch, CHF_TO_SPEND_AT_ONCE);
         }
 
         public void Dispose()
@@ -46,28 +47,31 @@ namespace AutoTrader.Trader
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
-            await doPrepWorkAsync();
-            await RefreshHistory();
+            await InitializeAssetPairs();
             var autoEvent = new AutoResetEvent(false);
             _timer = new Timer(DoWork, autoEvent, TimeSpan.Zero, TimeSpan.FromHours(8));
             return;
         }
 
-        private async Task doPrepWorkAsync()
+        private async Task InitializeAssetPairs()
         {
-            using (var scope = scopeFactory.CreateScope())
+            _logger.LogInformation("Starting with Prework");
+            using (var scope = _scopeFactory.CreateScope())
             {
                 IRepository repo = scope.ServiceProvider.GetRequiredService<IRepository>();
                 IDataAccessAsync dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccessAsync>();
                 DataRefresher dataRefresher = scope.ServiceProvider.GetRequiredService<DataRefresher>();
 
-                _logger.LogInformation("Starting with Prework");
                 Dictionary<String, AssetPair> assetPairDict = await repo.GetAssetPairs();
                 _logger.LogInformation("Got some assetPairs from repo [assetPairDict]: {keys}", string.Join(", ", assetPairDict.Select(kvp => kvp.Key)));
 
-                List<string> knownAssetPairIds = conf.knownAssetPairIds;
+                List<string> knownAssetPairIds = _conf.knownAssetPairIds;
 
                 _logger.LogInformation("Preconfigured assetPairs [knownAssetPairIds]: {list}", string.Join(", ", knownAssetPairIds.Select(assetPairId => assetPairId)));
+
+                int deletedRows = await dataAccess.DeleteAllAssetPair();
+                _logger.LogInformation("Deleted {0} assetPairs", deletedRows);
+
                 foreach (string item in knownAssetPairIds)
                 {
                     AssetPair assetPair = assetPairDict.GetValueOrDefault(item);
@@ -92,16 +96,28 @@ namespace AutoTrader.Trader
 
         private async void DoWork(object stateInfo)
         {
-            _logger.LogInformation("Lykke trader started to do work");
-            AutoResetEvent autoEvent = (AutoResetEvent)stateInfo;
-            Console.WriteLine("Time: {0}, InvokeCount:  {1,2}.", DateTime.Now.ToString("h:mm:ss.fff"), (++invokeCount).ToString());
-            await RefreshHistory();
-            trade();
+            try
+            {
+                _logger.LogInformation("Lykke trader started to do work");
+                AutoResetEvent autoEvent = (AutoResetEvent)stateInfo;
+                Console.WriteLine("Time: {0}, InvokeCount:  {1,2}.", DateTime.Now.ToString("h:mm:ss.fff"), (++_invokeCount).ToString());
+                await RefreshHistory();
+                Trade();
+            }
+            catch (Exception e)
+            {
+                using (var scope = _scopeFactory.CreateScope())
+                {
+                    IDataAccessAsync dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccessAsync>();
+                    String exceptionLog = await dataAccess.AddExceptionLog(new ExceptionLog(e.Message, DateTime.Now));
+                    _logger.LogError("Catched unexpected exception {0}", exceptionLog);
+                }
+            }
         }
 
-        private async void trade()
+        private async void Trade()
         {
-            using (var scope = scopeFactory.CreateScope())
+            using (var scope = _scopeFactory.CreateScope())
             {
                 IRepository repo = scope.ServiceProvider.GetRequiredService<IRepository>();
                 IDataAccessAsync dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccessAsync>();
@@ -120,14 +136,13 @@ namespace AutoTrader.Trader
 
                     Price price = (Price)iPrice;
 
-                    DecisionAudit decisionAudit = post2DaysDiffSlopeStrategy.advice(assetPairHistoryEntries, balances, assetPair, trades, price);
+                    DecisionAudit decisionAudit = _post2DaysDiffSlopeStrategy.advice(assetPairHistoryEntries, balances, assetPair, trades, price);
                     String reason = "unknown";
 
                     if (buy.Equals(decisionAudit.Advice))
                     {
                         Decimal volume = CHF_TO_SPEND_AT_ONCE / price.Ask;
                         _logger.LogInformation("Should buy: {0}, volume: {1}", assetPair.Id, volume);
-                        // Use baseAsset Accuracy to set volume (USDCHF = 2)
                         IResponse<String> response = await repo.LimitOrderBuy(assetPair.Id, Decimal.Round(price.Ask, assetPair.PriceAccuracy), Decimal.Round(volume, assetPair.QuoteAssetAccuracy));
                         if (response.IsSuccess())
                         {
@@ -169,7 +184,7 @@ namespace AutoTrader.Trader
 
         private async Task RefreshHistory()
         {
-            using (var scope = scopeFactory.CreateScope())
+            using (var scope = _scopeFactory.CreateScope())
             {
                 DataRefresher dataRefresher = scope.ServiceProvider.GetRequiredService<DataRefresher>();
                 IDataAccessAsync dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccessAsync>();
