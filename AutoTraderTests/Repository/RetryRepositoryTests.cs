@@ -13,14 +13,15 @@ namespace AutoTraderTests.Repository
     [TestClass()]
     public class RetryRepositoryTests
     {
-        IRepository repository = new RetryRepository(
-            new NullLogger<RetryRepository>(),
+        IRepository repository = new BusinessDomainRepository(
+            new NullLogger<BusinessDomainRepository>(),
             new RawResponseRepository(new NullLogger<RawResponseRepository>(), 
                 new LykkeRepository(new NullLogger<LykkeRepository>(), new TraderConfig { apiKey = "" })),
                 new AssetPairHistoryEntryMapper(),
                 new TradeEntryMapper(),
                 new PriceMapper(),
-                new AssetPairMapper()        
+                new AssetPairMapper(),
+                new OperationMapper()
         );
 
         [TestMethod()]

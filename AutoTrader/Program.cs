@@ -30,13 +30,14 @@ namespace AutoTrader
                  services.AddHostedService<TraderService>();
                  services.AddScoped<IRepositoryGen<Task<HttpResponseMessage>>, LykkeRepository>();
                  services.AddScoped<IRepositoryGen<Task<IResponse<HttpResponseMessage>>>, RawResponseRepository>();
-                 services.AddScoped<IRepository, RetryRepository>();
+                 services.AddScoped<IRepository, BusinessDomainRepository>();
                  services.AddScoped<DataRefresher>();
                  services.AddScoped<IDataAccessAsync, DataInDB>();
                  services.AddScoped<AssetPairHistoryEntryMapper>();
                  services.AddScoped<TradeEntryMapper>();
                  services.AddScoped<PriceMapper>();
                  services.AddScoped<AssetPairMapper>();
+                 services.AddScoped<OperationMapper>();
                  services.AddMvcCore().AddApiExplorer();
                  services.AddSwaggerGen();
              });

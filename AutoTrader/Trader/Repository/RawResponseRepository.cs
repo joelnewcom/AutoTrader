@@ -78,5 +78,9 @@ namespace AutoTrader.Repository
             return Task.FromResult<IResponse<HttpResponseMessage>>(new HttpResponse(lykkeRepository.LimitOrderSell(assetPairId, price, volume)));
         }
 
+        public Task<IResponse<HttpResponseMessage>> GetOperations()
+        {
+            return Task.FromResult<IResponse<HttpResponseMessage>>(new HttpResponse(lykkeRepository.GetOperations()));
+        }
     }
 }

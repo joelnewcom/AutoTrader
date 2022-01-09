@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoTrader.Data;
+using AutoTrader.Trader.PoCos;
 
 namespace AutoTrader.Repository
 {
@@ -22,6 +23,9 @@ namespace AutoTrader.Repository
         Task<IResponse<String>> LimitOrderBuy(String assetPairId, Decimal price, Decimal volume);
 
         Task<IResponse<String>> LimitOrderSell(String assetPairId, Decimal price, Decimal volume);
+
+        Task<List<Operation>> GetOperations();
+
     }
 
     public interface IRepositoryGen<T>
@@ -43,6 +47,8 @@ namespace AutoTrader.Repository
         T LimitOrderBuy(String assetPairId, Decimal price, Decimal volume);
 
         T LimitOrderSell(String assetPairId, Decimal price, Decimal volume);
+
+        T GetOperations();
     }
 
 }

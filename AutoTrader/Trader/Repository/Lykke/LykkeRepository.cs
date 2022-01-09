@@ -87,5 +87,9 @@ namespace AutoTrader.Repository
             return httpClient.PostAsync(LYKKE_API_V2 + "/api/orders/limit", httpContent);
         }
 
+        public Task<HttpResponseMessage> GetOperations()
+        {
+            return httpClient.GetAsync(LYKKE_API_V2 + "/api/operations");
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using AutoTrader.Data;
 using AutoTrader.Repository;
+using AutoTrader.Trader.PoCos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -27,6 +28,14 @@ namespace AutoTrader.Controllers
         {
             _logger.LogDebug("Called endpoint: Get Wallets");
             return await repo.GetWallets();
+        }
+
+        [HttpGet]
+        [Route("api/operations")]
+        public async Task<List<Operation>> Operations()
+        {
+            _logger.LogDebug("Called endpoint: Get Operations");
+            return await repo.GetOperations();
         }
     }
 }

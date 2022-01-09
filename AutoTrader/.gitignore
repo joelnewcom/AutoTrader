@@ -231,5 +231,9 @@ _Pvt_Extensions
 # FAKE - F# Make
 .fake/
 
-# Hide api key
+# My development secrets
 appsettings.Private.json
+
+# SQLite temp files
+AutoTader.db-shm
+AutoTader.db-wal
