@@ -235,5 +235,5 @@ _Pvt_Extensions
 appsettings.Private.json
 
 # SQLite temp files
-AutoTader.db-shm
-AutoTader.db-wal
+AutoTrader.db-shm
+AutoTrader.db-wal

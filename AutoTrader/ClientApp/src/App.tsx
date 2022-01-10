@@ -4,6 +4,7 @@ import Layout from './components/Layout';
 import Home from './components/Home';
 import Counter from './components/Counter';
 import AssetPairs from './components/AssetPairs'
+import AssetPairsNew from './components/AssetPairsNew'
 import Wallet from './components/Wallet';
 import Trades from './components/Trades';
 import './custom.css'
@@ -14,6 +15,7 @@ export default () => (
         <Route exact path='/' component={Home} />
         <Route path='/counter' component={Counter} />
         <Route path='/assetpairs' component={AssetPairs} />
+        <Route path='/assetpairsnew' component={AssetPairsNew} />
         <Route path='/balance' component={Wallet} />
         <Route path='/trades' component={Trades} />
         <Route path='/exceptionlog' component={ExceptionLog} />

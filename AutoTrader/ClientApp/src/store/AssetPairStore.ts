@@ -9,16 +9,17 @@ export interface AutoTraderState {
     assetPairs: AssetPairs[];
     selectedAssetPair: string;
     assetPairHistoryEntries: AutoTraderIAssetPairHistoryEntry[];
+    logBooks: LogBook[];
 }
 
 export interface AssetPairs {
     id: string;
     name: string;
     priceAccuracy: number;
-    baseAssetId:string;
-    quotingAssetId:string;
-    quoteAssetAccuracy:number;
-    baseAssetAccuracy:number;
+    baseAssetId: string;
+    quotingAssetId: string;
+    quoteAssetAccuracy: number;
+    baseAssetAccuracy: number;
 }
 
 export interface AutoTraderIAssetPairHistoryEntry {
@@ -27,6 +28,12 @@ export interface AutoTraderIAssetPairHistoryEntry {
     bid: number;
 }
 
+export interface LogBook {
+    assetPairId: string,
+    date: string,
+    logBookEntry: string,
+    reason: string
+}
 // -----------------
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
 // They do not themselves have any side-effects; they just describe something that is going to happen.
@@ -41,6 +48,16 @@ interface ReceiveAssetPairHistoryDataAction {
     assetPairHistoryEntries: AutoTraderIAssetPairHistoryEntry[];
 }
 
+interface RequestAssetPairLogBookDataAction {
+    type: 'REQUEST_ASSETPAIR_LOGBOOK_DATA';
+    selectedAssetPair: string;
+}
+
+interface ReceiveAssetPairLogBookDataAction {
+    type: 'RECEIVE_ASSETPAIR_LOGBOOK_DATA';
+    logBooks: LogBook[];
+}
+
 interface RequestAssetPairAction {
     type: 'REQUEST_ASSETPAIRS';
 }
@@ -52,14 +69,14 @@ interface ReceiveAssetPairs {
 
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = RequestAssetPairHistoryDataAction | ReceiveAssetPairHistoryDataAction | ReceiveAssetPairs | RequestAssetPairAction;
+type KnownAction = RequestAssetPairHistoryDataAction | ReceiveAssetPairHistoryDataAction | ReceiveAssetPairs | RequestAssetPairAction | RequestAssetPairLogBookDataAction | ReceiveAssetPairLogBookDataAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
 // They don't directly mutate state, but they can have external side-effects (such as loading data).
 
 export const actionCreators = {
-   
+
     requestHistoryEntries: (assetPair: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
         // Only load data if it's something we don't already have (and are not already loading)
         const appState = getState();
@@ -86,13 +103,27 @@ export const actionCreators = {
                 });
             dispatch({ type: 'REQUEST_ASSETPAIRS' });
         }
-    }
+    },
+
+    requestLogBook: (assetPair: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        // Only load data if it's something we don't already have (and are not already loading)
+        const appState = getState();
+        if (appState && appState.autoTrader) {
+            console.log("Call Logbook");
+            fetch(`/Trader/api/Logbooks/` + assetPair)
+                .then(response => response.json() as Promise<LogBook[]>)
+                .then(data => {
+                    dispatch({ type: 'RECEIVE_ASSETPAIR_LOGBOOK_DATA', logBooks: data });
+                });
+            dispatch({ type: 'REQUEST_ASSETPAIR_LOGBOOK_DATA', selectedAssetPair: assetPair });
+        }
+    },
 };
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: AutoTraderState = { assetPairs: [], isLoading: false, assetPairHistoryEntries: [], selectedAssetPair: "" };
+const unloadedState: AutoTraderState = { assetPairs: [], isLoading: false, assetPairHistoryEntries: [], selectedAssetPair: "", logBooks: [] };
 
 export const reducer: Reducer<AutoTraderState> = (state: AutoTraderState | undefined, incomingAction: Action): AutoTraderState => {
     if (state === undefined) {
@@ -106,28 +137,48 @@ export const reducer: Reducer<AutoTraderState> = (state: AutoTraderState | undef
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
                 isLoading: true,
-                selectedAssetPair: action.selectedAssetPair
+                selectedAssetPair: action.selectedAssetPair,
+                logBooks: state.logBooks
             };
         case 'RECEIVE_ASSETPAIR_HISTORY_DATA':
             return {
                 isLoading: false,
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: action.assetPairHistoryEntries,
-                selectedAssetPair: state.selectedAssetPair
+                selectedAssetPair: state.selectedAssetPair,
+                logBooks: state.logBooks
+            };
+        case 'REQUEST_ASSETPAIR_LOGBOOK_DATA':
+            return {
+                assetPairs: state.assetPairs,
+                assetPairHistoryEntries: state.assetPairHistoryEntries,
+                isLoading: true,
+                selectedAssetPair: action.selectedAssetPair,
+                logBooks: state.logBooks
+            };
+        case 'RECEIVE_ASSETPAIR_LOGBOOK_DATA':
+            return {
+                isLoading: false,
+                assetPairs: state.assetPairs,
+                assetPairHistoryEntries: state.assetPairHistoryEntries,
+                selectedAssetPair: state.selectedAssetPair,
+                logBooks: action.logBooks
             };
         case 'REQUEST_ASSETPAIRS':
             return {
                 isLoading: true,
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
-                selectedAssetPair: state.selectedAssetPair
+                selectedAssetPair: state.selectedAssetPair,
+                logBooks: state.logBooks
             }
         case 'RECEIVE_ASSET_PAIRS':
             return {
                 isLoading: false,
                 assetPairs: action.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
-                selectedAssetPair: state.selectedAssetPair
+                selectedAssetPair: state.selectedAssetPair,
+                logBooks: state.logBooks
             };
     }
 
