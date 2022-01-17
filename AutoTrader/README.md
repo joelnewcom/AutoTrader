@@ -57,3 +57,5 @@ dotnet ef database update
 4. Navigate ```./site/wwwroot/```
 5. Download ```AutoTrader.db```
 
+## Todos
+Don't get history prices of current day.

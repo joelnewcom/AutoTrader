@@ -96,7 +96,7 @@ namespace AutoTrader.Trader
                 _logger.LogInformation("Lykke trader started to do work");
                 AutoResetEvent autoEvent = (AutoResetEvent)stateInfo;
                 Console.WriteLine("Time: {0}, InvokeCount:  {1,2}.", DateTime.Now.ToString("h:mm:ss.fff"), (++_invokeCount).ToString());
-                await RefreshHistory();
+                //await RefreshHistory();
                 Trade();
             }
             catch (Exception e)
@@ -150,7 +150,7 @@ namespace AutoTrader.Trader
                         }
                     }
 
-                    else if (SELL.Equals(decisionAudit))
+                    else if (SELL.Equals(decisionAudit.Advice))
                     {
                         IBalance balance = balances.Where(b => assetPair.BaseAssetId.Equals(b.AssetId)).First();
                         _logger.LogInformation("Should sell: {0}, volume: {1}", assetPair.Id, balance.Available);
