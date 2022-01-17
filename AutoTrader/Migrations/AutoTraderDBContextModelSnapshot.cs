@@ -46,11 +46,17 @@ namespace AutoTrader.Migrations
 
             modelBuilder.Entity("AutoTrader.Data.ExceptionLogEntity", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Message")
                         .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
 
                     b.ToTable("exceptionLogEnities");
                 });

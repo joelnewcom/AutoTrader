@@ -26,7 +26,7 @@
 ### Database
 
 ## Entity framework
-We used following commands to initialize entity framework:
+Following commands are used to build up the datebase schema for entity framework:
 
 ```
 dotnet add package Microsoft.EntityFrameworkCore.Sqlite
@@ -40,7 +40,14 @@ dotnet ef database update
 * changed AssetPair entity
 dotnet ef migrations add NewFieldsInAssetPair
 dotnet ef database update
-
+* Added primary key for exceptionLog entries
+dotnet ef migrations add ExceptionLogWithoutKeyLess
+dotnet ef database update
+* Previous migration was wrong so we undo it by:
+dotnet ef database update NewFieldsInAssetPair
+dotnet ef migrations remove
+dotnet ef migrations add NewExceptionLogEntity
+dotnet ef database update
 ```
 
 ## Download prod db 

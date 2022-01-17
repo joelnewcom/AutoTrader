@@ -1,5 +1,4 @@
-﻿using AutoTrader.Advisor;
-using AutoTrader.Config;
+﻿using AutoTrader.Config;
 using AutoTrader.Data;
 using AutoTrader.Library;
 using AutoTrader.Repository;
@@ -19,17 +18,13 @@ namespace AutoTrader.Trader
     public class TraderService : IHostedService, IDisposable
     {
         private const int CHF_TO_SPEND_AT_ONCE = 50;
-        private const Advice buy = Advice.Buy;
-        private const Advice sell = Advice.Sell;
+        private const Advice BUY = Advice.Buy;
+        private const Advice SELL = Advice.Sell;
         private readonly ILogger<TraderService> _logger;
         private Timer _timer;
-
         private readonly TraderConfig _conf;
-
         private int _invokeCount;
-
         private readonly IServiceScopeFactory _scopeFactory;
-
         private Post2DaysDiffSlopeStrategy _post2DaysDiffSlopeStrategy;
 
         public TraderService(ILogger<TraderService> logger, TraderConfig traderConfig, IServiceScopeFactory scopeFactory)
@@ -109,7 +104,7 @@ namespace AutoTrader.Trader
                 using (var scope = _scopeFactory.CreateScope())
                 {
                     IDataAccessAsync dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccessAsync>();
-                    String exceptionLog = await dataAccess.AddExceptionLog(new ExceptionLog(e.Message, DateTime.Now));
+                    String exceptionLog = await dataAccess.AddExceptionLog(new ExceptionLog(Guid.NewGuid(), e.Message, DateTime.Now));
                     _logger.LogError("Catched unexpected exception {0}", exceptionLog);
                 }
             }
@@ -139,7 +134,7 @@ namespace AutoTrader.Trader
                     DecisionAudit decisionAudit = _post2DaysDiffSlopeStrategy.advice(assetPairHistoryEntries, balances, assetPair, trades, price);
                     String reason = "unknown";
 
-                    if (buy.Equals(decisionAudit.Advice))
+                    if (BUY.Equals(decisionAudit.Advice))
                     {
                         Decimal volume = CHF_TO_SPEND_AT_ONCE / price.Ask;
                         _logger.LogInformation("Should buy: {0}, volume: {1}", assetPair.Id, volume);
@@ -155,7 +150,7 @@ namespace AutoTrader.Trader
                         }
                     }
 
-                    else if (sell.Equals(decisionAudit))
+                    else if (SELL.Equals(decisionAudit))
                     {
                         IBalance balance = balances.Where(b => assetPair.BaseAssetId.Equals(b.AssetId)).First();
                         _logger.LogInformation("Should sell: {0}, volume: {1}", assetPair.Id, balance.Available);

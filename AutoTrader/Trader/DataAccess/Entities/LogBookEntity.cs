@@ -4,7 +4,6 @@ namespace AutoTrader.Data
 {
     public class LogBookEntity
     {
-        /// Primary Key
         public Guid Id { get; private set; }
         public String AssetPairId { get; private set; }
         public DateTime Date { get; private set; }

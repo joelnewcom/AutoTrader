@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AutoTrader.Migrations
 {
     [DbContext(typeof(AutoTraderDBContext))]
-    [Migration("20220106205932_AddExceptionLogEntity")]
-    partial class AddExceptionLogEntity
+    [Migration("20220117215802_NewExceptionLogEntity")]
+    partial class NewExceptionLogEntity
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -48,11 +48,17 @@ namespace AutoTrader.Migrations
 
             modelBuilder.Entity("AutoTrader.Data.ExceptionLogEntity", b =>
                 {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("DateTime")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Message")
                         .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
 
                     b.ToTable("exceptionLogEnities");
                 });

@@ -1,20 +1,22 @@
 using System;
-using Microsoft.EntityFrameworkCore;
 
 namespace AutoTrader.Data
 {
-    [Keyless]
     public class ExceptionLogEntity
     {
-        public ExceptionLogEntity(string message, DateTime dateTime)
+        public Guid Id { get; private set; }
+
+        public String Message { get; private set; }
+
+        public DateTime DateTime { get; private set; }
+
+        public ExceptionLogEntity(Guid id, string message, DateTime dateTime)
         {
+            Id = id;
             Message = message;
             DateTime = dateTime;
         }
 
-        public String Message { get; set; }
-
-        public DateTime DateTime { get; set; }
 
     }
 }
