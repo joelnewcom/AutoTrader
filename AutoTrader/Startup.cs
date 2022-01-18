@@ -32,6 +32,8 @@ namespace AutoTrader
                 configuration.RootPath = "ClientApp/build";
             });
 
+            services.AddApplicationInsightsTelemetry();
+
             TraderConfig traderConfig = Configuration.GetSection("TraderConfig").Get<TraderConfig>();
             services.AddSingleton(traderConfig);
         }

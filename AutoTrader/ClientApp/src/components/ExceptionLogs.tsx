@@ -20,7 +20,7 @@ class ExceptionLog extends React.PureComponent<ExceptionLogsProps> {
   
     // This method is called when the route parameters change
     public componentDidUpdate() {
-      this.props.requestExceptionLogs();
+      
     }
   
 

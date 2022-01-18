@@ -7,11 +7,11 @@ namespace AutoTrader.Advisor
     public class BuyIfEnoughCHFAsset : IAdvisor<Decimal, List<IBalance>>
     {
 
-        public Advice advice(Decimal dataIn, List<IBalance> dataIn2)
+        public Advice advice(Decimal minAvailable, List<IBalance> balances)
         {
-            foreach (IBalance item in dataIn2)
+            foreach (IBalance item in balances)
             {
-                if ("CHF".Equals(item.AssetId) && item.Available > dataIn)
+                if ("CHF".Equals(item.AssetId) && (item.Available - item.Reserved) > minAvailable)
                 {
                     return Advice.Buy;
                 }

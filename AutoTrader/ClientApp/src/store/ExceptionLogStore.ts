@@ -40,7 +40,7 @@ export const actionCreators = {
         // Only load data if it's something we don't already have (and are not already loading)
         const appState = getState();
         if (appState && appState.exceptionlogs) {
-            fetch(`/ExceptionLog/api/excpetionlogs`)
+            fetch(`/ExceptionLog/api/exceptionlogs`)
                 .then(response => response.json() as Promise<ExceptionLog[]>)
                 .then(data => {
                     dispatch({ type: 'RECEIVE_EXCEPTIONLOGS', exceptionLogs: data });
