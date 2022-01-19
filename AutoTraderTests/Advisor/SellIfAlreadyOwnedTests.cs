@@ -14,10 +14,22 @@ namespace AutoTrader.Advisor
             SellIfAlreadyOwned sellIfAlreadyOwned = new SellIfAlreadyOwned();
             Advice advice = sellIfAlreadyOwned.advice("LKK", new List<IBalance>()
             {
-                new Balance("LKK", 100, 100)
+                new Balance("LKK", 100, 99)
             });
 
             Assert.AreEqual(Advice.Sell, advice);
+        }
+
+        [TestMethod()]
+        public void HoldOnIfAlreadyOwnedButReserved()
+        {
+            SellIfAlreadyOwned sellIfAlreadyOwned = new SellIfAlreadyOwned();
+            Advice advice = sellIfAlreadyOwned.advice("LKK", new List<IBalance>()
+            {
+                new Balance("LKK", 50, 50)
+            });
+
+            Assert.AreEqual(Advice.HoldOn, advice);
         }
 
         [TestMethod()]

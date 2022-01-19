@@ -16,11 +16,28 @@ namespace AutoTraderTests.Library
         readonly AssetPair assetPair = new AssetPair("eth/chf", "testAssetPair", 1000, "CHF", "ETH", 0, 0, 0);
 
         [TestMethod()]
-        public async Task NewEntryGetsAdded()
+        public async Task EntryOfTodayIsNotAdded()
         {
             // given
             Price assetPairHistoryEntry = new Price(DateTime.Today, 10, 10, "ETHCHF");
             dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(Task.FromResult(DateTime.Today.AddDays(-1)));
+            repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<String>(), It.IsAny<DateTime>()))
+                .ReturnsAsync(assetPairHistoryEntry);
+            DataRefresher dataRefresher = new DataRefresher(repoMock.Object, dataAccessMock.Object);
+
+            // when
+            await dataRefresher.RefreshAssetPairHistory(assetPair.Id);
+
+            // then
+            dataAccessMock.Verify(s => s.AddAssetPairHistoryEntry(assetPair.Id, assetPairHistoryEntry), Times.Never);
+        }
+
+        [TestMethod()]
+        public async Task NewEntryGetsAdded()
+        {
+            // given
+            Price assetPairHistoryEntry = new Price(DateTime.Today, 10, 10, "ETHCHF");
+            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(Task.FromResult(DateTime.Today.AddDays(-2)));
             repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<String>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(assetPairHistoryEntry);
             DataRefresher dataRefresher = new DataRefresher(repoMock.Object, dataAccessMock.Object);
@@ -61,7 +78,7 @@ namespace AutoTraderTests.Library
             DateTime today = DateTime.Today;
             Price assetPairHistoryEntry = new Price(today, 10, 10, "ETHCHF");
 
-            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(Task.FromResult(today.AddDays(-2)));
+            dataAccessMock.Setup(p => p.GetDateOfLatestEntry(assetPair.Id)).Returns(Task.FromResult(today.AddDays(-3)));
             repoMock.Setup(p => p.GetHistoryRatePerDay(It.IsAny<String>(), It.IsAny<DateTime>()))
                 .ReturnsAsync(assetPairHistoryEntry);
 
