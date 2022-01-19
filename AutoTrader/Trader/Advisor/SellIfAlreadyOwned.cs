@@ -10,7 +10,7 @@ namespace AutoTrader.Advisor
         {
             foreach (IBalance item in balances)
             {
-                if (assetId.Equals(item.AssetId))
+                if (assetId.Equals(item.AssetId) && item.Available > item.Reserved)
                 {
                     return Advice.Sell;
                 }

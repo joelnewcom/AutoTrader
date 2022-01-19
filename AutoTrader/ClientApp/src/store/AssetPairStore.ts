@@ -78,7 +78,6 @@ type KnownAction = RequestAssetPairHistoryDataAction | ReceiveAssetPairHistoryDa
 export const actionCreators = {
 
     requestHistoryEntries: (assetPair: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
-        // Only load data if it's something we don't already have (and are not already loading)
         const appState = getState();
         if (appState && appState.autoTrader) {
             console.log("Call AssetPairHistoryEntries");
@@ -92,7 +91,6 @@ export const actionCreators = {
     },
 
     requestAssetPairs: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
-        // Only load data if it's something we don't already have (and are not already loading)
         const appState = getState();
         if (appState && appState.autoTrader) {
             console.log("Call GET AssetPairs");
@@ -106,7 +104,6 @@ export const actionCreators = {
     },
 
     requestLogBook: (assetPair: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
-        // Only load data if it's something we don't already have (and are not already loading)
         const appState = getState();
         if (appState && appState.autoTrader) {
             console.log("Call Logbook");

@@ -12,7 +12,7 @@ namespace AutoTraderTests.Library
         [TestMethod()]
         public void LatestBuyTradeWithHigherPriceLeadsToHoldOn()
         {
-            AlwaysWinSeller alwaysWinSeller = new AlwaysWinSeller();
+            SellAlwaysWin alwaysWinSeller = new SellAlwaysWin();
             Advice advice = alwaysWinSeller.advice("ETHCHF", new Price(System.DateTime.Now, 10, 10, "ETHCHF"), new List<TradeEntry>(){
                     new TradeEntry("uuid", System.DateTime.Now, "ETHCHF", 11, "CHF", "ETH", "Taker", "buy", 100, 900, new TradeFee(0, "CHF")),
                     new TradeEntry("uuid", System.DateTime.Now.AddDays(-1), "ETHCHF", 9, "CHF", "ETH", "Taker", "buy", 100, 900, new TradeFee(0, "CHF"))
@@ -24,7 +24,7 @@ namespace AutoTraderTests.Library
         [TestMethod()]
         public void LatestBuyTradeWithLowerPriceLeadsToSell()
         {
-            AlwaysWinSeller alwaysWinSeller = new AlwaysWinSeller();
+            SellAlwaysWin alwaysWinSeller = new SellAlwaysWin();
             Advice advice = alwaysWinSeller.advice("ETHCHF", new Price(System.DateTime.Now, 10, 10, "ETHCHF"), new List<TradeEntry>(){
                     new TradeEntry("uuid", System.DateTime.Now, "ETHCHF", 9, "CHF", "ETH", "Taker", "buy", 100, 900, new TradeFee(0, "CHF")),
                     new TradeEntry("uuid", System.DateTime.Now.AddDays(-1), "ETHCHF", 11, "CHF", "ETH", "Taker", "buy", 100, 900, new TradeFee(0, "CHF"))
@@ -36,7 +36,7 @@ namespace AutoTraderTests.Library
         [TestMethod()]
         public void OnlyConsiderLatestTradeEntryUnsortedList()
         {
-            AlwaysWinSeller alwaysWinSeller = new AlwaysWinSeller();
+            SellAlwaysWin alwaysWinSeller = new SellAlwaysWin();
             Advice advice = alwaysWinSeller.advice("ETHCHF", new Price(System.DateTime.Now, 10, 10, "ETHCHF"), new List<TradeEntry>(){
                     new TradeEntry("uuid", System.DateTime.Now.AddDays(-1), "ETHCHF", 11, "CHF", "ETH", "Taker", "buy", 100, 900, new TradeFee(0, "CHF")),
                     new TradeEntry("uuid", System.DateTime.Now.AddDays(-2), "ETHCHF", 11, "CHF", "ETH", "Taker", "buy", 100, 900, new TradeFee(0, "CHF")),
@@ -49,7 +49,7 @@ namespace AutoTraderTests.Library
         [TestMethod()]
         public void NotFoundLeadsToSell()
         {
-            AlwaysWinSeller alwaysWinSeller = new AlwaysWinSeller();
+            SellAlwaysWin alwaysWinSeller = new SellAlwaysWin();
             Advice advice = alwaysWinSeller.advice("ETHCHF", new Price(System.DateTime.Now, 10, 10, "ETHCHF"), new List<TradeEntry>());
             Assert.AreEqual(Advice.Sell, advice);
         }
@@ -57,7 +57,7 @@ namespace AutoTraderTests.Library
         [TestMethod()]
         public void OnlyConsiderBuySide()
         {
-            AlwaysWinSeller alwaysWinSeller = new AlwaysWinSeller();
+            SellAlwaysWin alwaysWinSeller = new SellAlwaysWin();
             Advice advice = alwaysWinSeller.advice("ETHCHF", new Price(System.DateTime.Now, 10, 10, "ETHCHF"), new List<TradeEntry>(){
                     new TradeEntry("uuid", System.DateTime.Now.AddDays(-1), "ETHCHF", 11, "CHF", "ETH", "Taker", "buy", 100, 900, new TradeFee(0, "CHF")),
                     new TradeEntry("uuid", System.DateTime.Now, "ETHCHF", 9, "CHF", "ETH", "Taker", "sell", 100, 900, new TradeFee(0, "CHF")),

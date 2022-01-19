@@ -96,7 +96,7 @@ namespace AutoTrader.Trader
                 _logger.LogInformation("Lykke trader started to do work");
                 AutoResetEvent autoEvent = (AutoResetEvent)stateInfo;
                 Console.WriteLine("Time: {0}, InvokeCount:  {1,2}.", DateTime.Now.ToString("h:mm:ss.fff"), (++_invokeCount).ToString());
-                //await RefreshHistory();
+                await RefreshHistory();
                 Trade();
             }
             catch (Exception e)
@@ -121,17 +121,17 @@ namespace AutoTrader.Trader
 
                 foreach (AssetPair assetPair in await dataAccess.GetAssetPairs())
                 {
-                    List<Price> assetPairHistoryEntries = await dataAccess.GetAssetPairHistory(assetPair.Id);
-                    IPrice iPrice = await repo.GetPrice(assetPair.Id);
+                    List<Price> historyPrices = await dataAccess.GetAssetPairHistory(assetPair.Id);
+                    IPrice actualPrice = await repo.GetPrice(assetPair.Id);
 
-                    if (iPrice is not Price)
+                    if (actualPrice is not Price)
                     {
                         continue;
                     }
 
-                    Price price = (Price)iPrice;
-
-                    DecisionAudit decisionAudit = _post2DaysDiffSlopeStrategy.advice(assetPairHistoryEntries, balances, assetPair, trades, price);
+                    Price price = (Price)actualPrice;
+                    historyPrices.Add(price);
+                    DecisionAudit decisionAudit = _post2DaysDiffSlopeStrategy.advice(historyPrices, balances, assetPair, trades, price);
                     String reason = "unknown";
 
                     if (BUY.Equals(decisionAudit.Advice))
@@ -153,8 +153,9 @@ namespace AutoTrader.Trader
                     else if (SELL.Equals(decisionAudit.Advice))
                     {
                         IBalance balance = balances.Where(b => assetPair.BaseAssetId.Equals(b.AssetId)).First();
-                        _logger.LogInformation("Should sell: {0}, volume: {1}", assetPair.Id, balance.Available);
-                        IResponse<String> response = await repo.LimitOrderSell(assetPair.Id, Decimal.Round(price.Ask, assetPair.PriceAccuracy), Decimal.Round(balance.Available, assetPair.QuoteAssetAccuracy));
+                        Decimal maxAvailableAmountToSell = balance.Available - balance.Reserved;
+                        _logger.LogInformation("Should sell: {0}, volume: {1}", assetPair.Id, maxAvailableAmountToSell);
+                        IResponse<String> response = await repo.LimitOrderSell(assetPair.Id, Decimal.Round(price.Ask, assetPair.PriceAccuracy), Decimal.Round(maxAvailableAmountToSell, assetPair.QuoteAssetAccuracy));
                         if (response.IsSuccess())
                         {
                             reason = "sell orderId: " + await response.GetResponse();
@@ -193,7 +194,6 @@ namespace AutoTrader.Trader
 
         public Task StopAsync(CancellationToken cancellationToken)
         {
-            //await dataAccess.PersistData();
             return Task.CompletedTask;
         }
     }

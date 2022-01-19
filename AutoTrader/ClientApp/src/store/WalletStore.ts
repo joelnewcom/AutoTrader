@@ -7,12 +7,20 @@ import { AppThunkAction } from '.';
 export interface WalletState {
     isLoading: boolean;
     balances: Balance[];
+    operations: Operation[];
 }
 
 export interface Balance {
     assetId: string;
     available: number;
     reserved: number;
+}
+
+export interface Operation {
+    assetId: string;
+    totalVolume: number;
+    type: string;
+    timestamp: string;
 }
 
 // -----------------
@@ -28,9 +36,18 @@ interface ReceiveBalances {
     balances: Balance[];
 }
 
+interface RequestOperations {
+    type: 'REQUEST_OPERATIONS';
+}
+
+interface ReceiveOperations {
+    type: 'RECEIVE_OPERATIONS';
+    operations: Operation[];
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = RequestBalances | ReceiveBalances;
+type KnownAction = RequestBalances | ReceiveBalances | RequestOperations | ReceiveOperations;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -40,9 +57,7 @@ export const actionCreators = {
     requestBalances: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
         // Only load data if it's something we don't already have (and are not already loading)
         const appState = getState();
-        console.log("Call Balance");
         if (appState && appState.wallet) {
-            console.log("Call Balance");
             fetch(`/Wallet/api/balance`)
                 .then(response => response.json() as Promise<Balance[]>)
                 .then(data => {
@@ -50,13 +65,25 @@ export const actionCreators = {
                 });
             dispatch({ type: 'REQUEST_BALANCES' });
         }
+    },
+    requestOperations: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        // Only load data if it's something we don't already have (and are not already loading)
+        const appState = getState();
+        if (appState && appState.wallet) {
+            fetch(`/Wallet/api/operations`)
+                .then(response => response.json() as Promise<Operation[]>)
+                .then(data => {
+                    dispatch({ type: 'RECEIVE_OPERATIONS', operations: data });
+                });
+            dispatch({ type: 'REQUEST_OPERATIONS' });
+        }
     }
 };
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: WalletState = { balances: [], isLoading: false };
+const unloadedState: WalletState = { balances: [], isLoading: false, operations: [] };
 
 export const reducer: Reducer<WalletState> = (state: WalletState | undefined, incomingAction: Action): WalletState => {
     if (state === undefined) {
@@ -67,13 +94,27 @@ export const reducer: Reducer<WalletState> = (state: WalletState | undefined, in
     switch (action.type) {
         case 'REQUEST_BALANCES':
             return {
-                balances: state.balances,
                 isLoading: true,
+                balances: state.balances,
+                operations: state.operations
             };
         case 'RECEIVE_BALANCES':
             return {
                 isLoading: false,
-                balances: action.balances
+                balances: action.balances,
+                operations: state.operations
+            };
+        case 'REQUEST_OPERATIONS':
+            return {
+                isLoading: true,
+                balances: state.balances,
+                operations: state.operations
+            };
+        case 'RECEIVE_OPERATIONS':
+            return {
+                isLoading: false,
+                balances: state.balances,
+                operations: action.operations
             };
     }
     return state;

@@ -57,5 +57,10 @@ dotnet ef database update
 4. Navigate ```./site/wwwroot/```
 5. Download ```AutoTrader.db```
 
-## Todos
-Don't get history prices of current day.
+## Put money into API Wallet
+Put money into your trading wallet
+Goto https://wallet.lykke.com/wallets/hft
+Select the API wallet you want to deposit money
+Click on "TRANSER"
+Fill out the form and use Microsoft Authenticator app for MFA code
+Use the Lykke app to verify the QR code. If popup doesn't appear on the app, restart the app

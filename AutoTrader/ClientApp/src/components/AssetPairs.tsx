@@ -2,22 +2,22 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps } from 'react-router';
 import { ApplicationState } from '../store';
-import * as AutoTradersStore from "../store/AssetPairStore";
+import * as AssetPairStore from "../store/AssetPairStore";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Legend, Tooltip } from 'recharts';
 import moment from 'moment';
 import { Button } from 'reactstrap';
 
 // At runtime, Redux will merge together...
 type AutoTraderProps =
-  AutoTradersStore.AutoTraderState // ... state we've requested from the Redux store
-  & typeof AutoTradersStore.actionCreators // ... plus action creators we've requested
+  AssetPairStore.AutoTraderState // ... state we've requested from the Redux store
+  & typeof AssetPairStore.actionCreators // ... plus action creators we've requested
   & RouteComponentProps<{ startDateIndex: string }>; // ... plus incoming routing parameters
 
 
 class AssetPairs extends React.PureComponent<AutoTraderProps> {
   // This method is called when the component is first added to the document
   public componentDidMount() {
-    this.ensureDataFetched();
+    const assetPairs = this.props.requestAssetPairs();
   }
 
   // This method is called when the route parameters change
@@ -27,51 +27,23 @@ class AssetPairs extends React.PureComponent<AutoTraderProps> {
   public render() {
     return (
       <React.Fragment>
-        <h1 id="tabelLabel">Lykke Autotrader</h1>
-        <p>Displaying live data from autoreader</p>
-        {this.renderAssetPairHistoryPairTable()}
+        {this.renderPage()}
       </React.Fragment>
     );
   }
 
-  private ensureDataFetched() {
-    this.props.requestAssetPairs();
-  }
-
-  private renderAssetPairHistoryPairTable() {
+  private renderPage() {
     return (
       <div>
         <h1>AssetPairs</h1>
-        <table className='table table-striped' aria-labelledby="tabelLabel">
-          <thead>
-            <tr>
-              <th>Id</th>
-              <th>Name</th>
-              <th>Price Accuracy</th>
-              <th>baseAssetId</th>
-              <th>quotingAssetId</th>
-              <th>quotAssetAccurary</th>
-              <th>baseAssetAccurary</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.props.assetPairs.map((assetPairs: AutoTradersStore.AssetPairs) =>
-              <tr key={assetPairs.id}>
-                <td>
-                  <Button color="primary" outline size="sm" onClick={() => { this.props.requestHistoryEntries(assetPairs.id); }}>
-                    {assetPairs.id}
-                  </Button>
-                </td>
-                <td>{assetPairs.name}</td>
-                <td>{assetPairs.priceAccuracy}</td>
-                <td>{assetPairs.baseAssetId}</td>
-                <td>{assetPairs.quotingAssetId}</td>
-                <td>{assetPairs.quoteAssetAccuracy}</td>
-                <td>{assetPairs.baseAssetAccuracy}</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+        {this.props.assetPairs.map((assetPairs: AssetPairStore.AssetPairs) =>
+          <Button className="assetPairButton" color="primary" key={assetPairs.id} outline size="sm" onClick={() => {
+            this.props.requestHistoryEntries(assetPairs.id);
+            this.props.requestLogBook(assetPairs.id);
+          }}>
+            {assetPairs.id}
+          </Button>
+        )}
 
         <h1>Chart</h1>
         <ResponsiveContainer width="100%" height={400}>
@@ -94,6 +66,26 @@ class AssetPairs extends React.PureComponent<AutoTraderProps> {
           </LineChart>
         </ResponsiveContainer>
 
+        <h1>Logentries of {this.props.selectedAssetPair}</h1>
+        <table className='table table-striped' aria-labelledby="tabelLabel">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Reason</th>
+              <th>Entry</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.props.logBooks.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((logBook: AssetPairStore.LogBook, index) =>
+              <tr key={index} >
+                <td>{this.formatDateString(logBook.date)}</td>
+                <td>{logBook.reason}</td>
+                <td>{logBook.logBookEntry}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+
         <h1>History entries of {this.props.selectedAssetPair}</h1>
         <table className='table table-striped' aria-labelledby="tabelLabel">
           <thead>
@@ -104,8 +96,8 @@ class AssetPairs extends React.PureComponent<AutoTraderProps> {
             </tr>
           </thead>
           <tbody>
-            {this.props.assetPairHistoryEntries.map((assetPairHistoryEntries: AutoTradersStore.AutoTraderIAssetPairHistoryEntry) =>
-              <tr key={this.formatDateString(assetPairHistoryEntries.date)}>
+            {this.props.assetPairHistoryEntries.map((assetPairHistoryEntries: AssetPairStore.AutoTraderIAssetPairHistoryEntry, index) =>
+              <tr key={index} >
                 <td>{this.formatDateString(assetPairHistoryEntries.date)}</td>
                 <td>{assetPairHistoryEntries.ask}</td>
                 <td>{assetPairHistoryEntries.bid}</td>
@@ -125,5 +117,5 @@ class AssetPairs extends React.PureComponent<AutoTraderProps> {
 
 export default connect(
   (state: ApplicationState) => state.autoTrader, // Selects which state properties are merged into the component's props
-  AutoTradersStore.actionCreators // Selects which action creators are merged into the component's props
+  AssetPairStore.actionCreators // Selects which action creators are merged into the component's props
 )(AssetPairs as any); // eslint-disable-line @typescript-eslint/no-explicit-any

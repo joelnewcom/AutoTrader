@@ -21,7 +21,7 @@ namespace AutoTrader.Trader.Advisor
         private int _maxMoneyToSpend { get; }
         public Post2DaysDiffSlopeStrategy(SafetyCatch safetyCatch, int maxMoneyToSpend)
         {
-            _sellAlwaysWin = new AlwaysWinSeller();
+            _sellAlwaysWin = new SellAlwaysWin();
             _buyIfNotAlreadyOwned = new BuyIfNotAlreadyOwned();
             _buyIfEnoughMoney = new BuyIfEnoughCHFAsset();
             _sellIfAlreadyOwned = new SellIfAlreadyOwned();
@@ -42,7 +42,7 @@ namespace AutoTrader.Trader.Advisor
             Advice alreadyOwnerAdvice = _sellIfAlreadyOwned.advice(assetPair.BaseAssetId, balances);
             Advice alwaysWinAdvice = _sellAlwaysWin.advice(assetPair.Id, price, trades);
 
-            String logBookEntry = String.Format(@"Buy Group: [linearSlopeAdvice: {0}, enoughMoneyAdvice: {1}, notAlreadyOwnedAdvice: {2}, buySafetyCatch: {3}], Sell Group: [linearSlopeAdvice: {0}, alreadyOwnerAdvice: {4}, alwaysWinAdvice: {5}, sellSafetyCatch: {6}]", linearSlopeAdvice, enoughMoneyAdvice, notAlreadyOwnedAdvice, _buySafetyCatch, alreadyOwnerAdvice, alwaysWinAdvice, _sellSafetyCatch);
+            String logBookEntry = String.Format(@"linearSlopeAdvice: {0}, Buy Group: [enoughMoneyAdvice: {1}, notAlreadyOwnedAdvice: {2}, buySafetyCatch: {3}], Sell Group: [alreadyOwnerAdvice: {4}, alwaysWinAdvice: {5}, sellSafetyCatch: {6}]", linearSlopeAdvice, enoughMoneyAdvice, notAlreadyOwnedAdvice, _buySafetyCatch, alreadyOwnerAdvice, alwaysWinAdvice, _sellSafetyCatch);
 
             if (buy.Equals(linearSlopeAdvice) && buy.Equals(enoughMoneyAdvice) && buy.Equals(notAlreadyOwnedAdvice) && buy.Equals(_buySafetyCatch))
             {

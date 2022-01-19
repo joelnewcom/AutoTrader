@@ -5,7 +5,7 @@ using AutoTrader.Data;
 
 namespace AutoTrader.Advisor
 {
-    public class AlwaysWinSeller : IAdvisor<String, Price, List<TradeEntry>>
+    public class SellAlwaysWin : IAdvisor<String, Price, List<TradeEntry>>
     {
         public Advice advice(string assetPairId, Price price, List<TradeEntry> trades)
         {
@@ -24,7 +24,6 @@ namespace AutoTrader.Advisor
                 TradeEntry tradeEntry = sortedTrades.Last();
                 return price.Bid > tradeEntry.price;
             }
-
             return true;
         }
 
