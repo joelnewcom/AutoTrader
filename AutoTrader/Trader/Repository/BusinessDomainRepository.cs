@@ -238,7 +238,7 @@ namespace AutoTrader.Repository
 
             PayloadWrapper<List<PayloadOperation>> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<List<PayloadOperation>>>(await responseMessage.Content.ReadAsStringAsync());
             List<Operation> responseObjects = new List<Operation>();
-            if (deserializeObject is null || deserializeObject.Payload is null || deserializeObject.Payload.Count != 1)
+            if (deserializeObject is null || deserializeObject.Payload is null)
             {
                 return responseObjects;
             }

@@ -26,14 +26,6 @@ namespace AutoTrader.Controllers
         }
 
         [HttpGet]
-        [Route("api/AssetPairHistoryEntries")]
-        public async Task<List<Price>> AssetPairHistoryEntries()
-        {
-            _logger.LogDebug("Called endpoint: Get AssetPairHistoryEntries");
-            return await _dataAccess.GetAssetPairHistory("ETHCHF");
-        }
-
-        [HttpGet]
         [Route("api/AssetPairHistoryEntries/{id}")]
         public async Task<List<Price>> AssetPairHistoryEntries(string id)
         {

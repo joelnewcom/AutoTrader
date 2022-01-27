@@ -22,7 +22,6 @@ class Home extends React.PureComponent<WalletProps> {
   public render() {
     return (
       <React.Fragment>
-        <h1 id="tabelLabel">Hello World</h1>
         {this.renderOperations()}
       </React.Fragment>
     );
