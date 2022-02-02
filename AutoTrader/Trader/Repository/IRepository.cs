@@ -26,6 +26,7 @@ namespace AutoTrader.Repository
 
         Task<List<Operation>> GetOperations();
 
+        Task<List<Price>> GetPrices();
     }
 
     public interface IRepositoryGen<T>
@@ -49,6 +50,8 @@ namespace AutoTrader.Repository
         T LimitOrderSell(String assetPairId, Decimal price, Decimal volume);
 
         T GetOperations();
+
+        T GetPrices();
     }
 
 }

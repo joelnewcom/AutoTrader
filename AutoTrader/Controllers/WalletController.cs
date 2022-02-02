@@ -37,5 +37,13 @@ namespace AutoTrader.Controllers
             _logger.LogDebug("Called endpoint: Get Operations");
             return await repo.GetOperations();
         }
+
+        [HttpGet]
+        [Route("api/prices")]
+        public async Task<List<Price>> Prices()
+        {
+            _logger.LogDebug("Called endpoint: Get Operations");
+            return await repo.GetPrices();
+        }
     }
 }

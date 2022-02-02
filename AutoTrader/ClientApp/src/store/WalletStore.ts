@@ -8,6 +8,7 @@ export interface WalletState {
     isLoading: boolean;
     balances: Balance[];
     operations: Operation[];
+    prices: Price[];
 }
 
 export interface Balance {
@@ -21,6 +22,13 @@ export interface Operation {
     totalVolume: number;
     type: string;
     timestamp: string;
+}
+
+export interface Price {
+    assetPairId: string;
+    date: string;
+    ask: number;
+    bid: number;
 }
 
 // -----------------
@@ -45,9 +53,18 @@ interface ReceiveOperations {
     operations: Operation[];
 }
 
+interface RequestPrices {
+    type: 'REQUEST_PRICES';
+}
+
+interface ReceivePrices {
+    type: 'RECEIVE_PRICES';
+    prices: Price[];
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = RequestBalances | ReceiveBalances | RequestOperations | ReceiveOperations;
+type KnownAction = RequestBalances | ReceiveBalances | RequestOperations | ReceiveOperations | RequestPrices | ReceivePrices;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -55,7 +72,6 @@ type KnownAction = RequestBalances | ReceiveBalances | RequestOperations | Recei
 
 export const actionCreators = {
     requestBalances: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
-        // Only load data if it's something we don't already have (and are not already loading)
         const appState = getState();
         if (appState && appState.wallet) {
             fetch(`/Wallet/api/balance`)
@@ -67,7 +83,6 @@ export const actionCreators = {
         }
     },
     requestOperations: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
-        // Only load data if it's something we don't already have (and are not already loading)
         const appState = getState();
         if (appState && appState.wallet) {
             fetch(`/Wallet/api/operations`)
@@ -77,13 +92,24 @@ export const actionCreators = {
                 });
             dispatch({ type: 'REQUEST_OPERATIONS' });
         }
+    },
+    requestPrices: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        const appState = getState();
+        if (appState && appState.wallet) {
+            fetch(`/Wallet/api/prices`)
+                .then(response => response.json() as Promise<Price[]>)
+                .then(data => {
+                    dispatch({ type: 'RECEIVE_PRICES', prices: data });
+                });
+            dispatch({ type: 'REQUEST_PRICES' });
+        }
     }
 };
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: WalletState = { balances: [], isLoading: false, operations: [] };
+const unloadedState: WalletState = { balances: [], isLoading: false, operations: [], prices: [] };
 
 export const reducer: Reducer<WalletState> = (state: WalletState | undefined, incomingAction: Action): WalletState => {
     if (state === undefined) {
@@ -96,26 +122,44 @@ export const reducer: Reducer<WalletState> = (state: WalletState | undefined, in
             return {
                 isLoading: true,
                 balances: state.balances,
-                operations: state.operations
+                operations: state.operations,
+                prices: state.prices
             };
         case 'RECEIVE_BALANCES':
             return {
                 isLoading: false,
                 balances: action.balances,
-                operations: state.operations
+                operations: state.operations,
+                prices: state.prices
             };
         case 'REQUEST_OPERATIONS':
             return {
                 isLoading: true,
                 balances: state.balances,
-                operations: state.operations
+                operations: state.operations,
+                prices: state.prices
             };
         case 'RECEIVE_OPERATIONS':
             return {
                 isLoading: false,
                 balances: state.balances,
-                operations: action.operations
+                operations: action.operations,
+                prices: state.prices
             };
+        case 'REQUEST_PRICES':
+            return {
+                isLoading: true,
+                balances: state.balances,
+                operations: state.operations,
+                prices: state.prices
+            };
+        case 'RECEIVE_PRICES':
+            return {
+                isLoading: false,
+                balances: state.balances,
+                operations: state.operations,
+                prices: action.prices
+            }
     }
     return state;
 };

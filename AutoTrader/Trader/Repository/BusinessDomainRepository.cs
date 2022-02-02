@@ -250,5 +250,25 @@ namespace AutoTrader.Repository
 
             return responseObjects;
         }
+
+        public async Task<List<Price>> GetPrices()
+        {
+            IResponse<HttpResponseMessage> response = await _wrappedResponeRepo.GetPrices();
+            HttpResponseMessage responseMessage = await response.GetResponse();
+
+            PayloadWrapper<List<PayloadPrice>> deserializeObject = JsonConvert.DeserializeObject<PayloadWrapper<List<PayloadPrice>>>(await responseMessage.Content.ReadAsStringAsync());
+            List<Price> responseObjects = new List<Price>();
+            if (deserializeObject is null || deserializeObject.Payload is null)
+            {
+                return responseObjects;
+            }
+
+            foreach (PayloadPrice price in deserializeObject.Payload)
+            {
+                responseObjects.Add(_priceMapper.build(price));
+            }
+
+            return responseObjects;
+        }
     }
 }
