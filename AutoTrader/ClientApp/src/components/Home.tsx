@@ -5,6 +5,7 @@ import { ApplicationState } from '../store';
 import * as WalletStore from "../store/WalletStore";
 import * as TraderStore from "../store/TradeStore"
 import * as AssetPairStore from "../store/AssetPairStore"
+import { Button } from 'reactstrap';
 
 type WalletProps =
   WalletStore.WalletState
@@ -13,6 +14,14 @@ type WalletProps =
   & typeof TraderStore.actionCreators
   & typeof WalletStore.actionCreators // ... plus action creators we've requested
   & typeof AssetPairStore.actionCreators
+
+export interface Summary {
+  walletEntryAssetId: string;
+  walletEntryAvailable: number;
+  assetPair: string;
+  price: number;
+  valueInCHF: number;
+}
 
 class Home extends React.PureComponent<WalletProps> {
   // This method is called when the component is first added to the document
@@ -24,6 +33,8 @@ class Home extends React.PureComponent<WalletProps> {
   public componentDidUpdate() {
   }
 
+
+
   public render() {
     return (
       <React.Fragment>
@@ -33,39 +44,77 @@ class Home extends React.PureComponent<WalletProps> {
   }
 
   private ensureDataFetched() {
-    this.props.actions.requestOperations();
-    this.props.actions.requestPrices();
-    this.props.actions.requestAssetPairs();
+    this.props.requestOperations();
+    this.props.requestBalances();
+    this.props.requestPrices();
+    this.props.requestAssetPairs();
   }
 
   private currentvalue() {
-    var sum = 0;
-    this.props.balances.forEach(walletEntry => {
+    var result: Summary[];
+    result = [];
+
+    this.props.balances.forEach((walletEntry, index) => {
+
+      result[index] = { walletEntryAssetId: walletEntry.assetId, walletEntryAvailable: walletEntry.available, assetPair: "", price: 0, valueInCHF: walletEntry.available }
       this.props.assetPairs.forEach(assetPair => {
-        if (assetPair.baseAssetId = walletEntry.assetId) {
+        if (assetPair.baseAssetId == walletEntry.assetId) {
           this.props.prices.forEach(price => {
-            if (price.assetPairId = assetPair.id) {
-              sum += price.ask;
+            if (price.assetPairId == assetPair.id) {
+              result[index] = {
+                walletEntryAssetId: result[index].walletEntryAssetId,
+                walletEntryAvailable: result[index].walletEntryAvailable,
+                assetPair: assetPair.name,
+                price: price.ask,
+                valueInCHF: walletEntry.available * price.ask
+              }
             }
           })
         }
       })
     })
-    return sum;
+    return result;
   }
 
   private renderOperations() {
     return (
       <div>
-        Invested: {
-          this.props.operations.reduce(function (reducer, obj) {
-            return reducer += obj.totalVolume
-          }, 0)
-        }
+        <Button variant="primary" size="lg" disabled>
+          Invested: {
+            this.props.operations.reduce(function (reducer, obj) {
+              return reducer += obj.totalVolume
+            }, 0).toFixed(2)}
+        </Button>
+        {' '}
+        <Button variant="primary" size="lg" disabled>
+          Current value: {
+            this.currentvalue().reduce(function (reducer, obj) {
+              return reducer += obj.valueInCHF
+            }, 0).toFixed(2)}
+        </Button>
 
-        current value: {
-          this.currentvalue()
-        }
+        {/* <table className='table table-striped' aria-labelledby="tabelLabel">
+          <thead>
+            <tr>
+              <th>walletEntryAssetId</th>
+              <th>walletEntryAvailable</th>
+              <th>assetPair</th>
+              <th>price</th>
+              <th>valueInCHF</th>
+            </tr>
+          </thead>
+          <tbody>
+            {this.currentvalue().map((summary: Summary, index) =>
+              <tr key={index}>
+                <td>{summary.walletEntryAssetId}</td>
+                <td>{summary.walletEntryAvailable}</td>
+                <td>{summary.assetPair}</td>
+                <td>{summary.price}</td>
+                <td>{summary.valueInCHF}</td>
+              </tr>
+            )}
+          </tbody>
+        </table>
 
         <h1>Operations</h1>
         <table className='table table-striped' aria-labelledby="tabelLabel">
@@ -87,7 +136,7 @@ class Home extends React.PureComponent<WalletProps> {
               </tr>
             )}
           </tbody>
-        </table>
+        </table> */}
       </div>
     );
   }
@@ -101,7 +150,7 @@ function mapStateToProps(state: ApplicationState) {
 
 function mapDispatchToProps(dispatch: any) {
 
-  return { actions: bindActionCreators(Object.assign({}, WalletStore.actionCreators, AssetPairStore.actionCreators), dispatch) }
+  return bindActionCreators(Object.assign({}, WalletStore.actionCreators, AssetPairStore.actionCreators), dispatch);
   // return {
   //   actions: {
   //     todoActions: bindActionCreators(WalletStore.actionCreators, dispatch),
