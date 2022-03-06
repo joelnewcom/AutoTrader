@@ -4,7 +4,7 @@ import { AppThunkAction } from '.';
 // -----------------
 // STATE - This defines the type of data maintained in the Redux store.
 
-export interface AutoTraderState {
+export interface AssetPairState {
     isLoading: boolean;
     assetPairs: AssetPairs[];
     selectedAssetPair: string;
@@ -79,7 +79,7 @@ export const actionCreators = {
 
     requestHistoryEntries: (assetPair: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
         const appState = getState();
-        if (appState && appState.autoTrader) {
+        if (appState && appState.assetPairs) {
             console.log("Call AssetPairHistoryEntries");
             fetch(`/Trader/api/AssetPairHistoryEntries/` + assetPair)
                 .then(response => response.json() as Promise<AutoTraderIAssetPairHistoryEntry[]>)
@@ -92,7 +92,7 @@ export const actionCreators = {
 
     requestAssetPairs: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
         const appState = getState();
-        if (appState && appState.autoTrader) {
+        if (appState && appState.assetPairs) {
             console.log("Call GET AssetPairs");
             fetch(`/Trader/api/AssetPairs`)
                 .then(response => response.json() as Promise<AssetPairs[]>)
@@ -105,7 +105,7 @@ export const actionCreators = {
 
     requestLogBook: (assetPair: string): AppThunkAction<KnownAction> => (dispatch, getState) => {
         const appState = getState();
-        if (appState && appState.autoTrader) {
+        if (appState && appState.assetPairs) {
             console.log("Call Logbook");
             fetch(`/Trader/api/Logbooks/` + assetPair)
                 .then(response => response.json() as Promise<LogBook[]>)
@@ -120,9 +120,9 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: AutoTraderState = { assetPairs: [], isLoading: false, assetPairHistoryEntries: [], selectedAssetPair: "", logBooks: [] };
+const unloadedState: AssetPairState = { assetPairs: [], isLoading: false, assetPairHistoryEntries: [], selectedAssetPair: "", logBooks: [] };
 
-export const reducer: Reducer<AutoTraderState> = (state: AutoTraderState | undefined, incomingAction: Action): AutoTraderState => {
+export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefined, incomingAction: Action): AssetPairState => {
     if (state === undefined) {
         return unloadedState;
     }

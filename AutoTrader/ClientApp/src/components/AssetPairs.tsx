@@ -9,7 +9,7 @@ import { Button } from 'reactstrap';
 
 // At runtime, Redux will merge together...
 type AutoTraderProps =
-  AssetPairStore.AutoTraderState // ... state we've requested from the Redux store
+  AssetPairStore.AssetPairState // ... state we've requested from the Redux store
   & typeof AssetPairStore.actionCreators // ... plus action creators we've requested
   & RouteComponentProps<{ startDateIndex: string }>; // ... plus incoming routing parameters
 
@@ -116,6 +116,6 @@ class AssetPairs extends React.PureComponent<AutoTraderProps> {
 
 
 export default connect(
-  (state: ApplicationState) => state.autoTrader, // Selects which state properties are merged into the component's props
+  (state: ApplicationState) => state.assetPairs, // Selects which state properties are merged into the component's props
   AssetPairStore.actionCreators // Selects which action creators are merged into the component's props
 )(AssetPairs as any); // eslint-disable-line @typescript-eslint/no-explicit-any

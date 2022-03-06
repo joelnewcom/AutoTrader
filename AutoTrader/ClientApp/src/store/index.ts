@@ -1,6 +1,6 @@
 import * as WeatherForecasts from './WeatherForecasts';
 import * as Counter from './Counter';
-import * as AutoTrader from './AssetPairStore';
+import * as AssetPair from './AssetPairStore';
 import * as WalletStore from './WalletStore';
 import * as TradeStore from './TradeStore';
 import * as ExceptionLogStore from './ExceptionLogStore';
@@ -9,7 +9,7 @@ import * as ExceptionLogStore from './ExceptionLogStore';
 export interface ApplicationState {
     counter: Counter.CounterState | undefined;
     weatherForecasts: WeatherForecasts.WeatherForecastsState | undefined;
-    autoTrader: AutoTrader.AutoTraderState | undefined;
+    assetPairs: AssetPair.AssetPairState | undefined;
     wallet: WalletStore.WalletState | undefined;
     trades: TradeStore.TradeState | undefined;
     exceptionlogs: ExceptionLogStore.ExceptionLogState | undefined;
@@ -21,7 +21,7 @@ export interface ApplicationState {
 export const reducers = {
     counter: Counter.reducer,
     weatherForecasts: WeatherForecasts.reducer,
-    autoTrader: AutoTrader.reducer,
+    assetPairs: AssetPair.reducer,
     wallet: WalletStore.reducer,
     trades: TradeStore.reducer,
     exceptionlogs: ExceptionLogStore.reducer

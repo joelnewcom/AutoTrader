@@ -10,7 +10,7 @@ import { Button } from 'reactstrap';
 type WalletProps =
   WalletStore.WalletState
   & TraderStore.TradeState // ... state we've requested from the Redux store
-  & AssetPairStore.AutoTraderState // ... state we've requested from the Redux store
+  & AssetPairStore.AssetPairState // ... state we've requested from the Redux store
   & typeof TraderStore.actionCreators
   & typeof WalletStore.actionCreators // ... plus action creators we've requested
   & typeof AssetPairStore.actionCreators
@@ -32,8 +32,6 @@ class Home extends React.PureComponent<WalletProps> {
   // This method is called when the route parameters change
   public componentDidUpdate() {
   }
-
-
 
   public render() {
     return (
@@ -143,20 +141,12 @@ class Home extends React.PureComponent<WalletProps> {
 
 }
 
-
 function mapStateToProps(state: ApplicationState) {
-  return Object.assign({}, state.wallet, state.autoTrader);
+  return Object.assign({}, state.wallet, state.assetPairs);
 }
 
 function mapDispatchToProps(dispatch: any) {
-
   return bindActionCreators(Object.assign({}, WalletStore.actionCreators, AssetPairStore.actionCreators), dispatch);
-  // return {
-  //   actions: {
-  //     todoActions: bindActionCreators(WalletStore.actionCreators, dispatch),
-  //     counterActions: bindActionCreators(AssetPairStore.actionCreators, dispatch)
-  //   }
-  // };
 }
 
 export default connect(
