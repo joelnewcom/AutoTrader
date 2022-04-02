@@ -10,6 +10,7 @@ export interface AssetPairState {
     selectedAssetPair: string;
     assetPairHistoryEntries: AutoTraderIAssetPairHistoryEntry[];
     logBooks: LogBook[];
+    information: BackendInfo;
 }
 
 export interface AssetPairs {
@@ -33,6 +34,10 @@ export interface LogBook {
     date: string,
     logBookEntry: string,
     reason: string
+}
+
+export interface BackendInfo {
+    version: string
 }
 // -----------------
 // ACTIONS - These are serializable (hence replayable) descriptions of state transitions.
@@ -67,9 +72,18 @@ interface ReceiveAssetPairs {
     assetPairs: AssetPairs[];
 }
 
+interface RequestInfoAction {
+    type: 'REQUEST_INFO';
+}
+
+interface ReceiveInfoAction {
+    type: 'RECEIVE_INFO';
+    information: BackendInfo;
+}
+
 // Declare a 'discriminated union' type. This guarantees that all references to 'type' properties contain one of the
 // declared type strings (and not any other arbitrary string).
-type KnownAction = RequestAssetPairHistoryDataAction | ReceiveAssetPairHistoryDataAction | ReceiveAssetPairs | RequestAssetPairAction | RequestAssetPairLogBookDataAction | ReceiveAssetPairLogBookDataAction;
+type KnownAction = RequestAssetPairHistoryDataAction | ReceiveAssetPairHistoryDataAction | ReceiveAssetPairs | RequestAssetPairAction | RequestAssetPairLogBookDataAction | ReceiveAssetPairLogBookDataAction | RequestInfoAction | ReceiveInfoAction;
 
 // ----------------
 // ACTION CREATORS - These are functions exposed to UI components that will trigger a state transition.
@@ -115,12 +129,24 @@ export const actionCreators = {
             dispatch({ type: 'REQUEST_ASSETPAIR_LOGBOOK_DATA', selectedAssetPair: assetPair });
         }
     },
+
+    requestInfos: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
+        const appState = getState();
+        if (appState && appState.assetPairs) {
+            fetch(`/Trader/api/info/`)
+                .then(response => response.json() as Promise<BackendInfo>)
+                .then(data => {
+                    dispatch({ type: 'RECEIVE_INFO', information: data });
+                });
+            dispatch({ type: 'REQUEST_INFO' });
+        }
+    },
 };
 
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: AssetPairState = { assetPairs: [], isLoading: false, assetPairHistoryEntries: [], selectedAssetPair: "", logBooks: [] };
+const unloadedState: AssetPairState = { assetPairs: [], isLoading: false, assetPairHistoryEntries: [], selectedAssetPair: "", logBooks: [], information: { version: "n/a" } };
 
 export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefined, incomingAction: Action): AssetPairState => {
     if (state === undefined) {
@@ -135,7 +161,8 @@ export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefin
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
                 isLoading: true,
                 selectedAssetPair: action.selectedAssetPair,
-                logBooks: state.logBooks
+                logBooks: state.logBooks,
+                information: state.information
             };
         case 'RECEIVE_ASSETPAIR_HISTORY_DATA':
             return {
@@ -143,7 +170,8 @@ export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefin
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: action.assetPairHistoryEntries,
                 selectedAssetPair: state.selectedAssetPair,
-                logBooks: state.logBooks
+                logBooks: state.logBooks,
+                information: state.information
             };
         case 'REQUEST_ASSETPAIR_LOGBOOK_DATA':
             return {
@@ -151,7 +179,8 @@ export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefin
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
                 isLoading: true,
                 selectedAssetPair: action.selectedAssetPair,
-                logBooks: state.logBooks
+                logBooks: state.logBooks,
+                information: state.information
             };
         case 'RECEIVE_ASSETPAIR_LOGBOOK_DATA':
             return {
@@ -159,7 +188,8 @@ export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefin
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
                 selectedAssetPair: state.selectedAssetPair,
-                logBooks: action.logBooks
+                logBooks: action.logBooks,
+                information: state.information
             };
         case 'REQUEST_ASSETPAIRS':
             return {
@@ -167,7 +197,8 @@ export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefin
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
                 selectedAssetPair: state.selectedAssetPair,
-                logBooks: state.logBooks
+                logBooks: state.logBooks,
+                information: state.information
             }
         case 'RECEIVE_ASSET_PAIRS':
             return {
@@ -175,7 +206,26 @@ export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefin
                 assetPairs: action.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
                 selectedAssetPair: state.selectedAssetPair,
-                logBooks: state.logBooks
+                logBooks: state.logBooks,
+                information: state.information
+            };
+        case 'REQUEST_INFO':
+            return {
+                isLoading: true,
+                assetPairs: state.assetPairs,
+                assetPairHistoryEntries: state.assetPairHistoryEntries,
+                selectedAssetPair: state.selectedAssetPair,
+                logBooks: state.logBooks,
+                information: state.information
+            };
+        case 'RECEIVE_INFO':
+            return {
+                isLoading: false,
+                assetPairs: state.assetPairs,
+                assetPairHistoryEntries: state.assetPairHistoryEntries,
+                selectedAssetPair: state.selectedAssetPair,
+                logBooks: state.logBooks,
+                information: action.information
             };
     }
 

@@ -152,10 +152,9 @@ namespace AutoTrader.Trader
 
                     else if (SELL.Equals(decisionAudit.Advice))
                     {
-                        IBalance balance = balances.Where(b => assetPair.BaseAssetId.Equals(b.AssetId)).First();
-                        Decimal maxAvailableAmountToSell = balance.Available - balance.Reserved;
-                        _logger.LogInformation("Should sell: {0}, volume: {1}", assetPair.Id, maxAvailableAmountToSell);
-                        IResponse<String> response = await repo.LimitOrderSell(assetPair.Id, Decimal.Round(price.Ask, assetPair.PriceAccuracy), Decimal.Round(maxAvailableAmountToSell, assetPair.QuoteAssetAccuracy));
+                        decimal baseAssetToSell = getMaxVolumeToSellAlwaysWin(trades, balances, assetPair, price);
+                        _logger.LogInformation("Should sell: {0}, volume: {1}", assetPair.Id, baseAssetToSell);
+                        IResponse<String> response = await repo.LimitOrderSell(assetPair.Id, Decimal.Round(price.Ask, assetPair.PriceAccuracy), Decimal.Round(baseAssetToSell, assetPair.BaseAssetAccuracy));
                         if (response.IsSuccess())
                         {
                             reason = "sell orderId: " + await response.GetResponse();
@@ -173,9 +172,61 @@ namespace AutoTrader.Trader
                     }
 
                     await dataAccess.AddLogBook(new LogBook(Guid.NewGuid(), assetPair.Id, DateTime.Now, decisionAudit.Audit, reason));
-
                 }
             }
+        }
+
+        public decimal getMaxVolumeToSellAlwaysWin(List<TradeEntry> trades, List<IBalance> balances, AssetPair assetPair, Price price)
+        {
+            IBalance baseAssetBalance = balances.Where(b => assetPair.BaseAssetId.Equals(b.AssetId)).FirstOrDefault(new Balance("n/a", 0, 0));
+            Decimal baseAssetMaxAvailableAmountToSell = baseAssetBalance.Available - baseAssetBalance.Reserved;
+
+            List<TradeEntry> tradeEntriesOfAsset = trades.Where(trade => trade.baseAssetId.Equals(assetPair.BaseAssetId)).ToList();
+            // Sort the entries from newest first to oldest
+            tradeEntriesOfAsset.Sort((a, b) => b.timestamp.CompareTo(a.timestamp));
+            List<TradeEntry> buyTradesToConsider = new List<TradeEntry>();
+
+            Decimal soldVolume = 0;
+            Decimal soldPrice = 0;
+
+            foreach (TradeEntry trade in tradeEntriesOfAsset)
+            {
+                if (trade.side.Equals("buy"))
+                {
+                    if (soldVolume > 0 && trade.price < soldPrice)
+                    {
+                        soldVolume -= trade.baseVolume;
+                        if (soldVolume <= 0)
+                        {
+                            soldPrice = 0;
+                        }
+                    }
+                    else
+                    {
+                        buyTradesToConsider.Add(trade);
+                    }
+                }
+                else if (trade.side.Equals("sell"))
+                {
+                    if (soldPrice > 0)
+                    {
+                        soldPrice = Math.Max(soldPrice, trade.price);
+                    }
+                    else
+                    {
+                        soldPrice = trade.price;
+                    }
+                    soldVolume += trade.baseVolume;
+                }
+            }
+
+            Decimal baseAssetSellIfBoughtForLess = getAllBaseAssetVolumeIfBoughtLowerThanActualPrice(price, buyTradesToConsider, assetPair.BaseAssetId);
+            return Math.Min(baseAssetMaxAvailableAmountToSell, baseAssetSellIfBoughtForLess);
+        }
+
+        private decimal getAllBaseAssetVolumeIfBoughtLowerThanActualPrice(Price price, List<TradeEntry> trades, string baseAssetId)
+        {
+            return trades.Where(trade => trade.baseAssetId.Equals(baseAssetId) && trade.side.Equals("buy") && trade.price < price.Ask).Sum(trade => trade.baseVolume);
         }
 
         private async Task RefreshHistory()

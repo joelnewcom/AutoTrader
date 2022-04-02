@@ -13,8 +13,11 @@ The ask price represents the price that a seller is willing to take for this sec
 ## Sell multiple buys
 history trade entry: Buy v2 for price p2
 history trade entry: Buy v3 for price p3
+
 Now price is at p4
+
 p1 < p2 < p3 < p4
+
 Its time to sell:
 Sell v1 + v2 + v3 at the price of p4?
 or sell v3 for p4?

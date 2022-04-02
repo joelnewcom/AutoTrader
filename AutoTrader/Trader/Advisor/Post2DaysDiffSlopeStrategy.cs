@@ -13,19 +13,17 @@ namespace AutoTrader.Trader.Advisor
         private const Advice sell = Advice.Sell;
         private IAdvisor<List<Decimal>> _linearSlope = new LinearSlopeAdvisor();
         private IAdvisor<String, Price, List<TradeEntry>> _sellAlwaysWin;
-        private IAdvisor<String, List<IBalance>> _buyIfNotAlreadyOwned;
         private IAdvisor<String, List<IBalance>> _sellIfAlreadyOwned;
         private IAdvisor<Decimal, List<IBalance>> _buyIfEnoughMoney;
         private Advice _buySafetyCatch;
         private Advice _sellSafetyCatch;
-        private int _maxMoneyToSpend { get; }
-        public Post2DaysDiffSlopeStrategy(SafetyCatch safetyCatch, int maxMoneyToSpend)
+        private int _chfToSpend { get; }
+        public Post2DaysDiffSlopeStrategy(SafetyCatch safetyCatch, int chfToSpend)
         {
             _sellAlwaysWin = new SellAlwaysWin();
-            _buyIfNotAlreadyOwned = new BuyIfNotAlreadyOwned();
             _buyIfEnoughMoney = new BuyIfEnoughCHFAsset();
             _sellIfAlreadyOwned = new SellIfAlreadyOwned();
-            _maxMoneyToSpend = maxMoneyToSpend;
+            _chfToSpend = chfToSpend;
             IAdvisor<Advice> safetyCatchAdvisor = new SafetyCatchAdvisor(safetyCatch);
             _buySafetyCatch = safetyCatchAdvisor.advice(buy);
             _sellSafetyCatch = safetyCatchAdvisor.advice(sell);
@@ -37,14 +35,15 @@ namespace AutoTrader.Trader.Advisor
             List<Decimal> asks = (from Price entry in enumerable select entry.Ask).ToList();
 
             Advice linearSlopeAdvice = _linearSlope.advice(asks);
-            Advice enoughMoneyAdvice = _buyIfEnoughMoney.advice(_maxMoneyToSpend, balances);
-            Advice notAlreadyOwnedAdvice = _buyIfNotAlreadyOwned.advice(assetPair.BaseAssetId, balances);
+            Advice enoughMoneyAdvice = _buyIfEnoughMoney.advice(_chfToSpend, balances);
             Advice alreadyOwnerAdvice = _sellIfAlreadyOwned.advice(assetPair.BaseAssetId, balances);
             Advice alwaysWinAdvice = _sellAlwaysWin.advice(assetPair.Id, price, trades);
 
-            String logBookEntry = String.Format(@"linearSlopeAdvice: {0}, Buy Group: [enoughMoneyAdvice: {1}, notAlreadyOwnedAdvice: {2}, buySafetyCatch: {3}], Sell Group: [alreadyOwnerAdvice: {4}, alwaysWinAdvice: {5}, sellSafetyCatch: {6}]", linearSlopeAdvice, enoughMoneyAdvice, notAlreadyOwnedAdvice, _buySafetyCatch, alreadyOwnerAdvice, alwaysWinAdvice, _sellSafetyCatch);
+            String logBookEntry = String.Format(@"linearSlopeAdvice: {0}, Buy Group: [enoughMoneyAdvice: {1}, buySafetyCatch: {2}], Sell Group: [alreadyOwnerAdvice: {3}, alwaysWinAdvice: {4}, sellSafetyCatch: {5}]", linearSlopeAdvice, enoughMoneyAdvice, _buySafetyCatch, alreadyOwnerAdvice, alwaysWinAdvice, _sellSafetyCatch);
 
-            if (buy.Equals(linearSlopeAdvice) && buy.Equals(enoughMoneyAdvice) && buy.Equals(notAlreadyOwnedAdvice) && buy.Equals(_buySafetyCatch))
+            if (buy.Equals(linearSlopeAdvice) &&
+            buy.Equals(enoughMoneyAdvice) &&
+            buy.Equals(_buySafetyCatch))
             {
                 return new DecisionAudit(buy, logBookEntry);
             }

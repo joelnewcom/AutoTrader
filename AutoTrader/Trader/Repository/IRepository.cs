@@ -20,8 +20,12 @@ namespace AutoTrader.Repository
 
         Task<IPrice> GetPrice(String assetPairId);
 
+        /// <param name="volume">Order volume (in base asset)</param>
+        /// <param name="price">Order price(in quote asset for one unit of base asset)</param>
         Task<IResponse<String>> LimitOrderBuy(String assetPairId, Decimal price, Decimal volume);
 
+        /// <param name="volume">Order volume (in base asset)</param>
+        /// <param name="price">Order price(in quote asset for one unit of base asset)</param>
         Task<IResponse<String>> LimitOrderSell(String assetPairId, Decimal price, Decimal volume);
 
         Task<List<Operation>> GetOperations();
@@ -45,8 +49,12 @@ namespace AutoTrader.Repository
 
         T GetPrice(String assetPairId);
 
+        /// <param name="volume">Order volume (in base asset)</param>
+        /// <param name="price">Order price(in quote asset for one unit of base asset)</param>
         T LimitOrderBuy(String assetPairId, Decimal price, Decimal volume);
 
+        /// <param name="volume">Order volume (in base asset)</param>
+        /// <param name="price">Order price(in quote asset for one unit of base asset)</param>
         T LimitOrderSell(String assetPairId, Decimal price, Decimal volume);
 
         T GetOperations();

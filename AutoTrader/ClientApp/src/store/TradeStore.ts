@@ -53,9 +53,7 @@ export const actionCreators = {
     requestTrades: (): AppThunkAction<KnownAction> => (dispatch, getState) => {
         // Only load data if it's something we don't already have (and are not already loading)
         const appState = getState();
-        console.log("Call get trades");
         if (appState && appState.trades) {
-            console.log("Call get trades");
             fetch(`/Trader/api/trades`)
                 .then(response => response.json() as Promise<Trade[]>)
                 .then(data => {

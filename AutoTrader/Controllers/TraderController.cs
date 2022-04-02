@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace AutoTrader.Controllers
@@ -56,6 +57,13 @@ namespace AutoTrader.Controllers
         {
             _logger.LogDebug("Called endpoint: Get LogBooks");
             return await _dataAccess.GetLogBook(assetPair);
+        }
+
+        [HttpGet]
+        [Route("api/info")]
+        public BackendInfo Info()
+        {
+            return new BackendInfo(Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion.ToString());
         }
     }
 }

@@ -7,6 +7,7 @@ namespace AutoTrader.Config
         public List<string> knownAssetPairIds { get; set; }
         public string apiKey { get; set; }
 
-        public SafetyCatch safetyCatch { get; set; }
+        // Needs to be virtual for testing purposes
+        public virtual SafetyCatch safetyCatch { get; set; }
     }
 }

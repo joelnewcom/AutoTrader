@@ -46,6 +46,7 @@ class Home extends React.PureComponent<WalletProps> {
     this.props.requestBalances();
     this.props.requestPrices();
     this.props.requestAssetPairs();
+    this.props.requestInfos();
   }
 
   private currentvalue() {
@@ -90,51 +91,11 @@ class Home extends React.PureComponent<WalletProps> {
               return reducer += obj.valueInCHF
             }, 0).toFixed(2)}
         </Button>
-
-        {/* <table className='table table-striped' aria-labelledby="tabelLabel">
-          <thead>
-            <tr>
-              <th>walletEntryAssetId</th>
-              <th>walletEntryAvailable</th>
-              <th>assetPair</th>
-              <th>price</th>
-              <th>valueInCHF</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.currentvalue().map((summary: Summary, index) =>
-              <tr key={index}>
-                <td>{summary.walletEntryAssetId}</td>
-                <td>{summary.walletEntryAvailable}</td>
-                <td>{summary.assetPair}</td>
-                <td>{summary.price}</td>
-                <td>{summary.valueInCHF}</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-
-        <h1>Operations</h1>
-        <table className='table table-striped' aria-labelledby="tabelLabel">
-          <thead>
-            <tr>
-              <th>time</th>
-              <th>assetId</th>
-              <th>type</th>
-              <th>volume</th>
-            </tr>
-          </thead>
-          <tbody>
-            {this.props.operations.map((operation: WalletStore.Operation) =>
-              <tr key={operation.assetId}>
-                <td>{operation.timestamp}</td>
-                <td>{operation.assetId}</td>
-                <td>{operation.type}</td>
-                <td>{operation.totalVolume}</td>
-              </tr>
-            )}
-          </tbody>
-        </table> */}
+        {' '}
+        <Button variant="primary" size="lg" disabled>
+          backend version: {
+            this.props.information.version}
+        </Button>
       </div>
     );
   }
