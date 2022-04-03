@@ -6,7 +6,7 @@ name: Build and deploy ASP.Net Core app to Azure Web App - lykke-trader-app
 on:
   push:
     tags:
-      - "-v*"
+      - 'v*'
   workflow_dispatch:
 
 jobs:
