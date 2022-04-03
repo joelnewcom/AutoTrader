@@ -9,7 +9,8 @@
                 "build",
                 "${workspaceFolder}/AutoTrader/AutoTrader.csproj",
                 "/property:GenerateFullPaths=true",
-                "/consoleloggerparameters:NoSummary"
+                "/consoleloggerparameters:NoSummary",
+                "/property:InformationalVersion=v0.0.99"
             ],
             "problemMatcher": "$msCompile"
         },

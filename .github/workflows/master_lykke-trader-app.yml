@@ -27,7 +27,7 @@ jobs:
         uses: battila7/get-version-action@v2
 
       - name: Build with dotnet
-        run: dotnet build -p:AssemblyInformationalVersionAttribute=${{ steps.version.outputs.version-without-v }} --configuration Release
+        run: dotnet build -p:InformationalVersion=${{ steps.version.outputs.version-without-v }} --configuration Release
       
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
