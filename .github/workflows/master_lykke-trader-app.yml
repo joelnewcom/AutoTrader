@@ -30,7 +30,7 @@ jobs:
         run: dotnet build -p:InformationalVersion=${{ steps.version.outputs.version-without-v }} --configuration Release
       
       - name: dotnet publish
-        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
+        run: dotnet publish --no-build -c Release -o ${{env.DOTNET_ROOT}}/myapp
         env:
           CI: false
 
