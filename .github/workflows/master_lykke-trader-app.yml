@@ -5,8 +5,8 @@ name: Build and deploy ASP.Net Core app to Azure Web App - lykke-trader-app
 
 on:
   push:
-    branches:
-      - master
+    tags:
+      - "-v*"
   workflow_dispatch:
 
 jobs:
@@ -22,9 +22,13 @@ jobs:
           dotnet-version: '6.0.x'
           include-prerelease: true
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: 'Get Version'
+        id: version
+        uses: battila7/get-version-action@v2
 
+      - name: Build with dotnet
+        run: dotnet build -p:AssemblyInformationalVersionAttribute=${{ steps.version.outputs.version-without-v }} --configuration Release
+      
       - name: dotnet publish
         run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/myapp
         env:
