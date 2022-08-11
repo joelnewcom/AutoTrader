@@ -49,30 +49,32 @@ class Home extends React.PureComponent<WalletProps> {
     this.props.requestInfos();
   }
 
-  private currentvalue() {
-    var result: Summary[];
+  private getWalletEntriesMutipliedByItsPrice() {
+    var result: number[];
     result = [];
 
     this.props.balances.forEach((walletEntry, index) => {
-
-      result[index] = { walletEntryAssetId: walletEntry.assetId, walletEntryAvailable: walletEntry.available, assetPair: "", price: 0, valueInCHF: walletEntry.available }
-      this.props.assetPairs.forEach(assetPair => {
-        if (assetPair.baseAssetId == walletEntry.assetId) {
-          this.props.prices.forEach(price => {
-            if (price.assetPairId == assetPair.id) {
-              result[index] = {
-                walletEntryAssetId: result[index].walletEntryAssetId,
-                walletEntryAvailable: result[index].walletEntryAvailable,
-                assetPair: assetPair.name,
-                price: price.ask,
-                valueInCHF: walletEntry.available * price.ask
-              }
-            }
-          })
-        }
-      })
+      result[index] = 0
+      result[index] = walletEntry.available * this.getPrice(this.getAssetPairId(walletEntry.assetId))
     })
     return result;
+  }
+
+
+  private getPrice(assetPairId: string): number {
+    var price = this.props.prices.find(price => price.assetPairId === assetPairId)
+    if (price !== undefined) {
+      return price.ask
+    }
+    return 0;
+  }
+
+  private getAssetPairId(assetId: string): string {
+    var assetPair = this.props.assetPairs.find(assetPair => assetPair.baseAssetId === assetId)
+    if (assetPair !== undefined) {
+      return assetPair.id
+    }
+    return ""
   }
 
   private renderOperations() {
@@ -87,8 +89,8 @@ class Home extends React.PureComponent<WalletProps> {
         {' '}
         <Button variant="primary" size="lg" disabled>
           Current value: {
-            this.currentvalue().reduce(function (reducer, obj) {
-              return reducer += obj.valueInCHF
+            this.getWalletEntriesMutipliedByItsPrice().reduce(function (reducer, obj) {
+              return reducer += obj
             }, 0).toFixed(2)}
         </Button>
         {' '}
