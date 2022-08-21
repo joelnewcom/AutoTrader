@@ -32,7 +32,7 @@ namespace AutoTrader
                  services.AddScoped<IRepositoryGen<Task<IResponse<HttpResponseMessage>>>, RawResponseRepository>();
                  services.AddScoped<IRepository, BusinessDomainRepository>();
                  services.AddScoped<DataRefresher>();
-                 services.AddScoped<IDataAccessAsync, DataInDB>();
+                 services.AddScoped<IDataAccess, DataInDB>();
                  services.AddScoped<AssetPairHistoryEntryMapper>();
                  services.AddScoped<TradeEntryMapper>();
                  services.AddScoped<PriceMapper>();

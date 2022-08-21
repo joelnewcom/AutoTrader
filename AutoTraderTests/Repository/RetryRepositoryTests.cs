@@ -3,10 +3,10 @@ using AutoTrader.Repository;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoTrader.Data;
 using Microsoft.Extensions.Logging.Abstractions;
 using AutoTrader.Trader.Repository.Lykke.PocoMapper;
 using AutoTrader.Config;
+using AutoTrader.Models;
 
 namespace AutoTraderTests.Repository
 {

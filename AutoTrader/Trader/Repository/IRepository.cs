@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoTrader.Data;
-using AutoTrader.Trader.PoCos;
+using AutoTrader.Models;
 
 namespace AutoTrader.Repository
 {

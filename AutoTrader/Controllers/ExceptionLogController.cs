@@ -1,6 +1,6 @@
 ﻿using AutoTrader.Data;
+using AutoTrader.Models;
 using AutoTrader.Repository;
-using AutoTrader.Trader.PoCos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
@@ -15,9 +15,9 @@ namespace AutoTrader.Controllers
 
         private readonly ILogger<ExceptionLogController> _logger;
 
-        private IDataAccessAsync _dataAccess;
+        private IDataAccess _dataAccess;
 
-        public ExceptionLogController(ILogger<ExceptionLogController> logger, IDataAccessAsync dataAccess, IRepository repo)
+        public ExceptionLogController(ILogger<ExceptionLogController> logger, IDataAccess dataAccess, IRepository repo)
         {
             _logger = logger;
             this._dataAccess = dataAccess;

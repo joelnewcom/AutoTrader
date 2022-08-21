@@ -1,5 +1,6 @@
 using System;
 using AutoTrader.Data;
+using AutoTrader.Models;
 using AutoTrader.Repository;
 
 namespace AutoTrader.Trader.Repository.Lykke.PocoMapper

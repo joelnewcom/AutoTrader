@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using AutoTrader.Config;
-using AutoTrader.Data;
+using AutoTrader.Models;
 using AutoTrader.Trader;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

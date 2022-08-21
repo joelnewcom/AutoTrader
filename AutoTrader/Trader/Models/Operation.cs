@@ -1,6 +1,6 @@
 using System;
 
-namespace AutoTrader.Trader.PoCos
+namespace AutoTrader.Models
 {
     public class Operation
     {

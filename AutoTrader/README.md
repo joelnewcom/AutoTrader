@@ -26,7 +26,7 @@
 ### Database
 
 ## Entity framework
-Following commands are used to build up the datebase schema for entity framework:
+Following commands are used to build up the datebase schema with entity framework:
 
 ```
 dotnet add package Microsoft.EntityFrameworkCore.Sqlite
@@ -34,19 +34,22 @@ dotnet tool install --global dotnet-ef
 dotnet add package Microsoft.EntityFrameworkCore.Design
 dotnet ef migrations add InitialCreate
 dotnet ef database update
-* added new entity logBook
+// added new entity logBook
 dotnet ef migrations add AddLogBookTable
 dotnet ef database update
-* changed AssetPair entity
+// changed AssetPair entity
 dotnet ef migrations add NewFieldsInAssetPair
 dotnet ef database update
-* Added primary key for exceptionLog entries
+// Added primary key for exceptionLog entries
 dotnet ef migrations add ExceptionLogWithoutKeyLess
 dotnet ef database update
-* Previous migration was wrong so we undo it by:
+// Previous migration was wrong so we undo it by:
 dotnet ef database update NewFieldsInAssetPair
 dotnet ef migrations remove
 dotnet ef migrations add NewExceptionLogEntity
+dotnet ef database update
+// Added relationship in LogBook table: Child:Decision
+dotnet ef migrations add LogBookUseListInsteadOfStrin
 dotnet ef database update
 ```
 

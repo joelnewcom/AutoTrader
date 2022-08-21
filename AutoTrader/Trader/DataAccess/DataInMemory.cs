@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoTrader.Trader.PoCos;
+using AutoTrader.Models;
+using AutoTrader.Trader.Advisor;
 using Microsoft.Extensions.Logging;
 
 namespace AutoTrader.Data
 {
-    public class DataInMemory : IDataAccessAsync
+    public class DataInMemory : IDataAccess
     {
         private Dictionary<String, List<Price>> data = new Dictionary<String, List<Price>>();
 
@@ -60,7 +61,7 @@ namespace AutoTrader.Data
             return Task.FromResult(new List<AssetPair>(assetPairs.Values));
         }
 
-        Task<string> IDataAccessAsync.AddAssetPair(AssetPair assetPair)
+        Task<string> IDataAccess.AddAssetPair(AssetPair assetPair)
         {
             throw new NotImplementedException();
         }
@@ -96,6 +97,11 @@ namespace AutoTrader.Data
         }
 
         public Task<List<ExceptionLog>> GetExceptionLogs()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<Decision>> GetDecisions(string logBookId)
         {
             throw new NotImplementedException();
         }

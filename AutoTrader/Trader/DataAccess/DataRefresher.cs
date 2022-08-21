@@ -2,16 +2,17 @@
 using System;
 using System.Threading.Tasks;
 using AutoTrader.Data;
+using AutoTrader.Models;
 
 namespace AutoTrader.Library
 {
     public class DataRefresher
     {
         private readonly IRepository _repository;
-        private readonly IDataAccessAsync _data;
+        private readonly IDataAccess _data;
         private int _secondsToWaitForNextRequest = 10;
 
-        public DataRefresher(IRepository repository, IDataAccessAsync data)
+        public DataRefresher(IRepository repository, IDataAccess data)
         {
             _repository = repository;
             _data = data;

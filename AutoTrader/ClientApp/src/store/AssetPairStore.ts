@@ -5,7 +5,7 @@ import { AppThunkAction } from '.';
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface AssetPairState {
-    isLoading: boolean;
+    isLoadingAssetPairs: boolean;
     assetPairs: AssetPairs[];
     selectedAssetPair: string;
     assetPairHistoryEntries: AutoTraderIAssetPairHistoryEntry[];
@@ -146,7 +146,7 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: AssetPairState = { assetPairs: [], isLoading: false, assetPairHistoryEntries: [], selectedAssetPair: "", logBooks: [], information: { version: "n/a" } };
+const unloadedState: AssetPairState = { assetPairs: [], isLoadingAssetPairs: false, assetPairHistoryEntries: [], selectedAssetPair: "", logBooks: [], information: { version: "n/a" } };
 
 export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefined, incomingAction: Action): AssetPairState => {
     if (state === undefined) {
@@ -159,14 +159,14 @@ export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefin
             return {
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
-                isLoading: true,
+                isLoadingAssetPairs: true,
                 selectedAssetPair: action.selectedAssetPair,
                 logBooks: state.logBooks,
                 information: state.information
             };
         case 'RECEIVE_ASSETPAIR_HISTORY_DATA':
             return {
-                isLoading: false,
+                isLoadingAssetPairs: false,
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: action.assetPairHistoryEntries,
                 selectedAssetPair: state.selectedAssetPair,
@@ -177,14 +177,14 @@ export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefin
             return {
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
-                isLoading: true,
+                isLoadingAssetPairs: true,
                 selectedAssetPair: action.selectedAssetPair,
                 logBooks: state.logBooks,
                 information: state.information
             };
         case 'RECEIVE_ASSETPAIR_LOGBOOK_DATA':
             return {
-                isLoading: false,
+                isLoadingAssetPairs: false,
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
                 selectedAssetPair: state.selectedAssetPair,
@@ -193,7 +193,7 @@ export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefin
             };
         case 'REQUEST_ASSETPAIRS':
             return {
-                isLoading: true,
+                isLoadingAssetPairs: true,
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
                 selectedAssetPair: state.selectedAssetPair,
@@ -202,7 +202,7 @@ export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefin
             }
         case 'RECEIVE_ASSET_PAIRS':
             return {
-                isLoading: false,
+                isLoadingAssetPairs: false,
                 assetPairs: action.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
                 selectedAssetPair: state.selectedAssetPair,
@@ -211,7 +211,7 @@ export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefin
             };
         case 'REQUEST_INFO':
             return {
-                isLoading: true,
+                isLoadingAssetPairs: true,
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
                 selectedAssetPair: state.selectedAssetPair,
@@ -220,7 +220,7 @@ export const reducer: Reducer<AssetPairState> = (state: AssetPairState | undefin
             };
         case 'RECEIVE_INFO':
             return {
-                isLoading: false,
+                isLoadingAssetPairs: false,
                 assetPairs: state.assetPairs,
                 assetPairHistoryEntries: state.assetPairHistoryEntries,
                 selectedAssetPair: state.selectedAssetPair,

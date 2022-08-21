@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using AutoTrader.Data;
+using AutoTrader.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace AutoTrader.Advisor

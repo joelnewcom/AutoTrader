@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 using AutoTrader.Data;
-using AutoTrader.Trader.PoCos;
+using AutoTrader.Models;
 using AutoTrader.Trader.Repository;
 using AutoTrader.Trader.Repository.Lykke.PocoMapper;
 using Microsoft.Extensions.Logging;

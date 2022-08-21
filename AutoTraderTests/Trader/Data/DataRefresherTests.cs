@@ -5,6 +5,7 @@ using AutoTrader.Data;
 using AutoTrader.Repository;
 using Moq;
 using System.Threading.Tasks;
+using AutoTrader.Models;
 
 namespace AutoTraderTests.Library
 {
@@ -12,7 +13,7 @@ namespace AutoTraderTests.Library
     public class DataRefresherTests
     {
         readonly Mock<IRepository> repoMock = new Mock<IRepository>();
-        readonly Mock<IDataAccessAsync> dataAccessMock = new Mock<IDataAccessAsync>();
+        readonly Mock<IDataAccess> dataAccessMock = new Mock<IDataAccess>();
         readonly AssetPair assetPair = new AssetPair("eth/chf", "testAssetPair", 1000, "CHF", "ETH", 0, 0, 0);
 
         [TestMethod()]

@@ -1,10 +1,11 @@
 using System;
+using AutoTrader.Models;
 
 namespace AutoTrader.Data
 {
     public class AssetPairToEntity
     {
-        public AssetPairEntity create(AssetPair item)
+        public AssetPairEntity mapTo(AssetPair item)
         {
 
             if (item is not null)
@@ -15,7 +16,7 @@ namespace AutoTrader.Data
             throw new ArgumentException();
         }
 
-        public AssetPair create(AssetPairEntity item)
+        public AssetPair mapTo(AssetPairEntity item)
         {
 
             if (item is not null)

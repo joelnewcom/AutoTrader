@@ -1,5 +1,7 @@
 ﻿using AutoTrader.Data;
+using AutoTrader.Models;
 using AutoTrader.Repository;
+using AutoTrader.Trader.Advisor;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -16,10 +18,10 @@ namespace AutoTrader.Controllers
 
         private readonly ILogger<TraderController> _logger;
 
-        private IDataAccessAsync _dataAccess;
+        private IDataAccess _dataAccess;
         private IRepository _repo;
 
-        public TraderController(ILogger<TraderController> logger, IDataAccessAsync dataAccess, IRepository repo)
+        public TraderController(ILogger<TraderController> logger, IDataAccess dataAccess, IRepository repo)
         {
             _logger = logger;
             _dataAccess = dataAccess;
@@ -57,6 +59,14 @@ namespace AutoTrader.Controllers
         {
             _logger.LogDebug("Called endpoint: Get LogBooks");
             return await _dataAccess.GetLogBook(assetPair);
+        }
+
+        [HttpGet]
+        [Route("api/LogBooks/{logBookId}/Decisions")]
+        public async Task<List<Decision>> Decisions(String logBookId)
+        {
+            _logger.LogDebug("Called endpoint: Get LogBooks");
+            return await _dataAccess.GetDecisions(logBookId);
         }
 
         [HttpGet]

@@ -1,7 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using AutoTrader.Advisor;
-using AutoTrader.Data;
+using AutoTrader.Models;
 
 namespace AutoTraderTests.Library
 {

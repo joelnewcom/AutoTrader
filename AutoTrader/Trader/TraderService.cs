@@ -1,9 +1,9 @@
 ﻿using AutoTrader.Config;
 using AutoTrader.Data;
 using AutoTrader.Library;
+using AutoTrader.Models;
 using AutoTrader.Repository;
 using AutoTrader.Trader.Advisor;
-using AutoTrader.Trader.PoCos;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -54,7 +54,7 @@ namespace AutoTrader.Trader
             using (var scope = _scopeFactory.CreateScope())
             {
                 IRepository repo = scope.ServiceProvider.GetRequiredService<IRepository>();
-                IDataAccessAsync dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccessAsync>();
+                IDataAccess dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccess>();
                 DataRefresher dataRefresher = scope.ServiceProvider.GetRequiredService<DataRefresher>();
 
                 Dictionary<String, AssetPair> assetPairDict = await repo.GetAssetPairs();
@@ -103,7 +103,7 @@ namespace AutoTrader.Trader
             {
                 using (var scope = _scopeFactory.CreateScope())
                 {
-                    IDataAccessAsync dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccessAsync>();
+                    IDataAccess dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccess>();
                     String exceptionLog = await dataAccess.AddExceptionLog(new ExceptionLog(Guid.NewGuid(), e.Message, DateTime.Now));
                     _logger.LogError("Catched unexpected exception {0}", exceptionLog);
                 }
@@ -115,7 +115,7 @@ namespace AutoTrader.Trader
             using (var scope = _scopeFactory.CreateScope())
             {
                 IRepository repo = scope.ServiceProvider.GetRequiredService<IRepository>();
-                IDataAccessAsync dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccessAsync>();
+                IDataAccess dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccess>();
                 List<TradeEntry> trades = await repo.GetTrades();
                 List<IBalance> balances = await repo.GetWallets();
 
@@ -131,7 +131,8 @@ namespace AutoTrader.Trader
 
                     Price price = (Price)actualPrice;
                     historyPrices.Add(price);
-                    DecisionAudit decisionAudit = _post2DaysDiffSlopeStrategy.advice(historyPrices, balances, assetPair, trades, price);
+                    Guid logBookId = Guid.NewGuid();
+                    DecisionAudit decisionAudit = _post2DaysDiffSlopeStrategy.advice(historyPrices, balances, assetPair, trades, price, logBookId);
                     String reason = "unknown";
 
                     if (BUY.Equals(decisionAudit.Advice))
@@ -171,7 +172,7 @@ namespace AutoTrader.Trader
                         reason = "Hold on";
                     }
 
-                    await dataAccess.AddLogBook(new LogBook(Guid.NewGuid(), assetPair.Id, DateTime.Now, decisionAudit.Audit, reason));
+                    await dataAccess.AddLogBook(new LogBook(logBookId, assetPair.Id, DateTime.Now, reason, decisionAudit.Decisions));
                 }
             }
         }
@@ -234,7 +235,7 @@ namespace AutoTrader.Trader
             using (var scope = _scopeFactory.CreateScope())
             {
                 DataRefresher dataRefresher = scope.ServiceProvider.GetRequiredService<DataRefresher>();
-                IDataAccessAsync dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccessAsync>();
+                IDataAccess dataAccess = scope.ServiceProvider.GetRequiredService<IDataAccess>();
 
                 foreach (AssetPair assetPair in await dataAccess.GetAssetPairs())
                 {

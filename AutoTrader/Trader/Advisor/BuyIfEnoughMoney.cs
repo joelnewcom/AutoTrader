@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using AutoTrader.Data;
+using AutoTrader.Models;
 
 namespace AutoTrader.Advisor
 {

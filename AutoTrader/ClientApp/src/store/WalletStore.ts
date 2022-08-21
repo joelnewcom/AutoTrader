@@ -5,10 +5,12 @@ import { AppThunkAction } from '.';
 // STATE - This defines the type of data maintained in the Redux store.
 
 export interface WalletState {
-    isLoading: boolean;
     balances: Balance[];
+    isLoadingBalances: boolean;
     operations: Operation[];
+    isLoadingOperations: boolean;
     prices: Price[];
+    isLoadingPrices: boolean;
 }
 
 export interface Balance {
@@ -109,7 +111,7 @@ export const actionCreators = {
 // ----------------
 // REDUCER - For a given state and action, returns the new state. To support time travel, this must not mutate the old state.
 
-const unloadedState: WalletState = { balances: [], isLoading: false, operations: [], prices: [] };
+const unloadedState: WalletState = { balances: [], isLoadingBalances: false, operations: [], isLoadingOperations: false, prices: [], isLoadingPrices: false };
 
 export const reducer: Reducer<WalletState> = (state: WalletState | undefined, incomingAction: Action): WalletState => {
     if (state === undefined) {
@@ -120,42 +122,54 @@ export const reducer: Reducer<WalletState> = (state: WalletState | undefined, in
     switch (action.type) {
         case 'REQUEST_BALANCES':
             return {
-                isLoading: true,
+                isLoadingBalances: true,
+                isLoadingOperations: state.isLoadingOperations,
+                isLoadingPrices: state.isLoadingPrices,
                 balances: state.balances,
                 operations: state.operations,
                 prices: state.prices
             };
         case 'RECEIVE_BALANCES':
             return {
-                isLoading: false,
+                isLoadingBalances: false,
+                isLoadingOperations: state.isLoadingOperations,
+                isLoadingPrices: state.isLoadingPrices,
                 balances: action.balances,
                 operations: state.operations,
                 prices: state.prices
             };
         case 'REQUEST_OPERATIONS':
             return {
-                isLoading: true,
+                isLoadingBalances: state.isLoadingBalances,
+                isLoadingOperations: true,
+                isLoadingPrices: state.isLoadingPrices,
                 balances: state.balances,
                 operations: state.operations,
                 prices: state.prices
             };
         case 'RECEIVE_OPERATIONS':
             return {
-                isLoading: false,
+                isLoadingBalances: state.isLoadingBalances,
+                isLoadingOperations: false,
+                isLoadingPrices: state.isLoadingPrices,
                 balances: state.balances,
                 operations: action.operations,
                 prices: state.prices
             };
         case 'REQUEST_PRICES':
             return {
-                isLoading: true,
+                isLoadingBalances: state.isLoadingBalances,
+                isLoadingOperations: state.isLoadingOperations,
+                isLoadingPrices: true,
                 balances: state.balances,
                 operations: state.operations,
                 prices: state.prices
             };
         case 'RECEIVE_PRICES':
             return {
-                isLoading: false,
+                isLoadingBalances: state.isLoadingBalances,
+                isLoadingOperations: state.isLoadingOperations,
+                isLoadingPrices: false,
                 balances: state.balances,
                 operations: state.operations,
                 prices: action.prices

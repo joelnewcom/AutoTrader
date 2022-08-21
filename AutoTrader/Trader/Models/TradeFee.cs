@@ -1,4 +1,4 @@
-namespace AutoTrader.Data
+namespace AutoTrader.Models
 {
     public class TradeFee
     {

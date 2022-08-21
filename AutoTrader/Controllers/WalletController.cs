@@ -1,6 +1,5 @@
-﻿using AutoTrader.Data;
+﻿using AutoTrader.Models;
 using AutoTrader.Repository;
-using AutoTrader.Trader.PoCos;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System.Collections.Generic;

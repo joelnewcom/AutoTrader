@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using AutoTrader.Data;
+using AutoTrader.Models;
 
 namespace AutoTrader.Advisor
 {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using AutoTrader.Advisor;
 using AutoTrader.Config;
-using AutoTrader.Data;
+using AutoTrader.Models;
 
 namespace AutoTrader.Trader.Advisor
 {
@@ -29,7 +29,7 @@ namespace AutoTrader.Trader.Advisor
             _sellSafetyCatch = safetyCatchAdvisor.advice(sell);
         }
 
-        public DecisionAudit advice(List<Price> prices, List<IBalance> balances, AssetPair assetPair, List<TradeEntry> trades, Price price)
+        public DecisionAudit advice(List<Price> prices, List<IBalance> balances, AssetPair assetPair, List<TradeEntry> trades, Price price, Guid logBookId)
         {
             IEnumerable<Price> enumerable = prices.Skip(Math.Max(0, prices.Count() - 7));
             List<Decimal> asks = (from Price entry in enumerable select entry.Ask).ToList();
@@ -41,11 +41,21 @@ namespace AutoTrader.Trader.Advisor
 
             String logBookEntry = String.Format(@"linearSlopeAdvice: {0}, Buy Group: [enoughMoneyAdvice: {1}, buySafetyCatch: {2}], Sell Group: [alreadyOwnerAdvice: {3}, alwaysWinAdvice: {4}, sellSafetyCatch: {5}]", linearSlopeAdvice, enoughMoneyAdvice, _buySafetyCatch, alreadyOwnerAdvice, alwaysWinAdvice, _sellSafetyCatch);
 
-            if (buy.Equals(linearSlopeAdvice) &&
-            buy.Equals(enoughMoneyAdvice) &&
-            buy.Equals(_buySafetyCatch))
+            List<Decision> decisions = new List<Decision>
             {
-                return new DecisionAudit(buy, logBookEntry);
+                new Decision(AdviceType.linearSlopeAdvice, linearSlopeAdvice, logBookId),
+                new Decision(AdviceType.enoughMoneyAdvice, enoughMoneyAdvice, logBookId),
+                new Decision(AdviceType.alreadyOwnerAdvice, alreadyOwnerAdvice, logBookId),
+                new Decision(AdviceType.alwaysWinAdvice, alwaysWinAdvice, logBookId),
+                new Decision(AdviceType.sellSafetyCatch, _sellSafetyCatch, logBookId),
+                new Decision(AdviceType.buySafetyCatch, _buySafetyCatch, logBookId)
+            };
+
+            if (buy.Equals(linearSlopeAdvice) &&
+                buy.Equals(enoughMoneyAdvice) &&
+                buy.Equals(_buySafetyCatch))
+            {
+                return new DecisionAudit(buy, logBookEntry, decisions);
             }
 
             else if (sell.Equals(linearSlopeAdvice) &&
@@ -53,10 +63,10 @@ namespace AutoTrader.Trader.Advisor
                 sell.Equals(alwaysWinAdvice) &&
                 sell.Equals(_sellSafetyCatch))
             {
-                return new DecisionAudit(sell, logBookEntry);
+                return new DecisionAudit(sell, logBookEntry, decisions);
             }
 
-            return new DecisionAudit(Advice.HoldOn, logBookEntry);
+            return new DecisionAudit(Advice.HoldOn, logBookEntry, decisions);
         }
     }
 }

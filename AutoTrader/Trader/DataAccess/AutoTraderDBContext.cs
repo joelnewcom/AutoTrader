@@ -16,4 +16,5 @@ public class AutoTraderDBContext : DbContext
 
     public DbSet<ExceptionLogEntity> exceptionLogEnities { get; set; }
 
+    public DbSet<DecisionEntity> DecisionEntities { get; set; }
 }

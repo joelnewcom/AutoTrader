@@ -1,5 +1,5 @@
 using System;
-using AutoTrader.Trader.PoCos;
+using AutoTrader.Models;
 
 namespace AutoTrader.Trader.Repository.Lykke.PocoMapper
 {

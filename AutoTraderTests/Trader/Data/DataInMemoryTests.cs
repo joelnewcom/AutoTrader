@@ -1,8 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using AutoTrader.Data;
-using AutoTrader.Repository;
-using Moq;
+using AutoTrader.Models;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Threading.Tasks;
 

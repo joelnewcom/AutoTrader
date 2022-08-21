@@ -1,6 +1,6 @@
 using System;
 
-namespace AutoTrader.Data
+namespace AutoTrader.Models
 {
     public interface IBalance
     {

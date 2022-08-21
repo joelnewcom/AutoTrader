@@ -5,11 +5,13 @@ using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using AutoTrader.Trader.DataAccess.PoCoToEntityMappers;
-using AutoTrader.Trader.PoCos;
+using AutoTrader.Trader.Advisor;
+using AutoTrader.Models;
 
 namespace AutoTrader.Data
 {
-    public class DataInDB : IDataAccessAsync
+    /// This class translate the Pocos into entities, Therefore knows both worlds. This class would need to be rewritten if a new data access is used.
+    public class DataInDB : IDataAccess
     {
         private readonly int _timeWindowsInDays = 7;
         private readonly AutoTraderDBContext _context;
@@ -18,6 +20,7 @@ namespace AutoTrader.Data
         private PriceToEntity _priceToEntity = new PriceToEntity();
         private LogBookMapper _logBookMapper = new LogBookMapper();
         private ExceptionLogMapper _exceptionMapper = new ExceptionLogMapper();
+        private DecisionMapper _decisionMapper = new DecisionMapper();
 
         public DataInDB(ILogger<DataInDB> logger, AutoTraderDBContext autoTraderDBContext)
         {
@@ -27,7 +30,7 @@ namespace AutoTrader.Data
 
         public async Task<String> AddAssetPairHistoryEntry(String assetPairId, Price assetPairHistoryEntry)
         {
-            var price = await _context.AddAsync(_priceToEntity.create(assetPairHistoryEntry));
+            var price = await _context.AddAsync(_priceToEntity.mapTo(assetPairHistoryEntry));
             await _context.SaveChangesAsync();
             return price.Entity.AssetPairId;
         }
@@ -43,7 +46,7 @@ namespace AutoTrader.Data
             .OrderBy(p => p.Date)
             .ToListAsync();
 
-            return priceEntities.Select(priceEntity => _priceToEntity.create(priceEntity)).ToList();
+            return priceEntities.Select(priceEntity => _priceToEntity.mapTo(priceEntity)).ToList();
         }
 
         public async Task<DateTime> GetDateOfLatestEntry(String assetPairId)
@@ -57,12 +60,12 @@ namespace AutoTrader.Data
         public async Task<List<AssetPair>> GetAssetPairs()
         {
             List<AssetPairEntity> assetPairToEntities = await _context.assetPairEntities.ToListAsync();
-            return assetPairToEntities.Select(assetPairEntity => _assetPairToEntity.create(assetPairEntity)).ToList();
+            return assetPairToEntities.Select(assetPairEntity => _assetPairToEntity.mapTo(assetPairEntity)).ToList();
         }
 
         public async Task<String> AddAssetPair(AssetPair assetPair)
         {
-            var entityEntry = await _context.AddAsync(_assetPairToEntity.create(assetPair));
+            var entityEntry = await _context.AddAsync(_assetPairToEntity.mapTo(assetPair));
             await _context.SaveChangesAsync();
             return entityEntry.Entity.Id;
         }
@@ -77,27 +80,27 @@ namespace AutoTrader.Data
             {
                 return null;
             }
-            return _assetPairToEntity.create(assetPairEntity);
+            return _assetPairToEntity.mapTo(assetPairEntity);
         }
 
         public async Task<List<LogBook>> GetLogBook(string assetPairId)
         {
             return await _context.logBooks
             .Where(logBook => logBook.AssetPairId.Equals(assetPairId))
-            .Select(entity => _logBookMapper.create(entity))
+            .Select(entity => _logBookMapper.mapTo(entity))
             .ToListAsync();
         }
 
         public async Task<string> AddLogBook(LogBook logBook)
         {
-            var logBookRecord = await _context.logBooks.AddAsync(_logBookMapper.create(logBook));
+            var logBookRecord = await _context.logBooks.AddAsync(_logBookMapper.mapTo(logBook));
             await _context.SaveChangesAsync();
             return logBookRecord.Entity.Id.ToString();
         }
 
         public async Task<string> UpdateAssetPair(AssetPair assetPair)
         {
-            var entityEntry = _context.Update(_assetPairToEntity.create(assetPair));
+            var entityEntry = _context.Update(_assetPairToEntity.mapTo(assetPair));
             await _context.SaveChangesAsync();
             return entityEntry.Entity.Id;
         }
@@ -117,7 +120,15 @@ namespace AutoTrader.Data
         public async Task<List<ExceptionLog>> GetExceptionLogs()
         {
             return await _context.exceptionLogEnities
-            .Select(entity => _exceptionMapper.create(entity))
+            .Select(entity => _exceptionMapper.mapTo(entity))
+            .ToListAsync();
+        }
+
+        public async Task<List<Decision>> GetDecisions(string logBookId)
+        {
+            return await _context.DecisionEntities
+            .Where(decision => decision.LogBookId.Equals(new Guid(logBookId)))
+            .Select(entity => _decisionMapper.mapTo(entity))
             .ToListAsync();
         }
     }

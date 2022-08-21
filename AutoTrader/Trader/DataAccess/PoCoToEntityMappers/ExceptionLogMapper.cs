@@ -1,4 +1,4 @@
-using AutoTrader.Trader.PoCos;
+using AutoTrader.Models;
 
 namespace AutoTrader.Data
 {
@@ -9,7 +9,7 @@ namespace AutoTrader.Data
             return new ExceptionLogEntity(item.Id, item.Message, item.DateTime);
         }
 
-        public ExceptionLog create(ExceptionLogEntity item)
+        public ExceptionLog mapTo(ExceptionLogEntity item)
         {
             return new ExceptionLog(item.Id, item.Message, item.DateTime);
         }

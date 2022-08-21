@@ -1,10 +1,11 @@
 using System;
+using AutoTrader.Models;
 
 namespace AutoTrader.Data
 {
     public class PriceToEntity
     {
-        public PriceEntity create(Price item)
+        public PriceEntity mapTo(Price item)
         {
 
             if (item is not null)
@@ -15,7 +16,7 @@ namespace AutoTrader.Data
             throw new ArgumentException();
         }
 
-        public Price create (PriceEntity item)
+        public Price mapTo (PriceEntity item)
         {
 
             if (item is not null)

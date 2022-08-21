@@ -5,7 +5,7 @@ import { ApplicationState } from '../store';
 import * as WalletStore from "../store/WalletStore";
 import * as TraderStore from "../store/TradeStore"
 import * as AssetPairStore from "../store/AssetPairStore"
-import { Button } from 'reactstrap';
+import { Spinner, Button } from 'reactstrap';
 
 type WalletProps =
   WalletStore.WalletState
@@ -80,24 +80,34 @@ class Home extends React.PureComponent<WalletProps> {
   private renderOperations() {
     return (
       <div>
-        <Button variant="primary" size="lg" disabled>
-          Invested: {
-            this.props.operations.reduce(function (reducer, obj) {
-              return reducer += obj.totalVolume
-            }, 0).toFixed(2)}
-        </Button>
-        {' '}
-        <Button variant="primary" size="lg" disabled>
-          Current value: {
-            this.getWalletEntriesMutipliedByItsPrice().reduce(function (reducer, obj) {
-              return reducer += obj
-            }, 0).toFixed(2)}
-        </Button>
-        {' '}
-        <Button variant="primary" size="lg" disabled>
-          backend version: {
-            this.props.information.version}
-        </Button>
+        <div>
+          <Button variant="primary" size="lg" disabled>
+            Invested: {
+              this.props.operations.reduce(function (reducer, obj) {
+                return reducer += obj.totalVolume
+              }, 0).toFixed(2)}
+          </Button>
+          {' '}
+          <Button variant="primary" size="lg" disabled>
+            Current value: {
+              this.getWalletEntriesMutipliedByItsPrice().reduce(function (reducer, obj) {
+                return reducer += obj
+              }, 0).toFixed(2)}
+          </Button>
+          {' '}
+          <Button variant="primary" size="lg" disabled>
+            backend version: {
+              this.props.information.version}
+          </Button>
+        </div>
+        <br></br>
+        <div>
+        {this.props.isLoadingOperations && <div> Operations loading <Spinner/></div>}
+        {this.props.isLoadingBalances && <div> Balances loading <Spinner/></div>}
+        {this.props.isLoadingPrices && <div> Prices loading <Spinner/></div>}
+        {this.props.isLoadingAssetPairs && <div> AssetPairs loading <Spinner/></div>}
+          
+        </div>
       </div>
     );
   }

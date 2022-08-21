@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using AutoTrader.Trader.PoCos;
+using AutoTrader.Models;
+using AutoTrader.Trader.Advisor;
 
 namespace AutoTrader.Data
 {
-    public interface IDataAccessAsync
+    public interface IDataAccess
     {
         /// <summary> Stores a new price history entry </summary>
         /// <returns> AssetPairId of new record </returns>
@@ -35,6 +36,10 @@ namespace AutoTrader.Data
         /// <summary> To add a new logbook to the store</summary>
         /// <returns> id of the new record </returns>
         Task<String> AddLogBook(LogBook logBook);
+
+        /// <summary> retrieves all Decisions of a logBookEntry</summary>
+        /// <returns> List of Decisions </returns>
+        Task<List<Decision>> GetDecisions(String logBookId);
 
         /// <summary> Truncates the whole assetPairs table </summary>
         Task<int> DeleteAllAssetPair();
