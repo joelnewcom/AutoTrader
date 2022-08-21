@@ -67,3 +67,10 @@ Select the API wallet you want to deposit money
 Click on "TRANSER"
 Fill out the form and use Microsoft Authenticator app for MFA code
 Use the Lykke app to verify the QR code. If popup doesn't appear on the app, restart the app
+
+## Release master branch
+Create an annotaded tag: (lightweight also works, but annotated tags are recommended anyways)
+
+```git tag -a v1.0.3 -m "new release v1.0.3"```
+
+```git push origin v1.0.3```

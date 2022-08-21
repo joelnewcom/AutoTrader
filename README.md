@@ -1,6 +1,6 @@
 # LykkeTrader
 
-##
+## Setup Diagram
 ![diagram](Docu/diagram.drawio.png)
 
 ## Lykke APIs
