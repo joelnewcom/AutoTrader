@@ -38,6 +38,7 @@ namespace AutoTrader
                  services.AddScoped<PriceMapper>();
                  services.AddScoped<AssetPairMapper>();
                  services.AddScoped<OperationMapper>();
+                 services.AddScoped<BackgroundTask>();
                  services.AddMvcCore().AddApiExplorer();
                  services.AddSwaggerGen();
              });
