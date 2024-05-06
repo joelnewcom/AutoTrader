@@ -33,7 +33,7 @@
     "@types/react-router-dom": "5.1.0",
     "@types/reactstrap": "8.0.6",
     "@types/recharts": "^1.8.23",
-    "cross-env": "6.0.3",
+    "cross-env": "7.0.3",
     "nan": "^2.14.1",
     "typescript": "3.6.4"
   },
