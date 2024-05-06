@@ -18,7 +18,7 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.0.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.29" />
-    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.17.0" />
+    <PackageReference Include="Microsoft.ApplicationInsights.AspNetCore" Version="2.22.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="$(SpaRoot)**" />
