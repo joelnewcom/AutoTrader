@@ -1,15 +1,15 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections.Generic;
 using AutoTrader.Advisor;
 using AutoTrader.Models;
+using Xunit;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
-namespace AutoTraderTests.Library
+namespace AutoTraderTests.Trader.Advisor
 {
-    [TestClass()]
     public class AlwaysWinSellerTests
     {
 
-        [TestMethod()]
+        [Fact]
         public void LatestBuyTradeWithHigherPriceLeadsToHoldOn()
         {
             SellAlwaysWin alwaysWinSeller = new SellAlwaysWin();
@@ -21,7 +21,7 @@ namespace AutoTraderTests.Library
             Assert.AreEqual(Advice.HoldOn, advice);
         }
 
-        [TestMethod()]
+        [Fact]
         public void LatestBuyTradeWithLowerPriceLeadsToSell()
         {
             SellAlwaysWin alwaysWinSeller = new SellAlwaysWin();
@@ -33,7 +33,7 @@ namespace AutoTraderTests.Library
             Assert.AreEqual(Advice.Sell, advice);
         }
 
-        [TestMethod()]
+        [Fact]
         public void OnlyConsiderLatestTradeEntryUnsortedList()
         {
             SellAlwaysWin alwaysWinSeller = new SellAlwaysWin();
@@ -46,7 +46,7 @@ namespace AutoTraderTests.Library
             Assert.AreEqual(Advice.Sell, advice);
         }
 
-        [TestMethod()]
+        [Fact]
         public void NotFoundLeadsToSell()
         {
             SellAlwaysWin alwaysWinSeller = new SellAlwaysWin();
@@ -54,7 +54,7 @@ namespace AutoTraderTests.Library
             Assert.AreEqual(Advice.Sell, advice);
         }
 
-        [TestMethod()]
+        [Fact]
         public void OnlyConsiderBuySide()
         {
             SellAlwaysWin alwaysWinSeller = new SellAlwaysWin();

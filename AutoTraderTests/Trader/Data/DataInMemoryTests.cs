@@ -1,18 +1,18 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
+using System.Threading.Tasks;
 using AutoTrader.Data;
 using AutoTrader.Models;
 using Microsoft.Extensions.Logging.Abstractions;
-using System.Threading.Tasks;
+using Xunit;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
-namespace AutoTraderTests.Library
+namespace AutoTraderTests.Trader.Data
 {
-    [TestClass()]
     public class DataInMemoryTests
     {
         readonly AssetPair assetPair = new AssetPair("eth/chf", "testAssetPair", 1000, "CHF", "ETH",0,0,0);
 
-        [TestMethod()]
+        [Fact]
         public async Task NewestDataAvailableGetReturned()
         {
             // given

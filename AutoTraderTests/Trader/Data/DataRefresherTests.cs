@@ -1,22 +1,22 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AutoTrader.Library;
-using System;
-using AutoTrader.Data;
-using AutoTrader.Repository;
-using Moq;
+﻿using System;
 using System.Threading.Tasks;
+using AutoTrader.Data;
+using AutoTrader.Library;
 using AutoTrader.Models;
+using AutoTrader.Repository;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Moq;
+using Xunit;
 
-namespace AutoTraderTests.Library
+namespace AutoTraderTests.Trader.Data
 {
-    [TestClass()]
     public class DataRefresherTests
     {
         readonly Mock<IRepository> repoMock = new Mock<IRepository>();
         readonly Mock<IDataAccess> dataAccessMock = new Mock<IDataAccess>();
         readonly AssetPair assetPair = new AssetPair("eth/chf", "testAssetPair", 1000, "CHF", "ETH", 0, 0, 0);
 
-        [TestMethod()]
+        [Fact]
         public async Task EntryOfTodayIsNotAdded()
         {
             // given
@@ -33,7 +33,7 @@ namespace AutoTraderTests.Library
             dataAccessMock.Verify(s => s.AddAssetPairHistoryEntry(assetPair.Id, assetPairHistoryEntry), Times.Never);
         }
 
-        [TestMethod()]
+        [Fact]
         public async Task NewEntryGetsAdded()
         {
             // given

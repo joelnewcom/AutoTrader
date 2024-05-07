@@ -3,17 +3,17 @@ using AutoTrader.Data;
 using AutoTrader.Models;
 using AutoTrader.Trader.Advisor;
 using AutoTrader.Trader.DataAccess.PoCoToEntityMappers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace AutoTraderTests.Trader.Data
 {
-    [TestClass()]
     public class LogBookMapperTests
     {
         LogBookMapper logBookMapper = new LogBookMapper();
         Guid logBookId = Guid.NewGuid();
 
-        [TestMethod()]
+        [Fact]
         public void MapAdviceEntityToPoCoDecisionsAdded()
         {
             LogBookEntity logBookEntity = new LogBookEntity(logBookId, "assetPairId", DateTime.Now, "reason");
@@ -22,7 +22,7 @@ namespace AutoTraderTests.Trader.Data
             Assert.AreEqual(1, logBook.decisions.Count);
         }
 
-        [TestMethod()]
+        [Fact]
         public void MapAdviceEntityToPoCo()
         {
             LogBookEntity logBookEntity = new LogBookEntity(logBookId, "assetPairId", DateTime.Now, "reason");
@@ -30,7 +30,7 @@ namespace AutoTraderTests.Trader.Data
             Assert.AreEqual(0, logBook.decisions.Count);
         }
 
-        [TestMethod()]
+        [Fact]
         public void MapAdviceEntityToPoCoCheckAdviceEnums()
         {
             LogBookEntity logBookEntity = new LogBookEntity(logBookId, "assetPairId", DateTime.Now, "reason");
@@ -44,7 +44,7 @@ namespace AutoTraderTests.Trader.Data
             Assert.AreEqual(3, Enum.GetNames(typeof(AdviceEntity)).Length);
         }
 
-        [TestMethod()]
+        [Fact]
         public void MapAdviceEntityToPoCoCheckAdviceTypeEnums()
         {
             LogBookEntity logBookEntity = new LogBookEntity(logBookId, "assetPairId", DateTime.Now, "reason");

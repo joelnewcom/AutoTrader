@@ -4,12 +4,12 @@ using AutoTrader.Models;
 using AutoTrader.Trader;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Xunit;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace AutoTraderTests.Trader;
 
-[TestClass]
 public class BackgroundTaskTests
 {
     readonly Mock<IServiceScopeFactory> dependencyInjectionScope = new Mock<IServiceScopeFactory>();
@@ -24,7 +24,7 @@ public class BackgroundTaskTests
         _backgroundTask = new BackgroundTask(logger.Object, config.Object, dependencyInjectionScope.Object);
     }
 
-    [TestMethod]
+    [Fact]
     public void OnlyBuysInPast()
     {
         List<TradeEntry> trades = new List<TradeEntry>()
@@ -43,7 +43,7 @@ public class BackgroundTaskTests
         Assert.AreEqual(11, _backgroundTask.GetMaxVolumeToSellAlwaysWin(trades, balances, assetPair, price));
     }
 
-    [TestMethod()]
+    [Fact]
     public void SoldAlreadyInThePast()
     {
         List<TradeEntry> trades = new List<TradeEntry>()
@@ -62,7 +62,7 @@ public class BackgroundTaskTests
         Assert.AreEqual(0, _backgroundTask.GetMaxVolumeToSellAlwaysWin(trades, balances, assetPair, price));
     }
 
-    [TestMethod()]
+    [Fact]
     public void SoldAlreadyMutipleTimesInThePast()
     {
         List<TradeEntry> trades = new List<TradeEntry>()

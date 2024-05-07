@@ -1,15 +1,15 @@
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.Generic;
 using AutoTrader.Advisor;
-using System;
+using Xunit;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
-namespace AutoTraderTests.Library
+namespace AutoTraderTests.Trader.Advisor
 {
-    [TestClass()]
     public class LeastSquareMethodTests
     {
 
-        [TestMethod()]
+        [Fact]
         public void SimpleLinearTest()
         {
             List<Decimal> y = new List<Decimal> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
@@ -17,7 +17,7 @@ namespace AutoTraderTests.Library
             Assert.AreEqual(1, slope);
         }
 
-        [TestMethod()]
+        [Fact]
         public void SimpleNegativeLinearTest()
         {
             List<Decimal> y = new List<Decimal> { 5, 4, 3, 2, 1 };

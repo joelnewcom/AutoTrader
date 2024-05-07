@@ -1,16 +1,16 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using AutoTrader.Repository;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging.Abstractions;
-using AutoTrader.Trader.Repository.Lykke.PocoMapper;
 using AutoTrader.Config;
 using AutoTrader.Models;
+using AutoTrader.Repository;
+using AutoTrader.Trader.Repository.Lykke.PocoMapper;
+using Microsoft.Extensions.Logging.Abstractions;
+using Xunit;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
-namespace AutoTraderTests.Repository
+namespace AutoTraderTests.Trader.Repository
 {
-    [TestClass()]
     public class RetryRepositoryTests
     {
         IRepository repository = new BusinessDomainRepository(
@@ -24,7 +24,7 @@ namespace AutoTraderTests.Repository
                 new OperationMapper()
         );
 
-        [TestMethod()]
+        [Fact]
         public async Task GetHistoryRatePerDayTest()
         {
             Task<IPrice> historyRatePerDay = repository.GetHistoryRatePerDay("BTCCHF", DateTime.Today);
@@ -33,14 +33,14 @@ namespace AutoTraderTests.Repository
             Assert.AreEqual(DateTime.Today, assetPairHistoryEntry.Date);
         }
 
-        [TestMethod()]
+        [Fact]
         public async Task GetDictionaryTest()
         {
             Dictionary<string, AssetPair> task = await repository.GetAssetPairs();
             Assert.IsTrue(task.Count > 1);
         }
 
-        [TestMethod()]
+        [Fact]
         public async Task GetWalletTest()
         {
             List<IBalance> walletList = await repository.GetWallets();

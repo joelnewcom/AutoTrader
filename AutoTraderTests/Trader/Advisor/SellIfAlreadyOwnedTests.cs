@@ -1,14 +1,15 @@
 using System.Collections.Generic;
+using AutoTrader.Advisor;
 using AutoTrader.Models;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
-namespace AutoTrader.Advisor
+namespace AutoTraderTests.Trader.Advisor
 {
-    [TestClass()]
     public class SellIfAlreadyOwnedTests
     {
 
-        [TestMethod()]
+        [Fact]
         public void SellIfAlreadyOwned()
         {
             SellIfAlreadyOwned sellIfAlreadyOwned = new SellIfAlreadyOwned();
@@ -20,7 +21,7 @@ namespace AutoTrader.Advisor
             Assert.AreEqual(Advice.Sell, advice);
         }
 
-        [TestMethod()]
+        [Fact]
         public void HoldOnIfAlreadyOwnedButReserved()
         {
             SellIfAlreadyOwned sellIfAlreadyOwned = new SellIfAlreadyOwned();
@@ -32,7 +33,7 @@ namespace AutoTrader.Advisor
             Assert.AreEqual(Advice.HoldOn, advice);
         }
 
-        [TestMethod()]
+        [Fact]
         public void SellIfNotAlreadyOwned()
         {
             SellIfAlreadyOwned sellIfAlreadyOwned = new SellIfAlreadyOwned();
